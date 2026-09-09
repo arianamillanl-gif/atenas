@@ -3,8 +3,8 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Ventas verificadas | ATENAS',
-  description: 'Control operativo y seguimiento de ventas verificadas en ATENAS.',
+  title: 'Ventas verificadas pendientes de condiciones | ATENAS',
+  description: 'Control operativo y seguimiento de ventas verificadas pendientes de condiciones en ATENAS.',
   generator: 'v0.app',
   icons: {
     icon: [
