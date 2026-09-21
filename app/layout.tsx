@@ -1,5 +1,8 @@
 import { Analytics } from '@vercel/analytics/next'
+import { Poppins } from 'next/font/google'
 import type { Metadata, Viewport } from 'next'
+
+const poppins = Poppins({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-poppins' })
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -40,7 +43,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className="antialiased">
+      <body className={`${poppins.variable} antialiased`}>
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
