@@ -82,8 +82,8 @@ function Tooltip({ label, children }: { label: string; children: React.ReactNode
 }
 
 const actionCopy: Record<string, { label: string; tooltip: string }> = {
-  'Completar condiciones': { label: 'Completar', tooltip: 'Completar y verificar las condiciones comerciales' },
-  'Continuar borrador': { label: 'Continuar', tooltip: 'Continuar edición del borrador guardado' },
+  'Completar condiciones': { label: 'Completar', tooltip: 'Completar y verificar condiciones comerciales' },
+  'Continuar borrador': { label: 'Continuar', tooltip: 'Continuar edición del borrador' },
   'Reintentar integración': { label: 'Reintentar', tooltip: 'Reintentar proceso de integración' },
 }
 
