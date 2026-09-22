@@ -19,6 +19,7 @@ import {
   Menu,
   MoreHorizontal,
   PanelLeftClose,
+  PanelLeftOpen,
   RefreshCw,
   Search,
   Settings2,
@@ -101,6 +102,7 @@ export default function Page() {
   const [selected, setSelected] = useState<Sale | null>(null)
   const [openMenu, setOpenMenu] = useState<string | null>(null)
   const [notice, setNotice] = useState('')
+  const [isCollapsed, setIsCollapsed] = useState(false)
 
   useEffect(() => {
     const timer = window.setTimeout(() => setSearch(searchDraft), 300)
@@ -120,8 +122,8 @@ export default function Page() {
 
   return (
     <main className="app-shell">
-      <aside className="sidebar">
-        <div className="brand"><img src="/logo-atenas.png" alt="ATENAS Grupo Consultor" className="h-8 md:h-9 w-auto object-contain bg-transparent" /><button className="icon-button sidebar-close" aria-label="Cerrar menú"><PanelLeftClose size={16} /></button></div>
+      <aside className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+        <div className="brand"><img src="/logo-atenas.png" alt="ATENAS Grupo Consultor" className="h-10 md:h-11 w-auto max-w-[170px] object-contain bg-transparent transition-all duration-200" /><span className="brand-compact" aria-hidden="true">A</span><button className="icon-button sidebar-close" aria-label={isCollapsed ? 'Expandir menú' : 'Contraer menú'} onClick={() => setIsCollapsed((collapsed) => !collapsed)}>{isCollapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}</button></div>
         <div className="workspace-switch"><span className="workspace-avatar">LO</span><div><strong>Lo-Fi workspace</strong><span>Operaciones</span></div><ChevronDown size={15} /></div>
         <nav className="nav"><span className="nav-label">MENÚ PRINCIPAL</span><a href="#resumen"><LayoutDashboard size={16} />Resumen</a><a href="#ventas" className="active"><FileCheck2 size={16} />Ventas verificadas<span className="nav-count">6</span></a><a href="#clientes"><UserRound size={16} />Clientes</a><a href="#reportes"><SlidersHorizontal size={16} />Reportes</a><span className="nav-label second">CONFIGURACIÓN</span><a href="#integraciones"><Sparkles size={16} />Integraciones</a><a href="#ajustes"><Settings2 size={16} />Ajustes</a></nav>
         <div className="sidebar-footer"><div className="support-card"><CircleHelp size={17} /><div><strong>¿Necesitas ayuda?</strong><span>Revisa la guía de operación</span></div><ChevronRight size={14} /></div><div className="user-card"><div className="user-avatar">MG</div><div><strong>María González</strong><span>Administradora</span></div><MoreHorizontal size={16} /></div></div>
