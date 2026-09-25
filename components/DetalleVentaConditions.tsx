@@ -9,6 +9,7 @@ import {
   Lock,
   Paperclip,
   Save,
+  ShieldCheck,
   Sliders,
   Upload,
 } from 'lucide-react'
@@ -36,7 +37,7 @@ export default function DetalleVentaConditions({ onBack }: DetailProps) {
       <div className="detail-breadcrumb">Ventas <span>›</span> Ventas verificadas <span>›</span> <strong>Detalle VTA-2026-00893</strong></div>
       <header className="detail-hero">
         <div>
-          <span className="detail-eyebrow">P85-02 / P85-04 · CONTROL OPERATIVO</span>
+          <span className="detail-eyebrow"><ShieldCheck aria-hidden="true" /> CONTROL OPERATIVO / VENTAS</span>
           <h1 id="detail-title">Detalle de Venta Verificada y Condiciones Comerciales</h1>
           <p>ID Venta: VTA-2026-00893 <span>•</span> Ref. Clientify: CLT-2026-0409 <span>•</span> Ref. Origen: REF-ORIGEN-9982</p>
         </div>
@@ -47,7 +48,7 @@ export default function DetalleVentaConditions({ onBack }: DetailProps) {
 
       <div className="detail-sections">
         <section className="detail-card readonly-card">
-          <div className="detail-card-heading"><div><Lock aria-hidden="true" className="heading-icon muted" /><h2>Datos de la venta <small>Solo lectura</small></h2></div></div>
+          <div className="detail-card-heading"><div><h2>Datos de la venta</h2></div><Lock aria-hidden="true" className="heading-icon muted" /></div>
           <div className="detail-grid-three">{readOnlyFields.map(([label, value]) => <label className="detail-input-field" key={label}><span>{label}</span><input value={value} disabled className={label === 'Importe' ? 'amount-value' : ''} readOnly /></label>)}</div>
         </section>
 
