@@ -6,8 +6,8 @@ const poppins = Poppins({ subsets: ['latin'], weight: ['400', '500', '600'], var
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Ventas verificadas pendientes de condiciones | ATENAS',
-  description: 'Control operativo y seguimiento de ventas verificadas pendientes de condiciones en ATENAS.',
+  title: 'Detalle de venta verificada y condiciones comerciales | ATENAS',
+  description: 'Detalle, validación y trazabilidad de condiciones comerciales para ventas verificadas en ATENAS.',
   generator: 'v0.app',
   icons: {
     icon: [
