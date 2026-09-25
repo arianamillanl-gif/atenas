@@ -9,6 +9,7 @@ import {
   Lock,
   Paperclip,
   Save,
+  Sliders,
   Upload,
 } from 'lucide-react'
 
@@ -46,18 +47,18 @@ export default function DetalleVentaConditions({ onBack }: DetailProps) {
 
       <div className="detail-sections">
         <section className="detail-card readonly-card">
-          <div className="detail-card-heading"><div><span className="detail-step">1</span><h2>Datos de la venta <small>· Solo lectura</small></h2></div><Lock aria-hidden="true" /></div>
+          <div className="detail-card-heading"><div><Lock aria-hidden="true" className="heading-icon muted" /><h2>Datos de la venta <small>Solo lectura</small></h2></div></div>
           <div className="detail-grid-three">{readOnlyFields.map(([label, value]) => <label className="detail-input-field" key={label}><span>{label}</span><input value={value} disabled className={label === 'Importe' ? 'amount-value' : ''} readOnly /></label>)}</div>
         </section>
 
         <section className="detail-card">
-          <div className="detail-card-heading"><div><span className="detail-step">2</span><h2>Contrato y evidencia</h2></div><Paperclip aria-hidden="true" /></div>
+          <div className="detail-card-heading"><div><Paperclip aria-hidden="true" className="heading-icon brand" /><h2>Contrato y evidencia</h2></div></div>
           <div className="detail-grid-three"><label className="detail-input-field"><span>Referencia de contrato</span><input placeholder="Ej. CTR-2026-0031" /></label><label className="detail-input-field span-two"><span>Observación contractual</span><textarea rows={2} placeholder="Añade una observación relevante para la operación" /></label></div>
           <button type="button" className="evidence-dropzone"><Upload aria-hidden="true" /><span><strong>Adjuntar evidencia contractual</strong><small>PDF, JPG o PNG · Máximo 10 MB</small></span></button>
         </section>
 
         <section className="detail-card editable-card">
-          <div className="detail-card-heading"><div><span className="detail-step">3</span><h2>Condiciones comerciales editables</h2></div><span className="required-note">* Campos obligatorios</span></div>
+          <div className="detail-card-heading"><div><Sliders aria-hidden="true" className="heading-icon brand" /><h2>Condiciones comerciales editables</h2></div><span className="required-note">* Campos obligatorios</span></div>
           <div className="detail-grid-three">
             {['Modalidad del Servicio*', 'Frecuencia del Servicio*', 'Periodicidad de Facturación*', 'Periodicidad de Pago*', 'Condición de Pago*'].map((label) => <label className="detail-input-field" key={label}><span>{label}</span><select defaultValue=""><option value="" disabled>Seleccionar opción</option><option>Mensual</option><option>Trimestral</option><option>Anual</option></select></label>)}
             <label className="detail-input-field"><span>Fecha Inicio del Servicio*</span><input type="date" defaultValue="2026-09-24" /></label><label className="detail-input-field"><span>Fecha Fin del Servicio</span><input type="date" /></label><label className="detail-input-field"><span>Cantidad de Cuotas</span><input type="number" min="1" defaultValue="12" /></label><label className="detail-input-field"><span>Primer Vencimiento</span><input type="date" defaultValue="2026-10-24" /></label>
@@ -65,12 +66,12 @@ export default function DetalleVentaConditions({ onBack }: DetailProps) {
         </section>
 
         <section className="detail-card">
-          <div className="detail-card-heading"><div><span className="detail-step">4</span><h2>Versionado y trazabilidad</h2></div><History aria-hidden="true" /></div>
+          <div className="detail-card-heading"><div><History aria-hidden="true" className="heading-icon brand" /><h2>Versionado y trazabilidad</h2></div></div>
           <div className="version-grid"><label className="detail-input-field"><span>Versión vigente</span><input value="V1 · 24/09/2026" disabled readOnly /></label><label className="detail-input-field"><span>Motivo del cambio*</span><input placeholder="Describe el motivo de esta versión" /></label><button type="button" className="history-button"><History aria-hidden="true" /> Ver versiones anteriores</button></div>
         </section>
       </div>
 
-      <footer className="detail-actions"><div><button type="button" className="detail-button outline" onClick={onBack}><ArrowLeft aria-hidden="true" /> Volver a la Bandeja</button><button type="button" className="detail-button outline"><Save aria-hidden="true" /> Guardar Borrador</button><button type="button" className="detail-button ghost">Descartar Cambios</button></div><div><button type="button" className="detail-button dark"><FileText aria-hidden="true" /> Previsualizar CxC</button><button type="button" className="detail-button dark"><History aria-hidden="true" /> Consultar Historial</button><button type="button" className="detail-button primary"><CheckCircle2 aria-hidden="true" /> Confirmar condiciones</button></div></footer>
+      <footer className="detail-actions"><div className="detail-action-group detail-action-left"><button type="button" className="detail-button outline" onClick={onBack}><ArrowLeft aria-hidden="true" /> Volver a la Bandeja</button><button type="button" className="detail-button ghost">Descartar Cambios</button></div><div className="detail-action-group detail-action-center"><button type="button" className="detail-button outline"><FileText aria-hidden="true" /> Previsualizar CxC</button><button type="button" className="detail-button outline"><History aria-hidden="true" /> Consultar Historial</button></div><div className="detail-action-group detail-action-right"><button type="button" className="detail-button outline"><Save aria-hidden="true" /> Guardar Borrador</button><button type="button" className="detail-button primary"><CheckCircle2 aria-hidden="true" /> Confirmar condiciones</button></div></footer>
     </section>
   )
 }
