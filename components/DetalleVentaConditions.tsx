@@ -21,6 +21,7 @@ import {
 
 type DetailProps = {
   onBack: () => void
+  onPreview: () => void
 }
 
 const labelClassName = 'text-xs font-medium text-slate-600 mb-1.5 block'
@@ -38,7 +39,7 @@ const readOnlyFields = [
   ['Fuente y fecha de carga', 'Clientify · 02/08/2026 09:14'],
 ]
 
-export default function DetalleVentaConditions({ onBack }: DetailProps) {
+export default function DetalleVentaConditions({ onBack, onPreview }: DetailProps) {
   const [showAlert, setShowAlert] = useState(true)
   const [showHistory, setShowHistory] = useState(false)
   const [serviceConditions, setServiceConditions] = useState<string[]>(() => Array(5).fill(''))
@@ -135,7 +136,7 @@ export default function DetalleVentaConditions({ onBack }: DetailProps) {
             <History aria-hidden="true" className="w-3.5 h-3.5 text-slate-500" />
             <span>Consultar Historial</span>
           </button>
-          <button type="button" className="h-10 px-4 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-full text-xs font-semibold flex items-center gap-2 transition-all shadow-sm">
+          <button type="button" onClick={onPreview} className="h-10 px-4 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-full text-xs font-semibold flex items-center gap-2 transition-all shadow-sm">
             <FileText aria-hidden="true" className="w-3.5 h-3.5 text-slate-500" />
             <span>Previsualizar CxC</span>
           </button>

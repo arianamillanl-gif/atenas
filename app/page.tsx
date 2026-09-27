@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import DetalleVentaConditions from '@/components/DetalleVentaConditions'
+import PrevisualizacionConfirmacionCxC from '@/components/PrevisualizacionConfirmacionCxC'
 import {
   AlertCircle,
   AlertTriangle,
@@ -115,7 +116,7 @@ export default function Page() {
   const [openMenu, setOpenMenu] = useState<string | null>(null)
   const [notice, setNotice] = useState('')
   const [isCollapsed, setIsCollapsed] = useState(false)
-  const [currentView, setCurrentView] = useState<'list' | 'detail'>('list')
+  const [currentView, setCurrentView] = useState<'list' | 'detail' | 'preview'>('list')
 
   useEffect(() => {
     const timer = window.setTimeout(() => setSearch(searchDraft), 300)
@@ -143,7 +144,7 @@ export default function Page() {
         <footer className="sidebar-footer"><div className="support-card"><CircleHelp size={17} /><div><strong>¿Necesitas ayuda?</strong><span>Revisa la guía de operación</span></div><ChevronRight size={14} /></div><div className="user-card"><div className="user-avatar">MG</div><div><strong>María González</strong><span>Administradora</span></div><MoreHorizontal size={16} /></div></footer>
       </aside>
 
-      {currentView === 'detail' ? <DetalleVentaConditions onBack={() => { setCurrentView('list'); setSelected(null) }} /> : <section className="content">
+      {currentView === 'detail' ? <DetalleVentaConditions onBack={() => { setCurrentView('list'); setSelected(null) }} onPreview={() => setCurrentView('preview')} /> : currentView === 'preview' ? <PrevisualizacionConfirmacionCxC /> : <section className="content">
         <header className="topbar"><button className="mobile-menu icon-button" aria-label="Abrir menú"><Menu size={19} /></button><div className="breadcrumb">Ventas <ChevronRight size={14} /> <strong>Ventas verificadas</strong></div><div className="top-actions"><button className="icon-button" aria-label="Ayuda"><CircleHelp size={18} /></button><button className="icon-button notification" aria-label="Notificaciones"><Bell size={18} /><i /></button><div className="top-user">MG <ChevronDown size={14} /></div></div></header>
         <div className="page-wrap">
           <div className="page-heading"><div><div className="eyebrow"><ShieldCheck size={14} /> CONTROL OPERATIVO / VENTAS</div><h1>Ventas verificadas pendientes de condiciones</h1><p>Supervisa el estado de las condiciones y la integración de tus ventas verificadas.</p></div><div className="heading-actions"><button className="outline-button"><RefreshCw size={15} />Actualizar</button></div></div>
