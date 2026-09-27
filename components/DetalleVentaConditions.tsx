@@ -5,6 +5,7 @@ import {
   AlertTriangle,
   ArrowLeft,
   CheckCircle2,
+  ChevronRight,
   Clock,
   Download,
   FileText,
@@ -44,11 +45,14 @@ export default function DetalleVentaConditions({ onBack }: DetailProps) {
 
   return (
     <section className="detail-page" aria-labelledby="detail-title">
-      <div className="detail-breadcrumb">Ventas <span>›</span> Ventas verificadas <span>›</span> <strong>Detalle VTA-2026-00893</strong></div>
-      <button type="button" onClick={onBack} className="mb-4 inline-flex items-center gap-2 text-xs font-medium text-slate-500 hover:text-[#2A4B93] transition-colors">
-        <ArrowLeft aria-hidden="true" />
-        Volver a la bandeja
-      </button>
+      <nav className="flex items-center gap-2 text-xs text-slate-500 mb-3" aria-label="Migas de pan">
+        <button type="button" onClick={onBack} className="inline-flex items-center gap-1.5 text-slate-600 hover:text-[#2A4B93] font-medium transition-colors">
+          <ArrowLeft aria-hidden="true" className="w-3.5 h-3.5 text-slate-500" />
+          <span>Ventas verificadas</span>
+        </button>
+        <ChevronRight aria-hidden="true" className="w-3.5 h-3.5 text-slate-300" />
+        <span className="text-slate-400 font-normal">Detalle VTA-2026-00893</span>
+      </nav>
       <header className="detail-hero">
         <div>
           <span className="detail-eyebrow"><ShieldCheck aria-hidden="true" /> CONTROL OPERATIVO / VENTAS</span>
