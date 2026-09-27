@@ -25,6 +25,7 @@ import {
 type DetailProps = {
   onBack: () => void
   onPreview: () => void
+  onHistory: () => void
 }
 
 const labelClassName = 'text-xs font-medium text-slate-600 mb-1.5 block'
@@ -42,7 +43,7 @@ const readOnlyFields = [
   ['Fuente y fecha de carga', 'Clientify · 02/08/2026 09:14'],
 ]
 
-export default function DetalleVentaConditions({ onBack, onPreview }: DetailProps) {
+export default function DetalleVentaConditions({ onBack, onPreview, onHistory }: DetailProps) {
   const [showAlert, setShowAlert] = useState(true)
   const [showHistory, setShowHistory] = useState(false)
   const [serviceConditions, setServiceConditions] = useState<string[]>(() => Array(5).fill(''))
@@ -134,7 +135,7 @@ export default function DetalleVentaConditions({ onBack, onPreview }: DetailProp
         </section>
 
         <section className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm mb-6">
-          <div className="detail-card-heading"><h2 className="text-base font-bold text-slate-800">Versionado y trazabilidad</h2><button type="button" onClick={() => setShowHistory(true)} className="text-xs font-semibold text-[#2A4B93] hover:bg-[#2A4B93]/5 border border-[#2A4B93]/30 px-3 py-1.5 rounded-full inline-flex items-center gap-1.5 transition-colors"><History aria-hidden="true" className="w-3.5 h-3.5" /><span>Ver historial de versiones</span></button></div>
+          <div className="detail-card-heading"><h2 className="text-base font-bold text-slate-800">Versionado y trazabilidad</h2><button type="button" onClick={onHistory} className="text-xs font-semibold text-[#2A4B93] hover:bg-[#2A4B93]/5 border border-[#2A4B93]/30 px-3 py-1.5 rounded-full inline-flex items-center gap-1.5 transition-colors"><History aria-hidden="true" className="w-3.5 h-3.5" /><span>Ver historial de versiones</span></button></div>
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
             <label className="md:col-span-3"><span className="text-xs font-medium text-slate-600 mb-1.5 block h-4">Versión vigente</span><input className="w-full h-11 px-3.5 text-xs text-slate-700 font-semibold bg-slate-50 border border-slate-200 rounded-xl cursor-not-allowed disabled:opacity-100" value="V1 · 24/09/2026" disabled readOnly /></label>
             <label className="md:col-span-5"><span className="text-xs font-medium text-slate-600 mb-1.5 block h-4">Motivo del cambio*</span><input className="w-full h-11 px-3.5 text-xs text-slate-700 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2A4B93]/20 focus:border-[#2A4B93] placeholder:text-slate-400" placeholder="Describe la razón del cambio (ej. Ajuste comercial)..." /></label>
@@ -162,7 +163,7 @@ export default function DetalleVentaConditions({ onBack, onPreview }: DetailProp
           </button>
         </div>
         <div className="flex items-center gap-2.5">
-          <button type="button" onClick={() => setShowHistory(true)} className="h-10 px-4 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-full text-xs font-semibold flex items-center gap-2 transition-all shadow-sm">
+          <button type="button" onClick={onHistory} className="h-10 px-4 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-full text-xs font-semibold flex items-center gap-2 transition-all shadow-sm">
             <History aria-hidden="true" className="w-3.5 h-3.5 text-slate-500" />
             <span>Consultar Historial</span>
           </button>

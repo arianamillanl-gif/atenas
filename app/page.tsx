@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import DetalleVentaConditions from '@/components/DetalleVentaConditions'
 import PrevisualizacionConfirmacionCxC from '@/components/PrevisualizacionConfirmacionCxC'
+import HistorialVersionesVenta from '@/components/HistorialVersionesVenta'
 import {
   AlertCircle,
   AlertTriangle,
@@ -116,7 +117,7 @@ export default function Page() {
   const [openMenu, setOpenMenu] = useState<string | null>(null)
   const [notice, setNotice] = useState('')
   const [isCollapsed, setIsCollapsed] = useState(false)
-  const [currentView, setCurrentView] = useState<'list' | 'detail' | 'preview'>('list')
+  const [currentView, setCurrentView] = useState<'list' | 'detail' | 'preview' | 'history'>('list')
 
   useEffect(() => {
     const timer = window.setTimeout(() => setSearch(searchDraft), 300)
@@ -144,7 +145,7 @@ export default function Page() {
         <footer className="sidebar-footer"><div className="support-card"><CircleHelp size={17} /><div><strong>¿Necesitas ayuda?</strong><span>Revisa la guía de operación</span></div><ChevronRight size={14} /></div><div className="user-card"><div className="user-avatar">MG</div><div><strong>María González</strong><span>Administradora</span></div><MoreHorizontal size={16} /></div></footer>
       </aside>
 
-      {currentView === 'detail' ? <DetalleVentaConditions onBack={() => { setCurrentView('list'); setSelected(null) }} onPreview={() => setCurrentView('preview')} /> : currentView === 'preview' ? <PrevisualizacionConfirmacionCxC onBack={() => setCurrentView('detail')} onRefresh={() => setNotice('Vista previa actualizada')} onConfirmConditions={() => setNotice('Revisa y confirma las condiciones')} onGenerateCxC={() => setNotice('Generación de CxC iniciada')} /> : <section className="content">
+      {currentView === 'detail' ? <DetalleVentaConditions onBack={() => { setCurrentView('list'); setSelected(null) }} onPreview={() => setCurrentView('preview')} onHistory={() => setCurrentView('history')} /> : currentView === 'preview' ? <PrevisualizacionConfirmacionCxC onBack={() => setCurrentView('detail')} onRefresh={() => setNotice('Vista previa actualizada')} onConfirmConditions={() => setNotice('Revisa y confirma las condiciones')} onGenerateCxC={() => setNotice('Generación de CxC iniciada')} /> : currentView === 'history' ? <HistorialVersionesVenta onBack={() => setCurrentView('detail')} /> : <section className="content">
         <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-slate-200/80 bg-white px-6">
           <div className="flex items-center gap-3"><button className="mobile-menu icon-button" aria-label="Abrir menú"><Menu size={19} /></button><span className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-100/80 px-3 py-1.5 text-xs font-medium text-slate-700"><span className="size-2 rounded-full bg-indigo-600" aria-hidden="true" />Lo-Fi workspace · Operaciones</span></div>
           <div className="flex items-center gap-3"><label className="hidden items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-400 md:flex"><Search size={14} aria-hidden="true" /><span className="sr-only">Búsqueda rápida</span><input aria-label="Búsqueda rápida" placeholder="Búsqueda rápida" className="w-28 bg-transparent text-xs text-slate-700 outline-none placeholder:text-slate-400" /><kbd className="rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-medium text-slate-400">⌘K</kbd></label><button className="relative rounded-full p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-[#2A4B93]" aria-label="Notificaciones"><Bell size={18} /><span className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-[#2A4B93]" aria-hidden="true" /></button><span className="mx-2 h-5 w-px bg-slate-200" aria-hidden="true" /><button className="flex items-center gap-2 rounded-xl px-2 py-1.5 text-left transition-colors hover:bg-slate-50" aria-label="Menú de usuario"><span className="flex size-8 items-center justify-center rounded-full bg-[#2A4B93] text-xs font-bold text-white">MG</span><span className="hidden text-xs font-semibold text-slate-700 sm:block">María González</span><ChevronDown size={14} className="text-slate-400" /></button></div>
