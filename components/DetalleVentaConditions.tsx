@@ -48,7 +48,7 @@ export default function DetalleVentaConditions({ onBack, onPreview }: DetailProp
   const [serviceConditions, setServiceConditions] = useState<string[]>(() => Array(5).fill(''))
 
   return (
-    <>
+    <div className="flex flex-col min-h-screen w-full">
       <header className="w-full h-16 bg-white border-b border-slate-200/80 px-6 flex items-center justify-between sticky top-0 z-30">
         <div className="flex items-center gap-3">
           <span className="px-3 py-1.5 bg-slate-100/80 border border-slate-200 rounded-full text-xs font-medium text-slate-700 flex items-center gap-2">
@@ -75,7 +75,7 @@ export default function DetalleVentaConditions({ onBack, onPreview }: DetailProp
           </button>
         </div>
       </header>
-      <section className="detail-page" aria-labelledby="detail-title">
+      <main className="w-full flex-1 p-6 space-y-6 overflow-y-auto detail-page" aria-labelledby="detail-title">
       <nav className="flex items-center gap-2 text-xs text-slate-500 mb-6" aria-label="Migas de pan">
         <span className="text-slate-400">Ventas</span>
         <ChevronRight aria-hidden="true" className="w-3.5 h-3.5 text-slate-300" />
@@ -180,7 +180,7 @@ export default function DetalleVentaConditions({ onBack, onPreview }: DetailProp
           </button>
         </div>
       </footer>
-      </section>
-    </>
+      </main>
+    </div>
   )
 }
