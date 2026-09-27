@@ -56,7 +56,19 @@ function ReadOnlyGroup({ title, fields, dotClassName, gridClassName }: { title: 
   )
 }
 
-export default function PrevisualizacionConfirmacionCxC() {
+type PrevisualizacionConfirmacionCxCProps = {
+  onBack?: () => void
+  onRefresh?: () => void
+  onConfirmConditions?: () => void
+  onGenerateCxC?: () => void
+}
+
+export default function PrevisualizacionConfirmacionCxC({
+  onBack,
+  onRefresh,
+  onConfirmConditions,
+  onGenerateCxC,
+}: PrevisualizacionConfirmacionCxCProps) {
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [isConfirming, setIsConfirming] = useState(false)
 
@@ -75,12 +87,12 @@ export default function PrevisualizacionConfirmacionCxC() {
           <nav className="mb-2 flex items-center gap-2 text-xs text-slate-500" aria-label="Breadcrumb">
             <span>Ventas</span>
             <ChevronRight className="size-3.5 text-slate-300" aria-hidden="true" />
-            <span>Detalle VTA-2026-00893</span>
+            <button type="button" onClick={onBack} className="cursor-pointer transition-colors hover:text-[#2A4B93] hover:underline">Detalle VTA-2026-00893</button>
             <ChevronRight className="size-3.5 text-slate-300" aria-hidden="true" />
             <span className="font-semibold text-slate-700">Previsualización de CxC</span>
           </nav>
           <div className="flex flex-wrap items-center gap-3">
-            <button type="button" className="rounded-full p-2 text-slate-600 transition-colors hover:bg-slate-100" aria-label="Volver al detalle de venta">
+            <button type="button" onClick={onBack} className="rounded-full p-2 text-slate-600 transition-colors hover:bg-slate-100" aria-label="Volver al detalle de venta">
               <ArrowLeft className="size-5" aria-hidden="true" />
             </button>
             <h1 className="text-xl font-bold text-slate-900">Previsualización y Confirmación de CxC</h1>
@@ -162,12 +174,11 @@ export default function PrevisualizacionConfirmacionCxC() {
       </div>
 
       <footer className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 px-4 py-3 shadow-lg backdrop-blur-md sm:px-6">
-        <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <button type="button" className="h-10 rounded-full border border-slate-300 bg-white px-5 text-xs font-semibold text-slate-700 hover:bg-slate-50">Volver a editar condiciones</button>
+        <div className="mx-auto flex w-full max-w-7xl justify-end">
           <div className="flex flex-wrap justify-end gap-2">
-            <button type="button" className="inline-flex h-10 items-center gap-1.5 rounded-full border border-[#2A4B93] bg-[#2A4B93]/5 px-5 text-xs font-semibold text-[#2A4B93] hover:bg-[#2A4B93]/10"><RefreshCw className="size-3.5" aria-hidden="true" />Actualizar vista previa</button>
-            <button type="button" onClick={() => setShowConfirmation(true)} className="h-10 rounded-full bg-[#2A4B93] px-6 text-xs font-semibold text-white shadow-md hover:bg-[#1f3870]">Confirmar condiciones</button>
-            <button type="button" className="inline-flex h-10 items-center gap-1.5 rounded-full bg-emerald-600 px-6 text-xs font-semibold text-white shadow-md hover:bg-emerald-700 disabled:opacity-50"><CheckCircle2 className="size-3.5" aria-hidden="true" />Generar CxC (ATENAS-78)</button>
+            <button type="button" onClick={onRefresh} className="inline-flex h-10 items-center gap-1.5 rounded-full border border-[#2A4B93] bg-[#2A4B93]/5 px-5 text-xs font-semibold text-[#2A4B93] hover:bg-[#2A4B93]/10"><RefreshCw className="size-3.5" aria-hidden="true" />Actualizar vista previa</button>
+            <button type="button" onClick={() => { onConfirmConditions?.(); setShowConfirmation(true) }} className="h-10 rounded-full bg-[#2A4B93] px-6 text-xs font-semibold text-white shadow-md hover:bg-[#1f3870]">Confirmar condiciones</button>
+            <button type="button" onClick={onGenerateCxC} className="inline-flex h-10 items-center gap-1.5 rounded-full bg-emerald-600 px-6 text-xs font-semibold text-white shadow-md hover:bg-emerald-700 disabled:opacity-50"><CheckCircle2 className="size-3.5" aria-hidden="true" />Generar CxC (ATENAS-78)</button>
           </div>
         </div>
       </footer>
