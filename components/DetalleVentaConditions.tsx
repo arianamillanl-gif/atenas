@@ -64,10 +64,10 @@ export default function DetalleVentaConditions({ onBack }: DetailProps) {
             <h1 id="detail-title" className="text-2xl font-bold text-slate-900 tracking-tight leading-tight">Detalle de Venta Verificada y Condiciones Comerciales</h1>
             <p className="text-xs text-slate-500 pt-0.5">ID Venta: <span className="font-medium text-slate-700">VTA-2026-00893</span> • Ref. Clientify: <span className="font-medium text-slate-700">CLT-2026-0409</span> • Ref. Origen: <span className="font-medium text-slate-700">REF-ORIGEN-9982</span></p>
           </div>
-          <div className="flex items-center gap-2 shrink-0 pt-1">
-            <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-3 py-1 rounded-full font-medium inline-flex items-center gap-1.5"><CheckCircle2 aria-hidden="true" className="w-3.5 h-3.5" />Verificado</span>
-            <span className="bg-amber-50 text-amber-700 border border-amber-200 text-xs px-3 py-1 rounded-full font-medium inline-flex items-center gap-1.5"><SlidersHorizontal aria-hidden="true" className="w-3.5 h-3.5" />En borrador</span>
-            <span className="bg-slate-100 text-slate-700 border border-slate-200 text-xs px-3 py-1 rounded-full font-medium inline-flex items-center gap-1.5"><Clock aria-hidden="true" className="w-3.5 h-3.5" />Integración pendiente</span>
+          <div className="flex items-center gap-2 shrink-0 pt-6">
+            <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-3 py-1.5 rounded-full font-medium inline-flex items-center gap-1.5"><CheckCircle2 aria-hidden="true" className="w-3.5 h-3.5" /> Verificado</span>
+            <span className="bg-amber-50 text-amber-700 border border-amber-200 text-xs px-3 py-1.5 rounded-full font-medium inline-flex items-center gap-1.5"><SlidersHorizontal aria-hidden="true" className="w-3.5 h-3.5" /> En borrador</span>
+            <span className="bg-slate-100 text-slate-600 border border-slate-200 text-xs px-3 py-1.5 rounded-full font-medium inline-flex items-center gap-1.5"><Clock aria-hidden="true" className="w-3.5 h-3.5" /> Integración pendiente</span>
           </div>
         </div>
       </header>
