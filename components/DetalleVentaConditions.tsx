@@ -6,6 +6,7 @@ import {
   ArrowLeft,
   CheckCircle2,
   Clock,
+  Download,
   FileText,
   GitCommit,
   History,
@@ -14,6 +15,7 @@ import {
   ShieldCheck,
   SlidersHorizontal,
   Upload,
+  X,
 } from 'lucide-react'
 
 type DetailProps = {
@@ -37,6 +39,7 @@ const readOnlyFields = [
 
 export default function DetalleVentaConditions({ onBack }: DetailProps) {
   const [showAlert, setShowAlert] = useState(true)
+  const [showHistory, setShowHistory] = useState(false)
   const [serviceConditions, setServiceConditions] = useState<string[]>(() => Array(5).fill(''))
 
   return (
@@ -85,11 +88,27 @@ export default function DetalleVentaConditions({ onBack }: DetailProps) {
           </div>
         </section>
 
-        <section className="detail-card">
+        <section className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm mb-6">
           <div className="detail-card-heading"><h2 className="text-base font-bold text-slate-800">Versionado y trazabilidad</h2><History aria-hidden="true" className="heading-icon brand" /></div>
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end"><label className="md:col-span-3"><span className="text-xs font-medium text-slate-600 mb-1.5 block h-4">Versión vigente</span><input className="w-full h-11 text-xs font-medium text-slate-700 bg-white border border-slate-200/90 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#2A4B93]/20 focus:border-[#2A4B93]" value="V1 · 24/09/2026" disabled readOnly /></label><label className="md:col-span-6"><span className="text-xs font-medium text-slate-600 mb-1.5 block h-4">Motivo del cambio*</span><input className={`${controlClassName} h-11`} placeholder="Describe el motivo de esta versión" /></label><div className="md:col-span-3 flex flex-col justify-end h-full"><span className="text-xs mb-1.5 block h-4 select-none opacity-0" aria-hidden="true">Alineador</span><button type="button" className="w-full h-11 px-4 border border-slate-300 rounded-xl text-xs font-medium text-slate-700 bg-white hover:bg-slate-50 flex items-center justify-center gap-2 shadow-sm transition-colors"><History aria-hidden="true" className="w-4 h-4 text-slate-600" /><span>Ver versiones anteriores</span></button></div></div>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+            <label className="md:col-span-3"><span className="text-xs font-medium text-slate-600 mb-1.5 block h-4">Versión vigente</span><input className="w-full h-11 px-3.5 text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-xl cursor-not-allowed" value="V1 · 24/09/2026" disabled readOnly /></label>
+            <label className="md:col-span-4"><span className="text-xs font-medium text-slate-600 mb-1.5 block h-4">Motivo del cambio*</span><input className="w-full h-11 px-3.5 text-xs text-slate-700 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2A4B93]/20 focus:border-[#2A4B93] placeholder:text-slate-400" placeholder="Describe el motivo de esta versión" /></label>
+            <div className="md:col-span-3"><span className="text-xs font-medium text-slate-600 mb-1.5 block h-4">Evidencia de versión</span><button type="button" className="h-11 px-3 bg-slate-50 hover:bg-slate-100 border border-dashed border-slate-300 rounded-xl cursor-pointer flex items-center justify-start gap-2 transition-colors w-full"><Upload aria-hidden="true" className="w-4 h-4 text-slate-500 flex-shrink-0" /><span className="text-xs text-slate-600 truncate">Adjuntar (PDF/PNG)</span></button></div>
+            <div className="md:col-span-2"><span className="text-xs mb-1.5 block h-4 select-none opacity-0" aria-hidden="true">Alineador</span><button type="button" onClick={() => setShowHistory(true)} className="h-11 w-full px-3 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-700 hover:bg-slate-50 flex items-center justify-center gap-1.5 transition-colors shadow-sm"><History aria-hidden="true" className="w-4 h-4 text-[#2A4B93]" /><span>Ver versiones</span></button></div>
+          </div>
         </section>
       </div>
+
+      {showHistory && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="history-title">
+        <div className="bg-white rounded-2xl max-w-2xl w-full shadow-2xl border border-slate-100 overflow-hidden">
+          <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100"><div className="flex items-center gap-2.5"><History aria-hidden="true" className="w-5 h-5 text-[#2A4B93]" /><h2 id="history-title" className="text-base font-bold text-slate-800">Historial de versiones y trazabilidad</h2></div><button type="button" onClick={() => setShowHistory(false)} aria-label="Cerrar historial" className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700"><X aria-hidden="true" className="w-5 h-5" /></button></div>
+          <div className="px-6 py-5 flex flex-col gap-5">
+            <article className="relative pl-5 border-l-2 border-emerald-200"><div className="flex items-center gap-2 mb-2"><span className="text-xs px-2.5 py-1 rounded-full font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">V2 (Vigente)</span><span className="text-xs text-slate-500">27/09/2026 - 10:30 AM por María González</span></div><p className="text-sm text-slate-700">Actualización de condiciones de pago y ajuste de cuotas a 12 meses.</p><button type="button" className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-[#2A4B93] bg-blue-50 border border-blue-200 rounded-lg px-2.5 py-1.5 hover:bg-blue-100"><FileText aria-hidden="true" className="w-3.5 h-3.5" />Evidencia_v2.pdf<Download aria-hidden="true" className="w-3.5 h-3.5" /></button></article>
+            <article className="relative pl-5 border-l-2 border-slate-200"><div className="flex items-center gap-2 mb-2"><span className="text-xs px-2.5 py-1 rounded-full font-semibold bg-slate-100 text-slate-600 border border-slate-200">V1</span><span className="text-xs text-slate-500">24/09/2026 - 02:15 PM por Carlos Pérez</span></div><p className="text-sm text-slate-700">Creación inicial de las condiciones comerciales y contrato base.</p><button type="button" className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-[#2A4B93] bg-blue-50 border border-blue-200 rounded-lg px-2.5 py-1.5 hover:bg-blue-100"><FileText aria-hidden="true" className="w-3.5 h-3.5" />Contrato_Inicial_V1.pdf<Download aria-hidden="true" className="w-3.5 h-3.5" /></button></article>
+          </div>
+          <div className="flex justify-end px-6 py-4 bg-slate-50 border-t border-slate-100"><button type="button" onClick={() => setShowHistory(false)} className="px-4 py-2 rounded-xl text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-100">Cerrar trazabilidad</button></div>
+        </div>
+      </div>}
 
       <footer className="detail-actions"><div className="detail-action-group detail-action-left"><button type="button" className="detail-button outline" onClick={onBack}><ArrowLeft aria-hidden="true" /> Volver a la Bandeja</button><button type="button" className="detail-button ghost">Descartar Cambios</button></div><div className="detail-action-group detail-action-center"><button type="button" className="detail-button outline"><FileText aria-hidden="true" /> Previsualizar CxC</button><button type="button" className="detail-button outline"><History aria-hidden="true" /> Consultar Historial</button></div><div className="detail-action-group detail-action-right"><button type="button" className="detail-button outline"><Save aria-hidden="true" /> Guardar Borrador</button><button type="button" className="detail-button primary"><CheckCircle2 aria-hidden="true" /> Confirmar condiciones</button></div></footer>
     </section>
