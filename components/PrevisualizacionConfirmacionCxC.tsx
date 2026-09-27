@@ -1,0 +1,180 @@
+'use client'
+
+import { useState } from 'react'
+import {
+  CheckCircle2,
+  FileText,
+  Info,
+  LoaderCircle,
+  RefreshCw,
+  Upload,
+  X,
+} from 'lucide-react'
+
+const saleSummary = [
+  ['Referencia', 'VTA-2026-00893 / CLF-99213'],
+  ['Cliente', 'Corporativo Nexus'],
+  ['Servicio', 'Consultoría ERP'],
+  ['Fecha', '30/08/2026'],
+  ['Importe', '$60,000.00 USD'],
+]
+
+const conditionSummary = [
+  ['Modalidad', 'Servicio recurrente'],
+  ['Frecuencia', 'Mensual'],
+  ['Periodicidad de Pago', 'Mensual'],
+  ['Condición de Pago', 'PAGO_PERIODICO'],
+  ['Vigencia', '01/09/2026 — 31/08/2027'],
+  ['Cuotas', '3'],
+  ['Primer Vencimiento', '30/09/2026'],
+]
+
+const installments = [
+  ['1', 'CxC 1/3 - CORPORATIVO NEXUS', '~30/09/2026', '~$20,000.00 USD'],
+  ['2', 'CxC 2/3 - CORPORATIVO NEXUS', '~30/10/2026', '~$20,000.00 USD'],
+  ['3', 'CxC 3/3 - CORPORATIVO NEXUS', '~30/11/2026', '~$20,000.00 USD'],
+]
+
+function ReadOnlyGroup({ title, fields }: { title: string; fields: string[][] }) {
+  return (
+    <div>
+      <h2 className="mb-4 text-sm font-bold text-slate-800">{title}</h2>
+      <div className="grid gap-3">
+        {fields.map(([label, value]) => (
+          <div key={label}>
+            <span className="mb-1.5 block text-xs font-medium text-slate-500">{label}</span>
+            <div className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-medium text-slate-800">
+              {value}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export default function PrevisualizacionConfirmacionCxC() {
+  const [showConfirmation, setShowConfirmation] = useState(false)
+  const [isConfirming, setIsConfirming] = useState(false)
+
+  const confirmConditions = () => {
+    setIsConfirming(true)
+    window.setTimeout(() => {
+      setIsConfirming(false)
+      setShowConfirmation(false)
+    }, 900)
+  }
+
+  return (
+    <main className="min-h-screen bg-slate-50 pb-28 text-slate-900">
+      <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-4 py-6 sm:px-6 lg:px-8">
+        <header className="flex flex-col gap-4 rounded-2xl border border-blue-200 bg-blue-50/80 p-4 text-blue-900 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-center gap-3 text-sm font-semibold">
+            <Info className="size-5 shrink-0 text-[#2A4B93]" aria-hidden="true" />
+            <span>Esta es una previsualización; todavía no crea obligaciones.</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-medium text-blue-800">
+            <span>Fecha: 30/08/2026 14:20</span>
+            <span>Versión: V01</span>
+            <span>Hash: #cxc-9982-preview</span>
+          </div>
+        </header>
+
+        <section className="grid gap-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:grid-cols-2 lg:p-6">
+          <ReadOnlyGroup title="Resumen de venta" fields={saleSummary} />
+          <ReadOnlyGroup title="Resumen de condiciones" fields={conditionSummary} />
+        </section>
+
+        <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="flex flex-col gap-1 border-b border-slate-200 px-5 py-5 sm:px-6">
+            <h2 className="text-base font-bold text-slate-800">Previsualización calculada</h2>
+            <p className="text-xs text-slate-500">Obligaciones previstas para la confirmación de condiciones comerciales.</p>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-[900px] w-full border-collapse text-left">
+              <thead className="bg-slate-100/70 text-xs font-bold uppercase text-slate-700">
+                <tr>
+                  {['#', 'Descripción CxC', 'Fecha de Vencimiento', 'Monto Ilustrativo', 'Estado Inicial', 'Versión'].map((heading) => (
+                    <th key={heading} className="px-5 py-3.5">{heading}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-sm text-slate-700">
+                {installments.map(([sequence, description, dueDate, amount]) => (
+                  <tr key={sequence}>
+                    <td className="px-5 py-4 font-semibold text-slate-500">{sequence}</td>
+                    <td className="px-5 py-4 font-medium text-slate-800">{description}</td>
+                    <td className="px-5 py-4">{dueDate}</td>
+                    <td className="px-5 py-4 font-medium">{amount}</td>
+                    <td className="px-5 py-4"><span className="inline-flex rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700">PENDIENTE</span></td>
+                    <td className="px-5 py-4"><span className="inline-flex rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-600">V01</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="border-t border-slate-100 px-5 py-3 text-center text-xs font-medium italic text-slate-500">Importes y fechas ilustrativos calculados por el servidor. No representan una regla ya aprobada.</p>
+        </section>
+
+        <section className="grid gap-4 md:grid-cols-3">
+          {[
+            ['Total de la Venta', '$60,000.00 USD', 'text-slate-800'],
+            ['Total Previsto de CxC', '$60,000.00 USD', 'text-slate-800'],
+            ['Diferencia / Residuo de Redondeo', '$0.00 USD', 'text-emerald-600'],
+          ].map(([label, value, tone]) => (
+            <article key={label} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <p className="text-xs font-medium text-slate-500">{label}</p>
+              <strong className={`mt-2 block text-xl font-bold ${tone}`}>{value}</strong>
+            </article>
+          ))}
+        </section>
+      </div>
+
+      <footer className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 px-4 py-3 shadow-lg backdrop-blur-md sm:px-6">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <button type="button" className="h-10 rounded-full border border-slate-300 bg-white px-5 text-xs font-semibold text-slate-700 hover:bg-slate-50">Volver a editar condiciones</button>
+          <div className="flex flex-wrap justify-end gap-2">
+            <button type="button" className="inline-flex h-10 items-center gap-1.5 rounded-full border border-[#2A4B93] bg-[#2A4B93]/5 px-5 text-xs font-semibold text-[#2A4B93] hover:bg-[#2A4B93]/10"><RefreshCw className="size-3.5" aria-hidden="true" />Actualizar vista previa</button>
+            <button type="button" onClick={() => setShowConfirmation(true)} className="h-10 rounded-full bg-[#2A4B93] px-6 text-xs font-semibold text-white shadow-md hover:bg-[#1f3870]">Confirmar condiciones</button>
+            <button type="button" className="inline-flex h-10 items-center gap-1.5 rounded-full bg-emerald-600 px-6 text-xs font-semibold text-white shadow-md hover:bg-emerald-700 disabled:opacity-50"><CheckCircle2 className="size-3.5" aria-hidden="true" />Generar CxC (ATENAS-78)</button>
+          </div>
+        </div>
+      </footer>
+
+      {showConfirmation && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm" role="presentation">
+          <section className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="confirmation-title">
+            <div className="flex items-start justify-between border-b border-slate-100 px-6 py-5">
+              <div>
+                <h2 id="confirmation-title" className="text-lg font-bold text-slate-800">Confirmar Condiciones Comerciales</h2>
+                <p className="mt-1 text-xs text-slate-500">Revisa los datos antes de registrar la confirmación.</p>
+              </div>
+              <button type="button" onClick={() => setShowConfirmation(false)} disabled={isConfirming} className="rounded-full p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 disabled:opacity-50" aria-label="Cerrar confirmación"><X className="size-5" /></button>
+            </div>
+            <div className="flex flex-col gap-5 px-6 py-5">
+              <div className="grid gap-3 sm:grid-cols-2">
+                {[
+                  ['Venta', 'VTA-2026-00893'],
+                  ['Cliente', 'Corporativo Nexus'],
+                  ['Obligaciones previstas', '3'],
+                  ['Versión a confirmar', 'V1'],
+                  ['Importe Total', '$60,000.00 USD'],
+                ].map(([label, value]) => (
+                  <div key={label} className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-3 sm:last:col-span-2">
+                    <span className="block text-xs font-medium text-slate-500">{label}</span>
+                    <strong className="mt-1 block text-sm font-semibold text-slate-800">{value}</strong>
+                  </div>
+                ))}
+              </div>
+              <div className="flex items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-center text-xs font-semibold text-rose-700"><FileText className="size-4 shrink-0" aria-hidden="true" />ESTA ACCIÓN QUEDARÁ AUDITADA Y NO SE PUEDE DESHACER</div>
+            </div>
+            <div className="flex flex-col-reverse gap-2 border-t border-slate-100 px-6 py-4 sm:flex-row sm:justify-end">
+              <button type="button" onClick={() => setShowConfirmation(false)} disabled={isConfirming} className="h-10 rounded-full border border-slate-300 bg-white px-5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50">Cancelar</button>
+              <button type="button" onClick={confirmConditions} disabled={isConfirming} className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#2A4B93] px-6 text-xs font-semibold text-white shadow-md hover:bg-[#1f3870] disabled:cursor-not-allowed disabled:opacity-50">{isConfirming && <LoaderCircle className="size-3.5 animate-spin" aria-hidden="true" />}{isConfirming ? 'Loading...' : 'Confirmar condiciones'}</button>
+            </div>
+          </section>
+        </div>
+      )}
+    </main>
+  )
+}
