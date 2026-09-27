@@ -45,6 +45,10 @@ export default function DetalleVentaConditions({ onBack }: DetailProps) {
   return (
     <section className="detail-page" aria-labelledby="detail-title">
       <div className="detail-breadcrumb">Ventas <span>›</span> Ventas verificadas <span>›</span> <strong>Detalle VTA-2026-00893</strong></div>
+      <button type="button" onClick={onBack} className="mb-4 inline-flex items-center gap-2 text-xs font-medium text-slate-500 hover:text-[#2A4B93] transition-colors">
+        <ArrowLeft aria-hidden="true" />
+        Volver a la bandeja
+      </button>
       <header className="detail-hero">
         <div>
           <span className="detail-eyebrow"><ShieldCheck aria-hidden="true" /> CONTROL OPERATIVO / VENTAS</span>
@@ -110,7 +114,15 @@ export default function DetalleVentaConditions({ onBack }: DetailProps) {
         </div>
       </div>}
 
-      <footer className={`detail-actions z-40 ${showHistory ? 'hidden' : ''}`}><div className="detail-action-group detail-action-left"><button type="button" className="detail-button outline" onClick={onBack}><ArrowLeft aria-hidden="true" /> Volver a la Bandeja</button><button type="button" className="detail-button ghost">Descartar Cambios</button></div><div className="detail-action-group detail-action-center"><button type="button" className="detail-button outline"><FileText aria-hidden="true" /> Previsualizar CxC</button><button type="button" className="detail-button outline"><History aria-hidden="true" /> Consultar Historial</button></div><div className="detail-action-group detail-action-right"><button type="button" className="detail-button outline"><Save aria-hidden="true" /> Guardar Borrador</button><button type="button" className="detail-button primary"><CheckCircle2 aria-hidden="true" /> Confirmar condiciones</button></div></footer>
+      <footer className={`fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 px-6 py-3 flex items-center justify-between shadow-lg ${showHistory ? 'hidden' : ''}`}>
+        <button type="button" className="text-xs font-medium text-slate-500 hover:text-rose-600 transition-colors">Descartar cambios</button>
+        <div className="flex items-center gap-2.5">
+          <button type="button" onClick={() => setShowHistory(true)} className="h-10 px-3.5 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-xl text-xs font-semibold flex items-center gap-2 transition-colors whitespace-nowrap"><History aria-hidden="true" /> Consultar Historial</button>
+          <button type="button" className="h-10 px-3.5 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-xl text-xs font-semibold flex items-center gap-2 transition-colors whitespace-nowrap"><FileText aria-hidden="true" /> Previsualizar CxC</button>
+          <button type="button" className="h-10 px-3.5 border border-[#2A4B93]/30 text-[#2A4B93] bg-[#2A4B93]/5 hover:bg-[#2A4B93]/10 rounded-xl text-xs font-semibold flex items-center gap-2 transition-colors whitespace-nowrap"><Save aria-hidden="true" /> Guardar borrador</button>
+          <button type="button" className="h-10 px-4 bg-[#2A4B93] hover:bg-[#1f3870] text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap"><CheckCircle2 aria-hidden="true" /> Confirmar condiciones</button>
+        </div>
+      </footer>
     </section>
   )
 }
