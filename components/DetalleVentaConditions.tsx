@@ -64,10 +64,13 @@ export default function DetalleVentaConditions({ onBack }: DetailProps) {
           <div className="detail-grid-three">{readOnlyFields.map(([label, value]) => <label className={labelClassName} key={label}><span>{label}</span><input value={value} disabled className={`${controlClassName} ${label === 'Importe' ? 'amount-value' : ''}`} readOnly /></label>)}</div>
         </section>
 
-        <section className="detail-card">
+        <section className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm mb-6">
           <div className="detail-card-heading"><h2 className="text-base font-bold text-slate-800">Contrato y evidencia</h2></div>
-          <div className="detail-grid-three"><label className={labelClassName}><span>Referencia de contrato</span><input className={controlClassName} placeholder="Ej. CTR-2026-0031" /></label><label className={labelClassName}><span>Observación contractual</span><textarea className={controlClassName} rows={2} placeholder="Añade una observación relevante para la operación" /></label></div>
-          <button type="button" className="evidence-dropzone"><Upload aria-hidden="true" /><span><strong>Adjuntar evidencia contractual</strong><small>PDF, JPG o PNG · Máximo 10 MB</small></span></button>
+          <div className="grid grid-cols-2 gap-4">
+            <label className={labelClassName}><span>Referencia de contrato</span><input className={controlClassName} placeholder="Ej. CTR-2026-0031" /></label>
+            <div><span className={labelClassName}>Evidencia contractual</span><button type="button" className="w-full bg-slate-50 hover:bg-slate-100/80 border border-dashed border-slate-300 rounded-xl cursor-pointer flex items-center justify-between transition-colors py-2 px-3.5"><span className="flex items-center gap-2 text-xs font-medium text-slate-600"><Upload aria-hidden="true" />Adjuntar archivo (PDF, JPG, PNG - Máx 10MB)</span></button></div>
+            <label className="col-span-2 text-xs font-medium text-slate-600"><span className="mb-1.5 block">Observación contractual</span><textarea className="w-full text-xs font-normal text-slate-700 bg-white border border-slate-200/90 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#2A4B93]/20 focus:border-[#2A4B93] placeholder:text-slate-400 resize-none" rows={2} placeholder="Añade una observación relevante para la operación" /></label>
+          </div>
         </section>
 
         <section className="detail-card editable-card">
