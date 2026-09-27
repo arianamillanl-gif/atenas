@@ -5,11 +5,14 @@ import {
   ArrowLeft,
   Check,
   CheckCircle2,
+  Bell,
+  ChevronDown,
   ChevronRight,
   FileText,
   Info,
   LoaderCircle,
   RefreshCw,
+  Search,
   Upload,
   X,
 } from 'lucide-react'
@@ -83,6 +86,32 @@ export default function PrevisualizacionConfirmacionCxC({
 
   return (
     <main className="min-h-screen bg-slate-50 pb-28 text-slate-900">
+      <div className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-slate-200/80 bg-white px-6">
+        <div className="flex items-center gap-3">
+          <span className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700">
+            <span className="size-2 rounded-full bg-[#2A4B93]" aria-hidden="true" />
+            Lo-Fi workspace <span className="font-normal text-slate-400">· Operaciones</span>
+          </span>
+        </div>
+        <div className="flex items-center gap-3">
+          <label className="hidden items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-400 md:flex">
+            <Search className="size-3.5" aria-hidden="true" />
+            <span className="sr-only">Buscar</span>
+            <input aria-label="Buscar" placeholder="Buscar" className="w-28 bg-transparent text-xs text-slate-700 outline-none placeholder:text-slate-400" />
+            <kbd className="rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-medium text-slate-400">⌘K</kbd>
+          </label>
+          <button type="button" className="relative rounded-full p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-[#2A4B93]" aria-label="Notificaciones">
+            <Bell className="size-4" aria-hidden="true" />
+            <span className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-[#2A4B93]" aria-hidden="true" />
+          </button>
+          <span className="mx-2 h-5 w-px bg-slate-200" aria-hidden="true" />
+          <button type="button" className="flex items-center gap-2 rounded-xl px-2 py-1.5 text-left transition-colors hover:bg-slate-50" aria-label="Menú de usuario">
+            <span className="flex size-8 items-center justify-center rounded-full bg-[#2A4B93] text-xs font-bold text-white">MG</span>
+            <span className="hidden text-xs font-semibold text-slate-700 sm:block">María González</span>
+            <ChevronDown className="size-3.5 text-slate-400" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-4 py-6 sm:px-6 lg:px-8">
         <div>
           <nav className="mb-2 flex items-center gap-2 text-xs text-slate-500" aria-label="Breadcrumb">
