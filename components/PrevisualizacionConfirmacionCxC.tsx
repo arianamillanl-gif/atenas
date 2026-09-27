@@ -35,17 +35,18 @@ const installments = [
   ['3', 'CxC 3/3 - CORPORATIVO NEXUS', '~30/11/2026', '~$20,000.00 USD'],
 ]
 
-function ReadOnlyGroup({ title, fields }: { title: string; fields: string[][] }) {
+function ReadOnlyGroup({ title, fields, dotClassName, gridClassName }: { title: string; fields: string[][]; dotClassName: string; gridClassName: string }) {
   return (
     <div>
-      <h2 className="mb-4 text-sm font-bold text-slate-800">{title}</h2>
-      <div className="grid gap-3">
+      <h2 className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#2A4B93]">
+        <span className={`size-1.5 rounded-full ${dotClassName}`} aria-hidden="true" />
+        {title}
+      </h2>
+      <div className={`grid gap-4 rounded-xl border border-slate-100 bg-slate-50/70 p-4 ${gridClassName}`}>
         {fields.map(([label, value]) => (
           <div key={label}>
-            <span className="mb-1.5 block text-xs font-medium text-slate-500">{label}</span>
-            <div className="rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-sm font-medium text-slate-800">
-              {value}
-            </div>
+            <span className="block text-[11px] font-medium uppercase text-slate-500">{label}</span>
+            <span className="text-xs font-semibold text-slate-800">{value}</span>
           </div>
         ))}
       </div>
@@ -80,9 +81,20 @@ export default function PrevisualizacionConfirmacionCxC() {
           </div>
         </header>
 
-        <section className="grid gap-5 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm lg:grid-cols-2 lg:p-6">
-          <ReadOnlyGroup title="Resumen de venta" fields={saleSummary} />
-          <ReadOnlyGroup title="Resumen de condiciones" fields={conditionSummary} />
+        <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm lg:p-6">
+          <ReadOnlyGroup
+            title="Resumen de Venta"
+            fields={saleSummary}
+            dotClassName="bg-[#2A4B93]"
+            gridClassName="grid-cols-2 md:grid-cols-4"
+          />
+          <div className="my-5 border-t border-slate-100" aria-hidden="true" />
+          <ReadOnlyGroup
+            title="Resumen de Condiciones Comerciales"
+            fields={conditionSummary}
+            dotClassName="bg-[#59A5E2]"
+            gridClassName="grid-cols-2 md:grid-cols-4 lg:grid-cols-7"
+          />
         </section>
 
         <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
