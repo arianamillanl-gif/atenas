@@ -87,14 +87,14 @@ export default function PrevisualizacionConfirmacionCxC({
           <nav className="mb-2 flex items-center gap-2 text-xs text-slate-500" aria-label="Breadcrumb">
             <span>Ventas</span>
             <ChevronRight className="size-3.5 text-slate-300" aria-hidden="true" />
-            <button type="button" onClick={onBack} className="cursor-pointer transition-colors hover:text-[#2A4B93] hover:underline">Detalle VTA-2026-00893</button>
+            <button type="button" onClick={onBack} className="inline-flex cursor-pointer items-center gap-1 text-slate-600 transition-colors hover:text-[#2A4B93] hover:underline">
+              <ArrowLeft className="inline size-3.5 text-slate-500 transition-colors hover:text-[#2A4B93]" aria-hidden="true" />
+              <span>Detalle VTA-2026-00893</span>
+            </button>
             <ChevronRight className="size-3.5 text-slate-300" aria-hidden="true" />
             <span className="font-semibold text-slate-700">Previsualización de CxC</span>
           </nav>
           <div className="flex flex-wrap items-center gap-3">
-            <button type="button" onClick={onBack} className="rounded-full p-2 text-slate-600 transition-colors hover:bg-slate-100" aria-label="Volver al detalle de venta">
-              <ArrowLeft className="size-5" aria-hidden="true" />
-            </button>
             <h1 className="text-xl font-bold text-slate-900">Previsualización y Confirmación de CxC</h1>
             <span className="rounded-full border border-[#2A4B93]/20 bg-blue-50 px-3 py-1 text-xs font-semibold text-[#2A4B93]">Modo Previsualización</span>
           </div>
