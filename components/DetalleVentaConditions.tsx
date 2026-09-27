@@ -13,6 +13,7 @@ import {
   Lock,
   Save,
   ShieldCheck,
+  Trash2,
   SlidersHorizontal,
   Upload,
   X,
@@ -123,13 +124,30 @@ export default function DetalleVentaConditions({ onBack }: DetailProps) {
         </div>
       </div>}
 
-      <footer className={`fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 px-6 py-3 flex items-center justify-between shadow-lg ${showHistory ? 'hidden' : ''}`}>
-        <button type="button" className="text-xs font-medium text-slate-500 hover:text-rose-600 transition-colors">Descartar cambios</button>
+      <footer className={`fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/80 px-6 py-3 flex items-center justify-between shadow-lg ${showHistory ? 'hidden' : ''}`}>
+        <div>
+          <button type="button" className="h-10 px-4 text-xs font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200/60 rounded-full flex items-center gap-2 transition-all">
+            <Trash2 aria-hidden="true" className="w-3.5 h-3.5 text-rose-600" />
+            <span>Descartar cambios</span>
+          </button>
+        </div>
         <div className="flex items-center gap-2.5">
-          <button type="button" onClick={() => setShowHistory(true)} className="h-10 px-3.5 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-xl text-xs font-semibold flex items-center gap-2 transition-colors whitespace-nowrap"><History aria-hidden="true" /> Consultar Historial</button>
-          <button type="button" className="h-10 px-3.5 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-xl text-xs font-semibold flex items-center gap-2 transition-colors whitespace-nowrap"><FileText aria-hidden="true" /> Previsualizar CxC</button>
-          <button type="button" className="h-10 px-3.5 border border-[#2A4B93]/30 text-[#2A4B93] bg-[#2A4B93]/5 hover:bg-[#2A4B93]/10 rounded-xl text-xs font-semibold flex items-center gap-2 transition-colors whitespace-nowrap"><Save aria-hidden="true" /> Guardar borrador</button>
-          <button type="button" className="h-10 px-4 bg-[#2A4B93] hover:bg-[#1f3870] text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm transition-colors whitespace-nowrap"><CheckCircle2 aria-hidden="true" /> Confirmar condiciones</button>
+          <button type="button" onClick={() => setShowHistory(true)} className="h-10 px-4 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-full text-xs font-semibold flex items-center gap-2 transition-all shadow-sm">
+            <History aria-hidden="true" className="w-3.5 h-3.5 text-slate-500" />
+            <span>Consultar Historial</span>
+          </button>
+          <button type="button" className="h-10 px-4 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-full text-xs font-semibold flex items-center gap-2 transition-all shadow-sm">
+            <FileText aria-hidden="true" className="w-3.5 h-3.5 text-slate-500" />
+            <span>Previsualizar CxC</span>
+          </button>
+          <button type="button" className="h-10 px-4 border border-[#2A4B93]/30 text-[#2A4B93] bg-[#2A4B93]/5 hover:bg-[#2A4B93]/10 rounded-full text-xs font-semibold flex items-center gap-2 transition-all">
+            <Save aria-hidden="true" className="w-3.5 h-3.5 text-[#2A4B93]" />
+            <span>Guardar borrador</span>
+          </button>
+          <button type="button" className="h-10 px-5 bg-[#2A4B93] hover:bg-[#1f3870] text-white rounded-full text-xs font-semibold flex items-center gap-2 shadow-md shadow-[#2A4B93]/20 transition-all">
+            <CheckCircle2 aria-hidden="true" className="w-3.5 h-3.5" />
+            <span>Confirmar condiciones</span>
+          </button>
         </div>
       </footer>
     </section>
