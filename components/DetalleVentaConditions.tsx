@@ -10,10 +10,8 @@ import {
   GitCommit,
   History,
   Lock,
-  Paperclip,
   Save,
   ShieldCheck,
-  Sliders,
   SlidersHorizontal,
   Upload,
 } from 'lucide-react'
@@ -67,13 +65,13 @@ export default function DetalleVentaConditions({ onBack }: DetailProps) {
         </section>
 
         <section className="detail-card">
-          <div className="detail-card-heading"><div><Paperclip aria-hidden="true" className="heading-icon brand" /><h2 className="text-base font-bold text-slate-800 mb-4 flex items-center justify-between">Contrato y evidencia</h2></div></div>
+          <div className="detail-card-heading"><h2 className="text-base font-bold text-slate-800">Contrato y evidencia</h2></div>
           <div className="detail-grid-three"><label className={labelClassName}><span>Referencia de contrato</span><input className={controlClassName} placeholder="Ej. CTR-2026-0031" /></label><label className={labelClassName}><span>Observación contractual</span><textarea className={controlClassName} rows={2} placeholder="Añade una observación relevante para la operación" /></label></div>
           <button type="button" className="evidence-dropzone"><Upload aria-hidden="true" /><span><strong>Adjuntar evidencia contractual</strong><small>PDF, JPG o PNG · Máximo 10 MB</small></span></button>
         </section>
 
         <section className="detail-card editable-card">
-          <div className="detail-card-heading"><div><Sliders aria-hidden="true" className="heading-icon brand" /><h2 className="text-base font-bold text-slate-800 mb-4 flex items-center justify-between">Condiciones comerciales editables</h2></div><span className="required-note">* Campos obligatorios</span></div>
+          <div className="detail-card-heading"><h2 className="text-base font-bold text-slate-800">Condiciones comerciales editables</h2><span className="required-note">* Campos obligatorios</span></div>
           <div className="detail-grid-three">
             {['Modalidad del Servicio*', 'Frecuencia del Servicio*', 'Periodicidad de Facturación*', 'Periodicidad de Pago*', 'Condición de Pago*'].map((label, index) => {
               const value = serviceConditions[index]
@@ -85,7 +83,7 @@ export default function DetalleVentaConditions({ onBack }: DetailProps) {
         </section>
 
         <section className="detail-card">
-          <div className="detail-card-heading"><div><History aria-hidden="true" className="heading-icon brand" /><h2 className="text-base font-bold text-slate-800 mb-4 flex items-center justify-between">Versionado y trazabilidad</h2></div></div>
+          <div className="detail-card-heading"><h2 className="text-base font-bold text-slate-800">Versionado y trazabilidad</h2><History aria-hidden="true" className="heading-icon brand" /></div>
           <div className="version-grid"><label className={labelClassName}><span>Versión vigente</span><input className={controlClassName} value="V1 · 24/09/2026" disabled readOnly /></label><label className={labelClassName}><span>Motivo del cambio*</span><input className={controlClassName} placeholder="Describe el motivo de esta versión" /></label><button type="button" className="history-button"><History aria-hidden="true" /> Ver versiones anteriores</button></div>
         </section>
       </div>
