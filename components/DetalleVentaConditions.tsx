@@ -19,7 +19,8 @@ type DetailProps = {
 }
 
 const labelClassName = 'text-xs font-medium text-slate-600 mb-1.5 block tracking-normal'
-const controlClassName = 'w-full text-xs font-normal text-slate-700 bg-white border border-slate-200/90 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#2A4B93]/20 focus:border-[#2A4B93] placeholder:text-slate-400'
+const controlClassName = 'w-full text-xs font-normal text-slate-500 bg-white border border-slate-200/90 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#2A4B93]/20 focus:border-[#2A4B93] placeholder:text-slate-400 placeholder:font-normal text-ellipsis'
+const filledControlClassName = 'text-slate-700 font-medium'
 
 const readOnlyFields = [
   ['Cliente', 'Empresa Alfa C.A.'],
@@ -65,7 +66,7 @@ export default function DetalleVentaConditions({ onBack }: DetailProps) {
           <div className="detail-card-heading"><div><Sliders aria-hidden="true" className="heading-icon brand" /><h2 className="text-base font-bold text-slate-800 mb-4 flex items-center justify-between">Condiciones comerciales editables</h2></div><span className="required-note">* Campos obligatorios</span></div>
           <div className="detail-grid-three">
             {['Modalidad del Servicio*', 'Frecuencia del Servicio*', 'Periodicidad de Facturación*', 'Periodicidad de Pago*', 'Condición de Pago*'].map((label) => <label className={labelClassName} key={label}><span>{label}</span><select className={controlClassName} defaultValue=""><option value="" disabled>Seleccionar opción</option><option>Mensual</option><option>Trimestral</option><option>Anual</option></select></label>)}
-            <label className={labelClassName}><span>Fecha Inicio del Servicio*</span><input className={controlClassName} type="date" defaultValue="2026-09-24" /></label><label className={labelClassName}><span>Fecha Fin del Servicio</span><input className={controlClassName} type="date" /></label><label className={labelClassName}><span>Cantidad de Cuotas</span><input className={controlClassName} type="number" min="1" defaultValue="12" /></label><label className={labelClassName}><span>Primer Vencimiento</span><input className={controlClassName} type="date" defaultValue="2026-10-24" /></label>
+            <label className={labelClassName}><span>Fecha Inicio del Servicio*</span><input className={`${controlClassName} ${filledControlClassName}`} type="date" defaultValue="2026-09-24" /></label><label className={labelClassName}><span>Fecha Fin del Servicio</span><input className={controlClassName} type="date" /></label><label className={labelClassName}><span>Cantidad de Cuotas</span><input className={`${controlClassName} ${filledControlClassName}`} type="number" min="1" defaultValue="12" /></label><label className={labelClassName}><span>Primer Vencimiento</span><input className={`${controlClassName} ${filledControlClassName}`} type="date" defaultValue="2026-10-24" /></label>
           </div>
         </section>
 
