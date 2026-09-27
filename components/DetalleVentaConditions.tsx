@@ -55,19 +55,14 @@ export default function DetalleVentaConditions({ onBack }: DetailProps) {
         <span className="text-slate-800 font-semibold">Detalle VTA-2026-00893</span>
       </nav>
       <header className="detail-hero">
-        <div className="flex items-center gap-2 text-[#2A4B93] text-xs font-bold tracking-wide uppercase mb-3">
-          <ShieldCheck aria-hidden="true" className="w-4 h-4" />
-          <span>CONTROL OPERATIVO / VENTAS</span>
-        </div>
         <div className="flex items-start justify-between gap-6 mb-4">
-          <div className="flex items-start gap-3">
-            <button type="button" onClick={onBack} title="Volver a Ventas verificadas" className="p-2 text-slate-500 hover:text-[#2A4B93] hover:bg-slate-100 rounded-lg transition-colors flex items-center justify-center shrink-0 mt-0.5">
-              <ArrowLeft aria-hidden="true" className="w-5 h-5" />
-            </button>
-            <div className="flex flex-col">
-              <h1 id="detail-title" className="text-xl md:text-2xl font-bold text-slate-900 tracking-tight">Detalle de Venta Verificada y Condiciones Comerciales</h1>
-              <p className="text-xs text-slate-500 mt-1">ID Venta: <span className="font-medium text-slate-700">VTA-2026-00893</span> • Ref. Clientify: <span className="font-medium text-slate-700">CLT-2026-0409</span> • Ref. Origen: <span className="font-medium text-slate-700">REF-ORIGEN-9982</span></p>
+          <div className="space-y-1.5 max-w-3xl">
+            <div className="flex items-center gap-2 text-[#2A4B93] text-xs font-bold tracking-wide uppercase">
+              <ShieldCheck aria-hidden="true" className="w-4 h-4" />
+              <span>CONTROL OPERATIVO / VENTAS</span>
             </div>
+            <h1 id="detail-title" className="text-2xl font-bold text-slate-900 tracking-tight leading-tight">Detalle de Venta Verificada y Condiciones Comerciales</h1>
+            <p className="text-xs text-slate-500 pt-0.5">ID Venta: <span className="font-medium text-slate-700">VTA-2026-00893</span> • Ref. Clientify: <span className="font-medium text-slate-700">CLT-2026-0409</span> • Ref. Origen: <span className="font-medium text-slate-700">REF-ORIGEN-9982</span></p>
           </div>
           <div className="flex items-center gap-2 shrink-0 pt-1">
             <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs px-3 py-1 rounded-full font-medium inline-flex items-center gap-1.5"><CheckCircle2 aria-hidden="true" className="w-3.5 h-3.5" />Verificado</span>
