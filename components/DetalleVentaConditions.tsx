@@ -45,15 +45,14 @@ export default function DetalleVentaConditions({ onBack }: DetailProps) {
   return (
     <section className="detail-page" aria-labelledby="detail-title">
       <nav className="flex items-center gap-2 text-xs text-slate-500 mb-6" aria-label="Migas de pan">
-        <button type="button" onClick={onBack} className="hover:text-slate-700 cursor-pointer transition-colors">
-          Ventas
+        <span className="text-slate-400">Ventas</span>
+        <ChevronRight aria-hidden="true" className="w-3.5 h-3.5 text-slate-300" />
+        <button type="button" onClick={onBack} className="inline-flex items-center gap-1 text-slate-600 hover:text-[#2A4B93] font-medium transition-colors">
+          <ArrowLeft aria-hidden="true" className="w-3.5 h-3.5" />
+          <span>Ventas verificadas</span>
         </button>
         <ChevronRight aria-hidden="true" className="w-3.5 h-3.5 text-slate-300" />
-        <button type="button" onClick={onBack} className="hover:text-slate-700 cursor-pointer transition-colors">
-          Ventas verificadas
-        </button>
-        <ChevronRight aria-hidden="true" className="w-3.5 h-3.5 text-slate-300" />
-        <span className="text-slate-700 font-semibold">Detalle VTA-2026-00893</span>
+        <span className="text-slate-800 font-semibold">Detalle VTA-2026-00893</span>
       </nav>
       <header className="detail-hero">
         <div className="flex items-center gap-2 text-[#2A4B93] text-xs font-bold tracking-wide uppercase mb-3">
