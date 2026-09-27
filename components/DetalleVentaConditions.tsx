@@ -35,6 +35,7 @@ const readOnlyFields = [
 
 export default function DetalleVentaConditions({ onBack }: DetailProps) {
   const [showAlert, setShowAlert] = useState(true)
+  const [serviceConditions, setServiceConditions] = useState<string[]>(() => Array(5).fill(''))
 
   return (
     <section className="detail-page" aria-labelledby="detail-title">
@@ -65,7 +66,11 @@ export default function DetalleVentaConditions({ onBack }: DetailProps) {
         <section className="detail-card editable-card">
           <div className="detail-card-heading"><div><Sliders aria-hidden="true" className="heading-icon brand" /><h2 className="text-base font-bold text-slate-800 mb-4 flex items-center justify-between">Condiciones comerciales editables</h2></div><span className="required-note">* Campos obligatorios</span></div>
           <div className="detail-grid-three">
-            {['Modalidad del Servicio*', 'Frecuencia del Servicio*', 'Periodicidad de Facturación*', 'Periodicidad de Pago*', 'Condición de Pago*'].map((label) => <label className={labelClassName} key={label}><span>{label}</span><select className={controlClassName} defaultValue=""><option value="" disabled>Seleccionar opción</option><option>Mensual</option><option>Trimestral</option><option>Anual</option></select></label>)}
+            {['Modalidad del Servicio*', 'Frecuencia del Servicio*', 'Periodicidad de Facturación*', 'Periodicidad de Pago*', 'Condición de Pago*'].map((label, index) => {
+              const value = serviceConditions[index]
+
+              return <label className={labelClassName} key={label}><span>{label}</span><select value={value} onChange={(event) => setServiceConditions((current) => current.map((condition, conditionIndex) => conditionIndex === index ? event.target.value : condition))} className={`${controlClassName} ${value === '' ? 'text-slate-400 font-normal' : filledControlClassName}`}><option value="" disabled className="text-slate-400">Seleccionar opción</option><option value="Mensual" className="text-slate-700">Mensual</option><option value="Trimestral" className="text-slate-700">Trimestral</option><option value="Anual" className="text-slate-700">Anual</option></select></label>
+            })}
             <label className={labelClassName}><span>Fecha Inicio del Servicio*</span><input className={`${controlClassName} ${filledControlClassName}`} type="date" defaultValue="2026-09-24" /></label><label className={labelClassName}><span>Fecha Fin del Servicio</span><input className={controlClassName} type="date" /></label><label className={labelClassName}><span>Cantidad de Cuotas</span><input className={`${controlClassName} ${filledControlClassName}`} type="number" min="1" defaultValue="12" /></label><label className={labelClassName}><span>Primer Vencimiento</span><input className={`${controlClassName} ${filledControlClassName}`} type="date" defaultValue="2026-10-24" /></label>
           </div>
         </section>
