@@ -20,7 +20,7 @@ type DetailProps = {
   onBack: () => void
 }
 
-const labelClassName = 'text-xs font-medium text-slate-600 mb-1.5 block tracking-normal'
+const labelClassName = 'text-xs font-medium text-slate-600 mb-1.5 block'
 const controlClassName = 'w-full text-xs font-normal text-slate-500 bg-white border border-slate-200/90 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#2A4B93]/20 focus:border-[#2A4B93] placeholder:text-slate-400 placeholder:font-normal text-ellipsis'
 const filledControlClassName = 'text-slate-700 font-medium'
 
@@ -67,8 +67,8 @@ export default function DetalleVentaConditions({ onBack }: DetailProps) {
         <section className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm mb-6">
           <div className="detail-card-heading"><h2 className="text-base font-bold text-slate-800">Contrato y evidencia</h2></div>
           <div className="grid grid-cols-2 gap-4">
-            <label className={labelClassName}><span>Referencia de contrato</span><input className={controlClassName} placeholder="Ej. CTR-2026-0031" /></label>
-            <div><span className={labelClassName}>Evidencia contractual</span><button type="button" className="w-full bg-slate-50 hover:bg-slate-100/80 border border-dashed border-slate-300 rounded-xl cursor-pointer flex items-center justify-between transition-colors py-2 px-3.5"><span className="flex items-center gap-2 text-xs font-medium text-slate-600"><Upload aria-hidden="true" />Adjuntar archivo (PDF, JPG, PNG - Máx 10MB)</span></button></div>
+            <label className={labelClassName}><span>Referencia de contrato</span><input className="w-full h-10 px-3.5 text-xs text-slate-700 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2A4B93]/20 focus:border-[#2A4B93] placeholder:text-slate-400 flex items-center" placeholder="Ej. CTR-2026-0031" /></label>
+            <div><span className={labelClassName}>Evidencia contractual</span><button type="button" className="w-full h-10 px-3.5 bg-slate-50 hover:bg-slate-100/80 border border-dashed border-slate-300 rounded-xl cursor-pointer flex items-center justify-start gap-2 transition-colors"><Upload aria-hidden="true" className="w-4 h-4 text-slate-500 flex-shrink-0" /><span className="text-xs text-slate-600 font-medium truncate">Adjuntar archivo (PDF, JPG, PNG - Máx 10MB)</span></button></div>
             <label className="col-span-2 text-xs font-medium text-slate-600"><span className="mb-1.5 block">Observación contractual</span><textarea className="w-full text-xs font-normal text-slate-700 bg-white border border-slate-200/90 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#2A4B93]/20 focus:border-[#2A4B93] placeholder:text-slate-400 resize-none" rows={2} placeholder="Añade una observación relevante para la operación" /></label>
           </div>
         </section>
