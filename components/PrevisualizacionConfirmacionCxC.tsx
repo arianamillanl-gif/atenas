@@ -2,7 +2,9 @@
 
 import { useState } from 'react'
 import {
+  ArrowLeft,
   CheckCircle2,
+  ChevronRight,
   FileText,
   Info,
   LoaderCircle,
@@ -69,6 +71,23 @@ export default function PrevisualizacionConfirmacionCxC() {
   return (
     <main className="min-h-screen bg-slate-50 pb-28 text-slate-900">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-5 px-4 py-6 sm:px-6 lg:px-8">
+        <div>
+          <nav className="mb-2 flex items-center gap-2 text-xs text-slate-500" aria-label="Breadcrumb">
+            <span>Ventas</span>
+            <ChevronRight className="size-3.5 text-slate-300" aria-hidden="true" />
+            <span>Detalle VTA-2026-00893</span>
+            <ChevronRight className="size-3.5 text-slate-300" aria-hidden="true" />
+            <span className="font-semibold text-slate-700">Previsualización de CxC</span>
+          </nav>
+          <div className="flex flex-wrap items-center gap-3">
+            <button type="button" className="rounded-full p-2 text-slate-600 transition-colors hover:bg-slate-100" aria-label="Volver al detalle de venta">
+              <ArrowLeft className="size-5" aria-hidden="true" />
+            </button>
+            <h1 className="text-xl font-bold text-slate-900">Previsualización y Confirmación de CxC</h1>
+            <span className="rounded-full border border-[#2A4B93]/20 bg-blue-50 px-3 py-1 text-xs font-semibold text-[#2A4B93]">Modo Previsualización</span>
+          </div>
+        </div>
+
         <header className="flex flex-col gap-4 rounded-2xl border border-blue-200 bg-blue-50/80 p-4 text-blue-900 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-3 text-sm font-semibold">
             <Info className="size-5 shrink-0 text-[#2A4B93]" aria-hidden="true" />
