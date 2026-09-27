@@ -49,26 +49,26 @@ export default function DetalleVentaConditions({ onBack }: DetailProps) {
       <div className="detail-sections">
         <section className="detail-card readonly-card">
           <div className="detail-card-heading"><div><h2>Datos de la venta</h2></div><Lock aria-hidden="true" className="heading-icon muted" /></div>
-          <div className="detail-grid-three">{readOnlyFields.map(([label, value]) => <label className="detail-input-field" key={label}><span>{label}</span><input value={value} disabled className={label === 'Importe' ? 'amount-value' : ''} readOnly /></label>)}</div>
+          <div className="detail-grid-three">{readOnlyFields.map(([label, value]) => <label className="text-xs font-semibold text-slate-700 mb-1.5 block align-left" key={label}><span>{label}</span><input value={value} disabled className={label === 'Importe' ? 'amount-value' : ''} readOnly /></label>)}</div>
         </section>
 
         <section className="detail-card">
           <div className="detail-card-heading"><div><Paperclip aria-hidden="true" className="heading-icon brand" /><h2>Contrato y evidencia</h2></div></div>
-          <div className="detail-grid-three"><label className="detail-input-field"><span>Referencia de contrato</span><input placeholder="Ej. CTR-2026-0031" /></label><label className="detail-input-field span-two"><span>Observación contractual</span><textarea rows={2} placeholder="Añade una observación relevante para la operación" /></label></div>
+          <div className="detail-grid-three"><label className="text-xs font-semibold text-slate-700 mb-1.5 block align-left"><span>Referencia de contrato</span><input placeholder="Ej. CTR-2026-0031" /></label><label className="text-xs font-semibold text-slate-700 mb-1.5 block align-left"><span>Observación contractual</span><textarea rows={2} placeholder="Añade una observación relevante para la operación" /></label></div>
           <button type="button" className="evidence-dropzone"><Upload aria-hidden="true" /><span><strong>Adjuntar evidencia contractual</strong><small>PDF, JPG o PNG · Máximo 10 MB</small></span></button>
         </section>
 
         <section className="detail-card editable-card">
           <div className="detail-card-heading"><div><Sliders aria-hidden="true" className="heading-icon brand" /><h2>Condiciones comerciales editables</h2></div><span className="required-note">* Campos obligatorios</span></div>
           <div className="detail-grid-three">
-            {['Modalidad del Servicio*', 'Frecuencia del Servicio*', 'Periodicidad de Facturación*', 'Periodicidad de Pago*', 'Condición de Pago*'].map((label) => <label className="detail-input-field" key={label}><span>{label}</span><select defaultValue=""><option value="" disabled>Seleccionar opción</option><option>Mensual</option><option>Trimestral</option><option>Anual</option></select></label>)}
-            <label className="detail-input-field"><span>Fecha Inicio del Servicio*</span><input type="date" defaultValue="2026-09-24" /></label><label className="detail-input-field"><span>Fecha Fin del Servicio</span><input type="date" /></label><label className="detail-input-field"><span>Cantidad de Cuotas</span><input type="number" min="1" defaultValue="12" /></label><label className="detail-input-field"><span>Primer Vencimiento</span><input type="date" defaultValue="2026-10-24" /></label>
+            {['Modalidad del Servicio*', 'Frecuencia del Servicio*', 'Periodicidad de Facturación*', 'Periodicidad de Pago*', 'Condición de Pago*'].map((label) => <label className="text-xs font-semibold text-slate-700 mb-1.5 block align-left" key={label}><span>{label}</span><select defaultValue=""><option value="" disabled>Seleccionar opción</option><option>Mensual</option><option>Trimestral</option><option>Anual</option></select></label>)}
+            <label className="text-xs font-semibold text-slate-700 mb-1.5 block align-left"><span>Fecha Inicio del Servicio*</span><input type="date" defaultValue="2026-09-24" /></label><label className="text-xs font-semibold text-slate-700 mb-1.5 block align-left"><span>Fecha Fin del Servicio</span><input type="date" /></label><label className="text-xs font-semibold text-slate-700 mb-1.5 block align-left"><span>Cantidad de Cuotas</span><input type="number" min="1" defaultValue="12" /></label><label className="text-xs font-semibold text-slate-700 mb-1.5 block align-left"><span>Primer Vencimiento</span><input type="date" defaultValue="2026-10-24" /></label>
           </div>
         </section>
 
         <section className="detail-card">
           <div className="detail-card-heading"><div><History aria-hidden="true" className="heading-icon brand" /><h2>Versionado y trazabilidad</h2></div></div>
-          <div className="version-grid"><label className="detail-input-field"><span>Versión vigente</span><input value="V1 · 24/09/2026" disabled readOnly /></label><label className="detail-input-field"><span>Motivo del cambio*</span><input placeholder="Describe el motivo de esta versión" /></label><button type="button" className="history-button"><History aria-hidden="true" /> Ver versiones anteriores</button></div>
+          <div className="version-grid"><label className="text-xs font-semibold text-slate-700 mb-1.5 block align-left"><span>Versión vigente</span><input value="V1 · 24/09/2026" disabled readOnly /></label><label className="text-xs font-semibold text-slate-700 mb-1.5 block align-left"><span>Motivo del cambio*</span><input placeholder="Describe el motivo de esta versión" /></label><button type="button" className="history-button"><History aria-hidden="true" /> Ver versiones anteriores</button></div>
         </section>
       </div>
 
