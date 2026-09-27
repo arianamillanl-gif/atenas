@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import {
   ArrowLeft,
+  Check,
   CheckCircle2,
   ChevronRight,
   FileText,
@@ -138,7 +139,7 @@ export default function PrevisualizacionConfirmacionCxC({
               <thead className="bg-slate-100/70 text-xs font-bold uppercase text-slate-700">
                 <tr>
                   {['#', 'Descripción CxC', 'Fecha de Vencimiento', 'Monto Ilustrativo', 'Estado Inicial', 'Versión'].map((heading) => (
-                    <th key={heading} className="px-5 py-3.5">{heading}</th>
+                    <th key={heading} className={`px-5 py-3.5 ${heading === 'Versión' ? 'text-left' : ''}`}>{heading}</th>
                   ))}
                 </tr>
               </thead>
@@ -177,8 +178,8 @@ export default function PrevisualizacionConfirmacionCxC({
         <div className="mx-auto flex w-full max-w-7xl justify-end">
           <div className="flex flex-wrap justify-end gap-2">
             <button type="button" onClick={onRefresh} className="inline-flex h-10 items-center gap-1.5 rounded-full border border-[#2A4B93] bg-[#2A4B93]/5 px-5 text-xs font-semibold text-[#2A4B93] hover:bg-[#2A4B93]/10"><RefreshCw className="size-3.5" aria-hidden="true" />Actualizar vista previa</button>
-            <button type="button" onClick={() => { onConfirmConditions?.(); setShowConfirmation(true) }} className="h-10 rounded-full bg-[#2A4B93] px-6 text-xs font-semibold text-white shadow-md hover:bg-[#1f3870]">Confirmar condiciones</button>
-            <button type="button" onClick={onGenerateCxC} className="inline-flex h-10 items-center gap-1.5 rounded-full bg-emerald-600 px-6 text-xs font-semibold text-white shadow-md hover:bg-emerald-700 disabled:opacity-50"><CheckCircle2 className="size-3.5" aria-hidden="true" />Generar CxC (ATENAS-78)</button>
+            <button type="button" onClick={() => { onConfirmConditions?.(); setShowConfirmation(true) }} className="inline-flex h-10 items-center gap-1.5 rounded-full bg-[#2A4B93] px-6 text-xs font-semibold text-white shadow-md hover:bg-[#1f3870]"><Check className="size-3.5" aria-hidden="true" />Confirmar condiciones</button>
+            <button type="button" onClick={onGenerateCxC} className="inline-flex h-10 items-center gap-1.5 rounded-full bg-emerald-600 px-6 text-xs font-semibold text-white shadow-md hover:bg-emerald-700 disabled:opacity-50"><CheckCircle2 className="size-3.5" aria-hidden="true" />Generar CxC</button>
           </div>
         </div>
       </footer>
