@@ -28,36 +28,30 @@ export default function HistorialCondicionesIntegracion({ onBack }: { onBack: ()
 
       <nav className="flex items-center gap-2 text-xs text-slate-500" aria-label="Migas de pan"><span className="text-slate-400">Ventas</span><ChevronRight className="size-3.5 text-slate-300" /><button type="button" onClick={onBack} className="hover:text-[#2A4B93] hover:underline">Detalle VTA-2026-00312</button><ChevronRight className="size-3.5 text-slate-300" /><span className="font-semibold text-slate-800">Historial de Condiciones e Integración</span></nav>
 
-      <div className="w-full space-y-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs">
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-4">
-          <div>
-            <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400"><Hash className="size-3" /> Venta ID / Clientify</span>
-            <p className="mt-1 text-sm font-bold text-slate-800">VNT-2026-00312 <span className="text-xs font-normal text-slate-400">· CLF-88312</span></p>
+      <div className="w-full space-y-5 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
+        <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-12">
+          <div className="grid grid-cols-1 gap-4 border-slate-100 pr-0 sm:grid-cols-3 lg:col-span-8 lg:border-r lg:pr-6 xl:col-span-9">
+            <div className="space-y-1">
+              <span className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400"><Hash className="size-3.5" /> Venta ID / Clientify</span>
+              <div className="flex items-center gap-1.5 text-sm font-bold text-slate-900"><span>VNT-2026-00312</span><span className="text-xs font-normal text-slate-400">· CLF-88312</span></div>
+            </div>
+            <div className="min-w-0 space-y-1">
+              <span className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400"><Building2 className="size-3.5" /> Cliente</span>
+              <div className="truncate text-sm font-bold text-slate-900" title="CONSTRUCTORA DEL LLANO C.A.">CONSTRUCTORA DEL LLANO C.A.</div>
+            </div>
+            <div className="space-y-1">
+              <span className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400"><Briefcase className="size-3.5" /> Servicio</span>
+              <div><div className="text-sm font-bold text-slate-900">SRV-2026-00031</div><div className="text-xs font-normal text-slate-500">Consultoría Comercial</div></div>
+            </div>
           </div>
-          <div className="min-w-0">
-            <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400"><Building2 className="size-3" /> Cliente</span>
-            <p className="mt-1 truncate text-sm font-bold text-slate-900">CONSTRUCTORA DEL LLANO C.A.</p>
-          </div>
-          <div>
-            <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400"><Briefcase className="size-3" /> Servicio</span>
-            <p className="mt-1 text-sm font-semibold text-slate-700">SRV-2026-00031 <span className="block text-xs font-normal text-slate-500">Consultoría Comercial</span></p>
-          </div>
-          <div className="text-left md:text-right">
-            <span className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Importe Total</span>
-            <span className="block text-base font-extrabold tracking-tight text-slate-900">USD 18.500,00</span>
-            <span className="block text-[11px] font-medium text-slate-500">Resp: MORALES, Luis</span>
+          <div className="flex items-center justify-between rounded-xl border border-slate-200/60 bg-slate-50/80 p-3.5 lg:col-span-4 xl:col-span-3">
+            <div className="space-y-0.5"><span className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Importe Total</span><div className="text-lg font-extrabold tracking-tight text-slate-900">USD 18.500,00</div></div>
+            <div className="space-y-0.5 border-l border-slate-200/80 pl-3 text-right"><span className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Responsable</span><span className="block whitespace-nowrap text-xs font-semibold text-slate-700">MORALES, Luis</span></div>
           </div>
         </div>
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200/80 border-l-4 border-l-[#2A4B93] bg-slate-50/80 p-3.5 text-xs">
-          <div className="flex items-center gap-2.5">
-            <span className="flex items-center gap-1.5 rounded-lg bg-[#2A4B93] px-2.5 py-1 text-xs font-bold text-white shadow-2xs"><Layers className="size-3.5" /> Versión Vigente: V3</span>
-            <span className="flex items-center gap-1 text-[11px] font-medium text-slate-500"><Clock className="size-3.5 text-slate-400" /> Activada: <strong className="font-semibold text-slate-700">14/08/2026 10:22:07</strong></span>
-          </div>
-          <div className="flex flex-wrap items-center gap-4">
-            <span className="flex items-center gap-1 text-[11px] font-medium text-slate-500"><User className="size-3.5 text-slate-400" /> Autor: <strong className="font-semibold text-slate-700">Morales, Luis</strong></span>
-            <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-2xs"><FileSpreadsheet className="size-3 text-[#2A4B93]" /> 4 CxC Vinculadas</span>
-            <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200/80 bg-emerald-50 px-3 py-1 text-[11px] font-bold text-emerald-700 shadow-2xs"><CheckCircle2 className="size-3.5 text-emerald-600" /> Integración Exitosa</span>
-          </div>
+          <div className="flex items-center gap-2.5"><span className="flex items-center gap-1.5 rounded-lg bg-[#2A4B93] px-2.5 py-1 text-xs font-bold text-white shadow-2xs"><Layers className="size-3.5" /> Versión Vigente: V3</span><span className="flex items-center gap-1 text-[11px] font-medium text-slate-500"><Clock className="size-3.5 text-slate-400" /> Activada: <strong className="font-semibold text-slate-700">14/08/2026 10:22:07</strong></span></div>
+          <div className="flex flex-wrap items-center gap-4"><span className="flex items-center gap-1 text-[11px] font-medium text-slate-500"><User className="size-3.5 text-slate-400" /> Autor: <strong className="font-semibold text-slate-700">Morales, Luis</strong></span><span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-2xs"><FileSpreadsheet className="size-3 text-[#2A4B93]" /> 4 CxC Vinculadas</span><span className="inline-flex items-center gap-1 rounded-full border border-emerald-200/80 bg-emerald-50 px-3 py-1 text-[11px] font-bold text-emerald-700 shadow-2xs"><CheckCircle2 className="size-3.5 text-emerald-600" /> Integración Exitosa</span></div>
         </div>
       </div>
 
