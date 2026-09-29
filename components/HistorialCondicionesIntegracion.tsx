@@ -20,7 +20,7 @@ export default function HistorialCondicionesIntegracion({ onBack }: { onBack: ()
   const retry = () => { setRetrying(true); window.setTimeout(() => { setRetrying(false); setNotice('Reintento de integración V2 encolado') }, 700) }
 
   return (
-    <div className="w-full max-w-7xl mx-auto p-6 space-y-6 text-slate-900">
+    <div className="mx-auto w-full max-w-7xl min-w-0 overflow-hidden p-6 text-slate-900">
       <header className="-mx-8 -mt-8 w-[calc(100%+4rem)] h-16 bg-white border-b border-slate-200/80 px-8 flex items-center justify-between sticky top-0 z-30">
         <span className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-100/80 px-3 py-1.5 text-xs font-medium text-slate-700"><span className="size-2 rounded-full bg-indigo-600" />Lo-Fi workspace · Operaciones</span>
         <div className="flex items-center gap-3"><label className="hidden items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-400 md:flex"><Search className="size-3.5" /><input aria-label="Búsqueda rápida" placeholder="Búsqueda rápida" className="w-28 bg-transparent text-xs outline-none" /><kbd className="rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[10px]">⌘K</kbd></label><button type="button" aria-label="Notificaciones" className="relative rounded-full p-2 text-slate-500 hover:bg-slate-100"><Bell className="size-4" /><span className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-[#2A4B93]" /></button><span className="mx-2 h-5 w-px bg-slate-200" /><button type="button" className="flex items-center gap-2 rounded-xl px-2 py-1.5 hover:bg-slate-50"><span className="flex size-8 items-center justify-center rounded-full bg-[#2A4B93] text-xs font-bold text-white">MG</span><span className="hidden text-xs font-semibold sm:block">María González</span><ChevronDown className="size-3.5 text-slate-400" /></button></div>
@@ -29,8 +29,8 @@ export default function HistorialCondicionesIntegracion({ onBack }: { onBack: ()
       <nav className="flex items-center gap-2 text-xs text-slate-500" aria-label="Migas de pan"><span className="text-slate-400">Ventas</span><ChevronRight className="size-3.5 text-slate-300" /><button type="button" onClick={onBack} className="hover:text-[#2A4B93] hover:underline">Detalle VTA-2026-00312</button><ChevronRight className="size-3.5 text-slate-300" /><span className="font-semibold text-slate-800">Historial de Condiciones e Integración</span></nav>
 
       <div className="w-full space-y-5 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
-        <div className="grid grid-cols-1 items-center gap-6 lg:grid-cols-12">
-          <div className="grid grid-cols-1 gap-4 border-slate-100 pr-0 sm:grid-cols-3 lg:col-span-8 lg:border-r lg:pr-6 xl:col-span-9">
+        <div className="grid min-w-0 grid-cols-1 items-start gap-5 lg:grid-cols-12 lg:items-center">
+          <div className="grid min-w-0 grid-cols-1 gap-4 border-slate-100 pr-0 sm:grid-cols-3 lg:col-span-8 lg:border-r lg:pr-6 xl:col-span-8">
             <div className="space-y-1">
               <span className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-400"><Hash className="size-3.5" /> Venta ID / Clientify</span>
               <div className="flex items-center gap-1.5 text-sm font-bold text-slate-900"><span>VNT-2026-00312</span><span className="text-xs font-normal text-slate-400">· CLF-88312</span></div>
@@ -44,10 +44,10 @@ export default function HistorialCondicionesIntegracion({ onBack }: { onBack: ()
               <div><div className="text-sm font-bold text-slate-900">SRV-2026-00031</div><div className="text-xs font-normal text-slate-500">Consultoría Comercial</div></div>
             </div>
           </div>
-          <div className="ml-auto flex min-w-[380px] flex-1 items-center justify-between gap-8 rounded-xl border border-slate-200/70 bg-slate-50/80 px-6 py-2.5 lg:col-span-4 xl:col-span-3">
-            <div className="shrink-0 space-y-0.5"><span className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Importe Total</span><div className="flex items-baseline gap-1.5"><span className="text-base font-bold tracking-tight text-slate-900">18.500,00</span><span className="text-xs font-semibold text-slate-500">USD</span></div></div>
+          <div className="flex w-full min-w-0 max-w-full flex-wrap items-center justify-between gap-x-6 gap-y-2 rounded-xl border border-slate-200/70 bg-slate-50/80 px-4 py-3 sm:px-5 lg:col-span-4 xl:col-span-4">
+            <div className="min-w-0 flex-1 space-y-0.5"><span className="block truncate text-[10px] font-semibold uppercase tracking-wider text-slate-400">Importe Total</span><div className="flex items-baseline gap-1.5"><span className="text-base font-bold tracking-tight text-slate-900">18.500,00</span><span className="text-xs font-semibold text-slate-500">USD</span></div></div>
             <div className="h-8 w-px shrink-0 bg-slate-200/70" aria-hidden="true" />
-            <div className="min-w-[132px] shrink-0 space-y-0.5 pr-2 text-right"><span className="block whitespace-nowrap text-[10px] font-semibold uppercase tracking-wider text-slate-400">Responsable</span><span className="block whitespace-nowrap text-xs font-semibold text-slate-700">MORALES, Luis</span></div>
+            <div className="min-w-0 max-w-full flex-1 space-y-0.5 pr-0 text-right sm:pr-1"><span className="block truncate text-[10px] font-semibold uppercase tracking-wider text-slate-400">Responsable</span><span className="block max-w-full break-words text-xs font-semibold text-slate-700" title="MORALES, Luis">MORALES, Luis</span></div>
           </div>
         </div>
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200/80 border-l-4 border-l-[#2A4B93] bg-slate-50/80 p-3.5 text-xs">
