@@ -80,7 +80,10 @@ export default function HistorialCondicionesIntegracion({ onBack }: { onBack: ()
 
       <section className="w-full overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs">
         <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/30 px-6 py-4">
-          <div className="flex items-center gap-2.5"><div className="rounded-lg border border-blue-100/60 bg-blue-50 p-2 text-[#2A4B93]"><RefreshCw className="size-4" /></div><div><h3 className="text-sm font-bold tracking-tight text-slate-900">Panel de Integración y Recuperación</h3><p className="text-[11px] font-medium text-slate-400">Sincronización con el servidor de facturación</p></div></div>
+          <div>
+            <h3 className="text-sm font-bold tracking-tight text-slate-900">Panel de Integración y Recuperación</h3>
+            <p className="mt-0.5 text-[11px] font-medium text-slate-400">Sincronización con el servidor de facturación</p>
+          </div>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200/80 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700"><span className="size-1.5 animate-pulse rounded-full bg-amber-500" />Error Reintentable · V2</span>
         </div>
         <div className="space-y-5 p-6">
