@@ -44,10 +44,10 @@ export default function HistorialCondicionesIntegracion({ onBack }: { onBack: ()
               <div><div className="text-sm font-bold text-slate-900">SRV-2026-00031</div><div className="text-xs font-normal text-slate-500">Consultoría Comercial</div></div>
             </div>
           </div>
-          <div className="flex items-center justify-between gap-4 rounded-xl border border-slate-200/70 bg-slate-50/80 px-4 py-2.5 lg:col-span-4 xl:col-span-3">
-            <div className="space-y-0.5"><span className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Importe Total</span><div className="flex items-baseline gap-1.5"><span className="text-base font-bold tracking-tight text-slate-900">18.500,00</span><span className="text-xs font-semibold text-slate-500">USD</span></div></div>
-            <div className="h-8 w-px bg-slate-200/70" aria-hidden="true" />
-            <div className="space-y-0.5 text-right"><span className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Responsable</span><span className="block whitespace-nowrap text-xs font-semibold text-slate-700">MORALES, Luis</span></div>
+          <div className="ml-auto flex min-w-[340px] flex-1 items-center justify-between gap-6 rounded-xl border border-slate-200/70 bg-slate-50/80 px-5 py-2.5 lg:col-span-4 xl:col-span-3">
+            <div className="shrink-0 space-y-0.5"><span className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Importe Total</span><div className="flex items-baseline gap-1.5"><span className="text-base font-bold tracking-tight text-slate-900">18.500,00</span><span className="text-xs font-semibold text-slate-500">USD</span></div></div>
+            <div className="h-8 w-px shrink-0 bg-slate-200/70" aria-hidden="true" />
+            <div className="min-w-[112px] shrink-0 space-y-0.5 pr-1 text-right"><span className="block whitespace-nowrap text-[10px] font-semibold uppercase tracking-wider text-slate-400">Responsable</span><span className="block whitespace-nowrap text-xs font-semibold text-slate-700">MORALES, Luis</span></div>
           </div>
         </div>
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200/80 border-l-4 border-l-[#2A4B93] bg-slate-50/80 p-3.5 text-xs">
