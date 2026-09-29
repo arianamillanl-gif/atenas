@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Bell, Check, CheckCircle2, ChevronDown, ChevronRight, Clock, Eye, FileText, GitCompare, History, RefreshCw, Search, X, XCircle } from 'lucide-react'
+import { Bell, Briefcase, Building2, Check, CheckCircle2, ChevronDown, ChevronRight, Clock, Eye, FileSpreadsheet, FileText, GitCompare, Hash, History, Layers, RefreshCw, Search, User, X, XCircle } from 'lucide-react'
 
 type Version = { version: string; date: string; actor: string; reason: string; status: 'VIGENTE' | 'SUSTITUIDA'; integration: 'EXITOSO' | 'FALLIDO'; personId: string }
 
@@ -28,12 +28,38 @@ export default function HistorialCondicionesIntegracion({ onBack }: { onBack: ()
 
       <nav className="flex items-center gap-2 text-xs text-slate-500" aria-label="Migas de pan"><span className="text-slate-400">Ventas</span><ChevronRight className="size-3.5 text-slate-300" /><button type="button" onClick={onBack} className="hover:text-[#2A4B93] hover:underline">Detalle VTA-2026-00312</button><ChevronRight className="size-3.5 text-slate-300" /><span className="font-semibold text-slate-800">Historial de Condiciones e Integración</span></nav>
 
-      <section className="w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="w-full space-y-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs">
         <div className="grid grid-cols-1 gap-5 md:grid-cols-4">
-          <Data label="VENTA_ID / CLIENTIFY_ID" value="VNT-2026-00312 · CLF-88312" /><Data label="CLIENTE" value="CONSTRUCTORA DEL LLANO C.A." /><Data label="SERVICIO" value="SRV-2026-00031 · Consultoría Comercial" /><Data label="RESPONSABLE / IMPORTE" value="MORALES, LUIS | USD 18.500,00" />
+          <div>
+            <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400"><Hash className="size-3" /> Venta ID / Clientify</span>
+            <p className="mt-1 text-sm font-bold text-slate-800">VNT-2026-00312 <span className="text-xs font-normal text-slate-400">· CLF-88312</span></p>
+          </div>
+          <div className="min-w-0">
+            <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400"><Building2 className="size-3" /> Cliente</span>
+            <p className="mt-1 truncate text-sm font-bold text-slate-900">CONSTRUCTORA DEL LLANO C.A.</p>
+          </div>
+          <div>
+            <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-slate-400"><Briefcase className="size-3" /> Servicio</span>
+            <p className="mt-1 text-sm font-semibold text-slate-700">SRV-2026-00031 <span className="block text-xs font-normal text-slate-500">Consultoría Comercial</span></p>
+          </div>
+          <div className="text-left md:text-right">
+            <span className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Importe Total</span>
+            <span className="block text-base font-extrabold tracking-tight text-slate-900">USD 18.500,00</span>
+            <span className="block text-[11px] font-medium text-slate-500">Resp: MORALES, Luis</span>
+          </div>
         </div>
-        <div className="mt-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#2A4B93]/30 bg-slate-50 p-4 text-xs font-medium text-slate-700"><strong className="text-sm text-slate-900">VERSIÓN VIGENTE ACTUAL: V3</strong><span>Activada: 2026-08-14 10:22:07</span><span>Autor: Morales, Luis</span><span>CxC Vinculadas: 4</span><span className="rounded-full bg-emerald-100 px-3 py-1 font-bold text-emerald-800">• INTEGRACIÓN EXITOSA</span></div>
-      </section>
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200/80 border-l-4 border-l-[#2A4B93] bg-slate-50/80 p-3.5 text-xs">
+          <div className="flex items-center gap-2.5">
+            <span className="flex items-center gap-1.5 rounded-lg bg-[#2A4B93] px-2.5 py-1 text-xs font-bold text-white shadow-2xs"><Layers className="size-3.5" /> Versión Vigente: V3</span>
+            <span className="flex items-center gap-1 text-[11px] font-medium text-slate-500"><Clock className="size-3.5 text-slate-400" /> Activada: <strong className="font-semibold text-slate-700">14/08/2026 10:22:07</strong></span>
+          </div>
+          <div className="flex flex-wrap items-center gap-4">
+            <span className="flex items-center gap-1 text-[11px] font-medium text-slate-500"><User className="size-3.5 text-slate-400" /> Autor: <strong className="font-semibold text-slate-700">Morales, Luis</strong></span>
+            <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 shadow-2xs"><FileSpreadsheet className="size-3 text-[#2A4B93]" /> 4 CxC Vinculadas</span>
+            <span className="inline-flex items-center gap-1 rounded-full border border-emerald-200/80 bg-emerald-50 px-3 py-1 text-[11px] font-bold text-emerald-700 shadow-2xs"><CheckCircle2 className="size-3.5 text-emerald-600" /> Integración Exitosa</span>
+          </div>
+        </div>
+      </div>
 
       <section className="w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"><div className="border-b border-slate-100 p-6"><h2 className="text-base font-bold text-slate-900">Línea temporal de versiones</h2></div><div className="overflow-x-auto"><table className="w-full text-left border-collapse table-fixed"><thead className="bg-slate-100/70 text-[11px] font-semibold uppercase tracking-wider text-slate-500"><tr>{['V.NRO','FECHA · HORA','ACTOR','MOTIVO DEL CAMBIO','ESTADO NEG.','EVIDENCIA','CXC','INTEGRACIÓN','ACCIONES'].map((heading) => <th key={heading} className="px-2 py-3 font-semibold">{heading}</th>)}</tr></thead><tbody className="divide-y divide-slate-100">{versions.map((v) => <tr key={v.version} className={`align-top hover:bg-slate-50/70 ${v.version === 'V3' ? 'bg-slate-50/50' : ''}`}><td className="px-2 py-4"><span className="rounded-full bg-slate-100 px-2.5 py-1 font-bold text-slate-700">{v.version}</span></td><td className="whitespace-nowrap px-5 py-4 text-xs text-slate-600">{v.date}</td><td className="px-2 py-4 font-semibold text-slate-700">{v.actor}<span className="block text-[10px] font-normal text-slate-400">({v.personId})</span></td><td className="w-1/3 px-4 py-3 text-xs text-slate-700 leading-relaxed align-middle"><p className="line-clamp-2 break-words" title={v.reason}>{v.reason}</p></td><td className="px-2 py-4">{v.status === 'VIGENTE' ? <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/60"><CheckCircle2 className="w-3 h-3 text-emerald-600" />Vigente</span> : <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-slate-100 text-slate-600 border border-slate-200/60"><Clock className="w-3 h-3 text-slate-400" />Sustituida</span>}</td><td className="px-2 py-4"><div className="flex items-center gap-1.5 whitespace-nowrap"><button type="button" onClick={() => setDrawer(v)} className="inline-flex items-center gap-1 px-3 py-1 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-full text-[11px] font-medium transition-colors shadow-2xs"><Eye className="w-3 h-3 text-slate-400" />Ver detalle</button><button type="button" className="inline-flex items-center gap-1 px-3 py-1 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-full text-[11px] font-medium transition-colors shadow-2xs"><GitCompare className="w-3 h-3 text-slate-400" />Comparar</button><button type="button" className="inline-flex items-center gap-1 px-3 py-1 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 rounded-full text-[11px] font-medium transition-colors shadow-2xs"><FileText className="w-3 h-3 text-slate-400" />CxC vinculadas</button></div></td><td className="px-2 py-4"><span className="rounded-full bg-blue-50 px-2.5 py-1 font-bold text-[#2A4B93]">4</span></td><td className="px-2 py-4"><span className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${v.integration === 'EXITOSO' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>{v.integration === 'EXITOSO' ? '• EXITOSO' : '✕ FALLIDO'}</span></td><td className="px-2 py-4"><div className="flex gap-2"><button type="button" onClick={() => setDrawer(v)} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-[10px] font-semibold hover:bg-slate-50">Ver detalle</button><button type="button" className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"><GitCompare className="size-3 text-slate-400" />Comparar</button><button type="button" className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-700 shadow-sm transition-colors hover:bg-slate-50"><FileText className="size-3 text-slate-400" />CxC vinculadas</button><button type="button" onClick={() => setNotice(`Comparación ${v.version} preparada`)} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-[10px] font-semibold hover:bg-slate-50">Comparar</button><button type="button" onClick={() => setNotice('Cuentas por cobrar vinculadas: 4')} className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-[10px] font-semibold hover:bg-slate-50">CxC vinculadas</button></div></td></tr>)}</tbody></table></div></section>
 
