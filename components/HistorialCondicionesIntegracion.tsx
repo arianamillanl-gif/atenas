@@ -26,7 +26,13 @@ export default function HistorialCondicionesIntegracion({ onBack }: { onBack: ()
         <div className="flex items-center gap-3"><label className="hidden items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-400 md:flex"><Search className="size-3.5" /><input aria-label="Búsqueda rápida" placeholder="Búsqueda rápida" className="w-28 bg-transparent text-xs outline-none" /><kbd className="rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[10px]">⌘K</kbd></label><button type="button" aria-label="Notificaciones" className="relative rounded-full p-2 text-slate-500 hover:bg-slate-100"><Bell className="size-4" /><span className="absolute right-1.5 top-1.5 size-1.5 rounded-full bg-[#2A4B93]" /></button><span className="mx-2 h-5 w-px bg-slate-200" /><button type="button" className="flex items-center gap-2 rounded-xl px-2 py-1.5 hover:bg-slate-50"><span className="flex size-8 items-center justify-center rounded-full bg-[#2A4B93] text-xs font-bold text-white">MG</span><span className="hidden text-xs font-semibold sm:block">María González</span><ChevronDown className="size-3.5 text-slate-400" /></button></div>
       </header>
 
-      <nav className="flex items-center gap-2 text-xs text-slate-500" aria-label="Migas de pan"><span className="text-slate-400">Ventas</span><ChevronRight className="size-3.5 text-slate-300" /><button type="button" onClick={onBack} className="hover:text-[#2A4B93] hover:underline">Detalle VTA-2026-00312</button><ChevronRight className="size-3.5 text-slate-300" /><span className="font-semibold text-slate-800">Historial de Condiciones e Integración</span></nav>
+      <div className="mb-5 space-y-3">
+        <nav className="flex items-center gap-2 text-xs text-slate-500" aria-label="Migas de pan"><span className="text-slate-400">Ventas</span><ChevronRight className="size-3.5 text-slate-300" /><button type="button" onClick={onBack} className="cursor-pointer transition-colors hover:text-[#2A4B93] hover:underline">Detalle VTA-2026-00893</button><ChevronRight className="size-3.5 text-slate-300" /><span className="font-semibold text-slate-800">Historial de Condiciones e Integración</span></nav>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h1 className="text-xl font-bold tracking-tight text-slate-900">Historial de Condiciones e Integración</h1>
+          <span className="rounded-full border border-[#2A4B93]/20 bg-blue-50 px-3 py-1 text-xs font-semibold text-[#2A4B93]">Auditoría de versiones</span>
+        </div>
+      </div>
 
       <div className="w-full space-y-5 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
         <div className="grid min-w-0 grid-cols-1 items-start gap-5 lg:grid-cols-12 lg:items-center">
