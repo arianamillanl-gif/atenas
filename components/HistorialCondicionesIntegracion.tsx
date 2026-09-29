@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Briefcase, Building2, Check, CheckCircle2, ChevronRight, Clock, Eye, FileSpreadsheet, FileText, GitCompare, Hash, History, Layers, RefreshCw, ShieldCheck, Sliders, User, X, XCircle } from 'lucide-react'
+import { Bell, Briefcase, Building2, Check, CheckCircle2, ChevronDown, ChevronRight, Clock, Eye, FileSpreadsheet, FileText, GitCompare, Hash, History, Layers, RefreshCw, Search, ShieldCheck, Sliders, User, X, XCircle } from 'lucide-react'
 
 type Version = { version: string; date: string; actor: string; reason: string; status: 'VIGENTE' | 'SUSTITUIDA'; integration: 'EXITOSO' | 'FALLIDO'; personId: string }
 
@@ -20,8 +20,18 @@ export default function HistorialCondicionesIntegracion({ onBack }: { onBack: ()
   const retry = () => { setRetrying(true); window.setTimeout(() => { setRetrying(false); setNotice('Reintento de integración V2 encolado') }, 700) }
 
   return (
-    <div className="flex min-h-screen w-full min-w-0 flex-col space-y-6 overflow-hidden bg-slate-50/60 px-6 pb-6 pt-4 text-slate-900">
-  <header className="w-full space-y-3 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
+    <div className="min-h-screen w-full min-w-0 overflow-hidden bg-[#F8FAFC] text-slate-900">
+      <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-slate-200/80 bg-white px-8">
+        <span className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700"><span className="size-2 rounded-full bg-purple-600" aria-hidden="true" />Lo-Fi workspace · Operaciones</span>
+        <div className="flex items-center gap-4">
+          <div className="flex w-64 items-center justify-between rounded-xl border border-slate-200 bg-slate-100/80 px-3 py-1.5 text-xs text-slate-400"><span className="flex items-center gap-2"><Search className="size-3.5" aria-hidden="true" />Búsqueda rápida</span><kbd className="rounded border border-slate-200 bg-white px-1.5 py-0.5 font-mono text-[10px] text-slate-500">⌘K</kbd></div>
+          <button type="button" aria-label="Notificaciones" className="relative text-slate-500"><Bell className="size-4" /><span className="absolute -right-1 -top-1 size-1.5 rounded-full bg-[#2A4B93]" /></button>
+          <span className="h-4 w-px bg-slate-200" aria-hidden="true" />
+          <div className="flex items-center gap-2"><span className="flex size-7 items-center justify-center rounded-full bg-[#2A4B93] text-xs font-bold text-white">MG</span><span className="text-xs font-semibold text-slate-700">María González</span><ChevronDown className="size-3.5 text-slate-400" /></div>
+        </div>
+      </header>
+      <main className="space-y-6 px-8 pb-8">
+  <div className="w-full space-y-3 border-b border-slate-200/80 pb-5 pt-6">
     <nav className="flex items-center gap-2 text-xs font-medium text-slate-400" aria-label="Migas de pan">
       <span className="cursor-pointer transition-colors hover:text-slate-700">Ventas</span><span className="text-slate-300">&gt;</span><span className="cursor-pointer transition-colors hover:text-slate-700">Ventas verificadas</span><span className="text-slate-300">&gt;</span><span className="font-semibold text-slate-800">Historial de Condiciones e Integración</span>
     </nav>
@@ -33,7 +43,7 @@ export default function HistorialCondicionesIntegracion({ onBack }: { onBack: ()
       </div>
       <div className="shrink-0"><span className="inline-flex items-center gap-1.5 rounded-lg border border-[#2A4B93]/20 bg-[#2A4B93]/10 px-3.5 py-1.5 text-xs font-bold text-[#2A4B93] shadow-2xs"><Layers className="size-3.5" />Auditoría de versiones</span></div>
     </div>
-  </header>
+  </div>
 
       <section className="w-full space-y-5 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
         <div className="grid min-w-0 grid-cols-1 items-start gap-5 lg:grid-cols-12 lg:items-center">
@@ -69,6 +79,7 @@ export default function HistorialCondicionesIntegracion({ onBack }: { onBack: ()
 
       {drawer && <div className="fixed inset-0 z-50 bg-slate-950/35" onClick={() => setDrawer(null)}><aside className="absolute right-0 top-0 h-full w-96 overflow-y-auto bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}><div className="flex items-center justify-between border-b border-slate-100 pb-4"><h2 className="text-lg font-bold">Detalle {drawer.version}</h2><button type="button" aria-label="Cerrar" onClick={() => setDrawer(null)}><X className="size-4" /></button></div><div className="space-y-4 py-5"><Data label="Fecha y hora" value={drawer.date} /><Data label="Actor" value={`${drawer.actor} (${drawer.personId})`} /><Data label="Motivo del cambio" value={drawer.reason} /><Data label="Estado negocio" value={drawer.status} /><Data label="Integración" value={drawer.integration} /></div></aside></div>}
       {notice && <button type="button" onClick={() => setNotice('')} className="fixed right-6 top-20 z-[70] rounded-xl bg-slate-900 px-4 py-3 text-xs font-semibold text-white shadow-lg"><Check className="mr-2 inline size-3.5" />{notice}</button>}
+      </main>
     </div>
   )
 }
