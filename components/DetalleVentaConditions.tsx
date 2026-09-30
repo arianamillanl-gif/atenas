@@ -104,8 +104,9 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
           </button>
         </div>
       </header>
-      <main className="w-full flex-1 p-6 space-y-6 overflow-y-auto detail-page" aria-labelledby="detail-title">
-      <nav className="flex items-center gap-2 text-xs text-slate-500 mb-6" aria-label="Migas de pan">
+      <main className="w-full flex-1 overflow-y-auto detail-page" aria-labelledby="detail-title">
+      <div className="w-full max-w-[1400px] mx-auto px-6 py-6 space-y-4">
+      <nav className="flex items-center gap-2 text-xs text-slate-500" aria-label="Migas de pan">
         <span className="text-slate-400">Ventas</span>
         <ChevronRight aria-hidden="true" className="w-3.5 h-3.5 text-slate-300" />
         <button type="button" onClick={onBack} className="inline-flex items-center gap-1 text-slate-600 hover:text-[#2A4B93] font-medium transition-colors">
@@ -116,7 +117,7 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
         <span className="text-slate-800 font-semibold">Detalle VTA-2026-00893</span>
       </nav>
       <header className="detail-hero">
-        <div className="flex items-start justify-between gap-6 mb-4">
+        <div className="flex items-start justify-between gap-6 w-full">
           <div className="space-y-1.5 max-w-3xl">
             <div className="flex items-center gap-2 text-[#2A4B93] text-xs font-bold tracking-wide uppercase">
               <ShieldCheck aria-hidden="true" className="w-4 h-4" />
@@ -133,9 +134,9 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
         </div>
       </header>
 
-      {showAlert && <div className="detail-alert text-xs font-medium text-amber-800 bg-amber-50/90 border border-amber-200/80 rounded-xl px-4 py-2.5 flex items-center justify-between mb-6 shadow-sm" role="alert"><span className="flex items-center"><AlertTriangle aria-hidden="true" className="w-4 h-4 text-amber-600 mr-2 flex-shrink-0" />Existen CxC asociadas a una versión anterior</span><button type="button" onClick={() => setShowAlert(false)} aria-label="Cerrar advertencia" className="text-amber-500 hover:text-amber-700 cursor-pointer">×</button></div>}
+      {showAlert && <div className="detail-alert text-xs font-medium text-amber-800 bg-amber-50/90 border border-amber-200/80 rounded-xl px-4 py-2.5 flex items-center justify-between shadow-sm" role="alert"><span className="flex items-center"><AlertTriangle aria-hidden="true" className="w-4 h-4 text-amber-600 mr-2 flex-shrink-0" />Existen CxC asociadas a una versión anterior</span><button type="button" onClick={() => setShowAlert(false)} aria-label="Cerrar advertencia" className="text-amber-500 hover:text-amber-700 cursor-pointer">×</button></div>}
 
-      <div className="detail-sections max-w-7xl mx-auto px-4 space-y-6">
+      <div className="detail-sections">
         <section className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
           <div className="detail-card-heading"><div><h2 className="text-base font-bold text-slate-800 mb-4 flex items-center justify-between">Datos de la venta</h2></div><Lock aria-hidden="true" className="w-4 h-4 text-slate-400" /></div>
           <div className="detail-grid-three">{readOnlyFields.map(([label, value]) => <label className={labelClassName} key={label}><span>{label}</span><input value={value} disabled className={`w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2.5 text-slate-800 text-sm font-medium disabled:opacity-100 ${label === 'Importe' ? 'amount-value' : ''}`} readOnly /></label>)}</div>
@@ -169,7 +170,7 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
         </section>
 
         {isReplacement && (
-          <section className="bg-amber-50/60 border border-amber-200/80 rounded-2xl p-4 shadow-xs mt-6" aria-labelledby="change-reason-title">
+          <section className="bg-amber-50/60 border border-amber-200/80 rounded-2xl p-4 shadow-xs" aria-labelledby="change-reason-title">
             <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
               <label id="change-reason-title" htmlFor="change-reason" className="text-xs font-bold text-amber-900">
                 {`Motivo del cambio (Generando ${nextVersion})`}
@@ -188,10 +189,11 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
               aria-describedby="change-reason-note"
               rows={1}
               placeholder="Describe brevemente la razón de la modificación contractual (ej. Ajuste de cuotas acordado con el cliente)..."
-              className="w-full h-12 text-xs font-medium text-slate-700 bg-white border border-amber-200 rounded-xl px-3.5 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 placeholder:text-slate-400 placeholder:font-normal resize-none"
+              className="w-full h-11 text-xs font-medium text-slate-700 bg-white border border-amber-200 rounded-xl px-3.5 py-3 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 placeholder:text-slate-400 placeholder:font-normal resize-none"
             />
           </section>
         )}
+      </div>
       </div>
 
       {showHistory && <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="history-title">

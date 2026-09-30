@@ -158,7 +158,7 @@ export default function SoporteContractual({ onChange }: SoporteContractualProps
           <span id={`${id}-end-note`} className="mt-0.5 block text-[10px] text-slate-400">Opcional para contratos abiertos</span>
         </label>
 
-        <label className="block col-span-1 md:col-span-3 mt-2">
+        <label className="block col-span-1 md:col-span-3 mt-1">
           <span className={labelClassName}>Observación contractual relevante</span>
           <textarea
             rows={2}
