@@ -159,7 +159,7 @@ export default function BaseEconomicaIvaRetenciones() {
   }
 
   return (
-    <section className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs mb-6" aria-labelledby={`${id}-title`}>
+    <section className="bg-white border border-slate-200/80 rounded-2xl px-4 py-6 shadow-xs mb-6" aria-labelledby={`${id}-title`}>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         <div className="lg:col-span-8 flex flex-col gap-6 min-w-0">
           <div className="flex flex-wrap items-start justify-between gap-3">
@@ -279,66 +279,54 @@ export default function BaseEconomicaIvaRetenciones() {
                   Agregar retención
                 </button>
               </div>
-              <div className="w-full bg-slate-50/50 rounded-2xl border border-slate-200/80 overflow-hidden">
-                <div className="w-full overflow-x-hidden">
-                <table className="w-full table-fixed text-xs">
-                  <colgroup>
-                    <col className="w-[40%]" />
-                    <col className="w-[15%]" />
-                    <col className="w-[20%]" />
-                    <col className="w-[18%]" />
-                    <col className="w-[7%]" />
-                  </colgroup>
-                  <thead className="text-[10px] font-bold text-slate-400 uppercase tracking-wide bg-slate-100/60">
-                    <tr>
-                      <th scope="col" className="text-left font-bold px-2 first:pl-3 py-2.5 truncate">Tipo de Retención</th>
-                      <th scope="col" className="text-left font-bold px-2 py-2.5 truncate">Tasa %</th>
-                      <th scope="col" className="text-left font-bold px-2 py-2.5 truncate">Base imponible</th>
-                      <th scope="col" className="text-right font-bold px-2 py-2.5 truncate">Importe</th>
-                      <th scope="col" className="px-1"><span className="sr-only">Acciones</span></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {islrRows.length === 0 && (
-                      <tr><td colSpan={5} className="px-3 py-6 text-center text-slate-400">Sin retenciones de ISLR registradas.</td></tr>
-                    )}
-                    {islrRows.map((row, index) => {
-                      const amount = toNumber(row.base) * (toNumber(row.rate) / 100)
-                      return (
-                        <tr key={row.id} className="border-t border-slate-100">
-                          <td className="pl-3 pr-2 py-2.5 align-middle">
-                            <select aria-label={`Tipo de retención, fila ${index + 1}`} title={row.type} value={row.type} onChange={(event) => updateRow(row.id, 'type', event.target.value)} className={`${cellInputClassName} pl-2 pr-6 text-[11px] truncate`}>
-                              {islrTypes.map((type) => <option key={type} value={type}>{type}</option>)}
-                            </select>
-                          </td>
-                          <td className="px-2 py-2.5 align-middle">
-                            <input aria-label={`Tasa porcentual, fila ${index + 1}`} type="number" inputMode="decimal" min="0" max="100" step="0.01" value={row.rate} onChange={(event) => updateRow(row.id, 'rate', event.target.value)} placeholder="0" className={cellInputClassName} />
-                          </td>
-                          <td className="px-2 py-2.5 align-middle">
-                            <CurrencyInput aria-label={`Base imponible, fila ${index + 1}`} value={row.base} symbol={symbol} onValueChange={(raw) => updateRow(row.id, 'base', raw)} className={cellInputClassName} />
-                          </td>
-                          <td className="px-2 py-2.5 align-middle">
-                            <div className="flex items-center justify-end h-9 font-mono font-bold text-slate-800 tabular-nums truncate">{`${symbol} ${formatAmount(amount)}`}</div>
-                          </td>
-                          <td className="px-0 py-2.5 align-middle">
-                            <button type="button" onClick={() => removeRow(row.id)} aria-label={`Eliminar retención, fila ${index + 1}`} className="mx-auto flex items-center justify-center w-7 h-9 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300">
-                              <Trash2 aria-hidden="true" className="w-3.5 h-3.5" />
-                            </button>
-                          </td>
-                        </tr>
-                      )
-                    })}
-                  </tbody>
-                  {islrRows.length > 0 && (
-                    <tfoot>
-                      <tr className="border-t border-slate-200 bg-slate-100/40">
-                        <td colSpan={3} className="px-2 py-3 text-right text-[11px] font-bold uppercase tracking-wider text-slate-500">Total otras retenciones:</td>
-                        <td colSpan={2} className="pl-2 pr-4 py-3 text-right font-mono text-xs font-bold text-rose-600 tabular-nums whitespace-nowrap">{`- ${symbol} ${formatAmount(islrTotal)}`}</td>
-                      </tr>
-                    </tfoot>
-                  )}
-                </table>
+              <div className="w-full bg-slate-50/50 rounded-2xl border border-slate-200/80 px-4 py-3 text-xs">
+                <div aria-hidden="true" className="flex items-center gap-3 w-full pb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wide">
+                  <span className="flex-[2.5] min-w-0 truncate">Tipo de Retención</span>
+                  <span className="w-16 flex-none truncate">Tasa %</span>
+                  <span className="flex-1 min-w-[120px] truncate">Base imponible</span>
+                  <span className="flex-1 min-w-[100px] text-right truncate">Importe</span>
+                  <span className="w-8 flex-none" />
                 </div>
+
+                {islrRows.length === 0 && (
+                  <p className="border-t border-slate-100 py-6 text-center text-slate-400">Sin retenciones de ISLR registradas.</p>
+                )}
+
+                <ul className="flex flex-col">
+                  {islrRows.map((row, index) => {
+                    const amount = toNumber(row.base) * (toNumber(row.rate) / 100)
+                    return (
+                      <li key={row.id} className="flex items-center gap-3 w-full py-2 border-t border-slate-100">
+                        <div className="flex-[2.5] min-w-0">
+                          <select aria-label={`Tipo de retención, fila ${index + 1}`} title={row.type} value={row.type} onChange={(event) => updateRow(row.id, 'type', event.target.value)} className={`${cellInputClassName} w-full truncate text-xs pl-2 pr-6`}>
+                            {islrTypes.map((type) => <option key={type} value={type}>{type}</option>)}
+                          </select>
+                        </div>
+                        <div className="w-16 flex-none">
+                          <input aria-label={`Tasa porcentual, fila ${index + 1}`} type="number" inputMode="decimal" min="0" max="100" step="0.01" value={row.rate} onChange={(event) => updateRow(row.id, 'rate', event.target.value)} placeholder="0" className={cellInputClassName} />
+                        </div>
+                        <div className="flex-1 min-w-[120px]">
+                          <CurrencyInput aria-label={`Base imponible, fila ${index + 1}`} value={row.base} symbol={symbol} onValueChange={(raw) => updateRow(row.id, 'base', raw)} className={cellInputClassName} />
+                        </div>
+                        <div className="flex-1 min-w-[100px] text-right font-mono font-bold text-slate-800 tabular-nums truncate" aria-label={`Importe, fila ${index + 1}`}>
+                          {`${symbol} ${formatAmount(amount)}`}
+                        </div>
+                        <div className="w-8 flex-none text-center">
+                          <button type="button" onClick={() => removeRow(row.id)} aria-label={`Eliminar retención, fila ${index + 1}`} className="mx-auto flex items-center justify-center w-8 h-9 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300">
+                            <Trash2 aria-hidden="true" className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </li>
+                    )
+                  })}
+                </ul>
+
+                {islrRows.length > 0 && (
+                  <div className="flex items-center justify-end gap-3 w-full pt-3 mt-1 border-t border-slate-200">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Total otras retenciones:</span>
+                    <span className="font-mono text-xs font-bold text-rose-600 tabular-nums whitespace-nowrap">{`- ${symbol} ${formatAmount(islrTotal)}`}</span>
+                  </div>
+                )}
               </div>
             </div>
           </fieldset>
