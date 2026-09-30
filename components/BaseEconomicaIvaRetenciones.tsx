@@ -120,6 +120,8 @@ function CurrencyInput({ id, value, symbol, onValueChange, className, 'aria-labe
 }
 
 export type EconomicSummary = {
+  net: number
+  iva: number
   receivable: number
   withholdingRate: number
 }
@@ -143,8 +145,8 @@ export default function BaseEconomicaIvaRetenciones({ onSummaryChange }: { onSum
   const withholdingRate = net > 0 ? (ivaWithheld + islrTotal) / net : 0
 
   useEffect(() => {
-    onSummaryChange?.({ receivable, withholdingRate })
-  }, [receivable, withholdingRate, onSummaryChange])
+    onSummaryChange?.({ net, iva, receivable, withholdingRate })
+  }, [net, iva, receivable, withholdingRate, onSummaryChange])
 
   const changeInterpretation = (next: Interpretation) => {
     setInterpretation(next)

@@ -56,7 +56,7 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
   const [showAlert, setShowAlert] = useState(true)
   const [showHistory, setShowHistory] = useState(false)
   const [serviceConditions, setServiceConditions] = useState<string[]>(() => Array(5).fill(''))
-  const [economicSummary, setEconomicSummary] = useState<EconomicSummary>({ receivable: 68400, withholdingRate: 0.02 })
+  const [economicSummary, setEconomicSummary] = useState<EconomicSummary>({ net: 60000, iva: 9600, receivable: 68400, withholdingRate: 0.02 })
   const [scheduleBalanced, setScheduleBalanced] = useState(true)
   const [installmentsCount, setInstallmentsCount] = useState(12)
   const [support, setSupport] = useState<ContractSupport | null>(null)
@@ -169,14 +169,14 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
         </section>
 
         {isReplacement && (
-          <section className="bg-amber-50/60 border border-amber-200/80 rounded-2xl p-4 shadow-xs" aria-labelledby="change-reason-title">
+          <section className="bg-amber-50/60 border border-amber-200/80 rounded-2xl p-4 shadow-xs mt-6" aria-labelledby="change-reason-title">
             <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
               <label id="change-reason-title" htmlFor="change-reason" className="text-xs font-bold text-amber-900">
-                {`Motivo del cambio (Versión ${nextVersion}) *`}
+                {`Motivo del cambio (Generando ${nextVersion})`}
               </label>
-              <span id="change-reason-note" className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-bold text-amber-800">
-                <AlertTriangle aria-hidden="true" className="w-3 h-3" />
-                {`Requerido por auditoría al reemplazar versión confirmada V${CURRENT_CONFIRMED_VERSION}`}
+              <span id="change-reason-note" className="inline-flex items-center gap-1.5 rounded-full bg-amber-100/80 px-2.5 py-1 text-[10px] font-bold text-amber-900">
+                <AlertTriangle aria-hidden="true" className="w-3 h-3 text-amber-600" />
+                Requerido por auditoría al reemplazar versión confirmada
               </span>
             </div>
             <textarea
@@ -187,7 +187,7 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
               aria-required="true"
               aria-describedby="change-reason-note"
               rows={1}
-              placeholder="Describe brevemente la razón de la modificación contractual..."
+              placeholder="Describe brevemente la razón de la modificación contractual (ej. Ajuste de cuotas acordado con el cliente)..."
               className="w-full h-12 text-xs font-medium text-slate-700 bg-white border border-amber-200 rounded-xl px-3.5 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 placeholder:text-slate-400 placeholder:font-normal resize-none"
             />
           </section>
@@ -207,17 +207,15 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
 
       {showConfirm && (
         <ConfirmacionCondicionesModal
-          version={nextVersion}
           rows={[
             { label: 'Cliente', value: CLIENT_NAME },
-            { label: 'Contrato Ref', value: support?.reference.trim() || 'Sin referencia', mono: true },
-            { label: 'Total exigible', value: formatUsd(economicSummary.receivable), mono: true },
-            { label: 'Moneda', value: 'Dólar estadounidense (USD)' },
-            { label: 'Tipo de soporte', value: support ? supportTypeLabels[support.supportType] : '—' },
-            { label: 'Evidencia', value: support?.fileName || 'Sin archivo' },
+            { label: 'Código contrato', value: support?.reference.trim() || 'Sin referencia', mono: true },
+            { label: 'Importe neto', value: formatUsd(economicSummary.net), mono: true },
+            { label: 'IVA (16%)', value: formatUsd(economicSummary.iva), mono: true },
+            { label: 'Total CxC exigible', value: formatUsd(economicSummary.receivable), mono: true, highlight: true },
+            { label: 'Número de cuotas', value: installmentsCount > 0 ? `${installmentsCount} ${installmentsCount === 1 ? 'cuota' : 'cuotas'} · ${formatUsd(economicSummary.receivable / installmentsCount)} c/u` : '—' },
           ]}
-          installmentsCount={installmentsCount}
-          installmentAmount={installmentsCount > 0 ? `${formatUsd(economicSummary.receivable / installmentsCount)} c/u` : '—'}
+          supportLabel={support ? `${supportTypeLabels[support.supportType]} · ${support.fileName || 'Sin archivo'}` : undefined}
           missingFields={missingFields}
           onClose={closeConfirm}
           onConfirm={handleConfirm}

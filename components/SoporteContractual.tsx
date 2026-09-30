@@ -36,7 +36,7 @@ type SoporteContractualProps = {
 }
 
 const labelClassName = 'text-xs font-medium text-slate-600 mb-1.5 block'
-const inputClassName = 'w-full h-10 px-3.5 text-xs font-medium text-slate-700 bg-white border border-slate-200/90 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2A4B93]/20 focus:border-[#2A4B93] placeholder:text-slate-400 placeholder:font-normal'
+const inputClassName = 'w-full h-10 px-3.5 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2A4B93]/20 focus:border-[#2A4B93] placeholder:text-slate-400 placeholder:font-normal'
 
 export default function SoporteContractual({ onChange }: SoporteContractualProps) {
   const id = useId()
@@ -95,7 +95,7 @@ export default function SoporteContractual({ onChange }: SoporteContractualProps
         </label>
 
         <div className="min-w-0">
-          <span id={`${id}-file`} className={labelClassName}>Adjuntar evidencia (PDF/PNG) *</span>
+          <span id={`${id}-file`} className={labelClassName}>Adjuntar Evidencia (PDF/PNG) *</span>
           <input
             ref={fileInputRef}
             type="file"
@@ -155,19 +155,20 @@ export default function SoporteContractual({ onChange }: SoporteContractualProps
             onChange={(event) => update('endDate', event.target.value)}
             aria-describedby={`${id}-end-note`}
           />
-          <span id={`${id}-end-note`} className="mt-1 block text-[10px] text-slate-400">Opcional para contratos abiertos</span>
+          <span id={`${id}-end-note`} className="mt-0.5 block text-[10px] text-slate-400">Opcional para contratos abiertos</span>
+        </label>
+
+        <label className="block col-span-1 md:col-span-3 mt-2">
+          <span className={labelClassName}>Observación contractual relevante</span>
+          <textarea
+            rows={2}
+            className="w-full h-16 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#2A4B93]/20 focus:border-[#2A4B93] placeholder:text-slate-400 placeholder:font-normal resize-none"
+            value={support.notes}
+            onChange={(event) => update('notes', event.target.value)}
+            placeholder="Añade notas o cláusulas relevantes que no sustituyen datos estructurados..."
+          />
         </label>
       </div>
-
-      <label className="block mt-5">
-        <span className={labelClassName}>Observación contractual relevante</span>
-        <textarea
-          className="w-full h-16 text-xs font-medium text-slate-700 bg-white border border-slate-200/90 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#2A4B93]/20 focus:border-[#2A4B93] placeholder:text-slate-400 placeholder:font-normal resize-none"
-          value={support.notes}
-          onChange={(event) => update('notes', event.target.value)}
-          placeholder="Cláusulas, penalidades o notas relevantes del documento"
-        />
-      </label>
     </section>
   )
 }
