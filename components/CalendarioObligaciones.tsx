@@ -149,7 +149,7 @@ export default function CalendarioObligaciones({ contractTotal, withholdingRate,
     })
 
   return (
-    <section className="bg-white border border-slate-200/90 rounded-3xl p-6 shadow-sm mb-6" aria-labelledby={`${id}-title`}>
+    <section className="w-full bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs" aria-labelledby={`${id}-title`}>
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between mb-5">
         <div className="flex items-start gap-3">
           <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-[#2A4B93]/10 text-[#2A4B93]">

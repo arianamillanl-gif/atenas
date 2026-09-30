@@ -171,7 +171,7 @@ export default function BaseEconomicaIvaRetenciones({ onSummaryChange }: { onSum
   }
 
   return (
-    <section className="bg-white border border-slate-200/80 rounded-2xl px-4 py-6 shadow-xs mb-6" aria-labelledby={`${id}-title`}>
+    <section className="w-full bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs" aria-labelledby={`${id}-title`}>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         <div className="lg:col-span-8 flex flex-col gap-6 min-w-0">
           <div className="flex flex-wrap items-start justify-between gap-3">

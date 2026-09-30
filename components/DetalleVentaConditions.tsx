@@ -22,7 +22,6 @@ import {
   Search,
   ShieldCheck,
   SlidersHorizontal,
-  Upload,
   X,
 } from 'lucide-react'
 
@@ -105,7 +104,7 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
         </div>
       </header>
       <main className="w-full flex-1 overflow-y-auto detail-page" aria-labelledby="detail-title">
-      <div className="w-full max-w-[1400px] mx-auto px-6 py-6 space-y-4">
+      <div className="w-full space-y-4 p-6">
       <nav className="flex items-center gap-2 text-xs text-slate-500" aria-label="Migas de pan">
         <span className="text-slate-400">Ventas</span>
         <ChevronRight aria-hidden="true" className="w-3.5 h-3.5 text-slate-300" />
@@ -136,15 +135,15 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
 
       {showAlert && <div className="detail-alert text-xs font-medium text-amber-800 bg-amber-50/90 border border-amber-200/80 rounded-xl px-4 py-2.5 flex items-center justify-between shadow-sm" role="alert"><span className="flex items-center"><AlertTriangle aria-hidden="true" className="w-4 h-4 text-amber-600 mr-2 flex-shrink-0" />Existen CxC asociadas a una versión anterior</span><button type="button" onClick={() => setShowAlert(false)} aria-label="Cerrar advertencia" className="text-amber-500 hover:text-amber-700 cursor-pointer">×</button></div>}
 
-      <div className="detail-sections">
-        <section className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+      <div className="w-full space-y-4">
+        <section className="w-full bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs">
           <div className="detail-card-heading"><div><h2 className="text-base font-bold text-slate-800 mb-4 flex items-center justify-between">Datos de la venta</h2></div><Lock aria-hidden="true" className="w-4 h-4 text-slate-400" /></div>
           <div className="detail-grid-three">{readOnlyFields.map(([label, value]) => <label className={labelClassName} key={label}><span>{label}</span><input value={value} disabled className={`w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2.5 text-slate-800 text-sm font-medium disabled:opacity-100 ${label === 'Importe' ? 'amount-value' : ''}`} readOnly /></label>)}</div>
         </section>
 
         <SoporteContractual onChange={setSupport} />
 
-        <section className="detail-card editable-card">
+        <section className="w-full bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs">
           <div className="detail-card-heading"><h2 className="text-base font-bold text-slate-800">Condiciones comerciales editables</h2><span className="required-note">* Campos obligatorios</span></div>
           <div className="detail-grid-three">
             {['Modalidad del Servicio*', 'Frecuencia del Servicio*', 'Periodicidad de Facturación*', 'Periodicidad de Pago*', 'Condición de Pago*'].map((label, index) => {
@@ -160,24 +159,15 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
 
         <CalendarioObligaciones contractTotal={economicSummary.receivable} withholdingRate={economicSummary.withholdingRate} onBalanceChange={setScheduleBalanced} onInstallmentsCountChange={setInstallmentsCount} />
 
-        <section className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm">
-          <div className="detail-card-heading"><h2 className="text-base font-bold text-slate-800">Versionado y trazabilidad</h2><button type="button" onClick={onHistory} className="text-xs font-semibold text-[#2A4B93] hover:bg-[#2A4B93]/5 border border-[#2A4B93]/30 px-3 py-1.5 rounded-full inline-flex items-center gap-1.5 transition-colors"><History aria-hidden="true" className="w-3.5 h-3.5" /><span>Ver historial de versiones</span></button></div>
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-            <label className="md:col-span-4"><span className="text-xs font-medium text-slate-600 mb-1.5 block h-4">Versión vigente</span><input className="w-full h-11 px-3.5 text-xs text-slate-700 font-semibold bg-slate-50 border border-slate-200 rounded-xl cursor-not-allowed disabled:opacity-100" value={confirmedVersion ? `V${confirmedVersion} · Confirmada` : 'V1 · 24/09/2026'} disabled readOnly /></label>
-            <label className="md:col-span-4"><span className="text-xs font-medium text-slate-600 mb-1.5 block h-4">Versión en edición</span><input className="w-full h-11 px-3.5 text-xs text-slate-700 font-semibold bg-slate-50 border border-slate-200 rounded-xl cursor-not-allowed disabled:opacity-100" value={`${nextVersion} · Borrador`} disabled readOnly /></label>
-            <div className="md:col-span-4"><span className="text-xs font-medium text-slate-600 mb-1.5 block h-4">Evidencia de versión</span><button type="button" className="w-full h-11 border-dashed border-slate-300 bg-slate-50/50 hover:bg-slate-100/80 rounded-xl px-4 py-2 text-xs text-slate-600 flex items-center justify-center gap-2 cursor-pointer transition-colors"><Upload aria-hidden="true" className="w-4 h-4 text-slate-500 flex-shrink-0" /><span className="truncate">Adjuntar (PDF/PNG)</span></button></div>
-          </div>
-        </section>
-
         {isReplacement && (
-          <section className="bg-amber-50/60 border border-amber-200/80 rounded-2xl p-4 shadow-xs" aria-labelledby="change-reason-title">
+          <section className="bg-amber-50/60 border border-amber-200/80 rounded-2xl p-4 mt-4" aria-labelledby="change-reason-title">
             <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
               <label id="change-reason-title" htmlFor="change-reason" className="text-xs font-bold text-amber-900">
                 {`Motivo del cambio (Generando ${nextVersion})`}
               </label>
               <span id="change-reason-note" className="inline-flex items-center gap-1.5 rounded-full bg-amber-100/80 px-2.5 py-1 text-[10px] font-bold text-amber-900">
                 <AlertTriangle aria-hidden="true" className="w-3 h-3 text-amber-600" />
-                Requerido por auditoría al reemplazar versión confirmada
+                Requerido por auditoría
               </span>
             </div>
             <textarea
@@ -188,7 +178,7 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
               aria-required="true"
               aria-describedby="change-reason-note"
               rows={1}
-              placeholder="Describe brevemente la razón de la modificación contractual (ej. Ajuste de cuotas acordado con el cliente)..."
+              placeholder="Describe la razón de la modificación contractual..."
               className="w-full h-11 text-xs font-medium text-slate-700 bg-white border border-amber-200 rounded-xl px-3.5 py-3 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 placeholder:text-slate-400 placeholder:font-normal resize-none"
             />
           </section>

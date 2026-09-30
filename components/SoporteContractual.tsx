@@ -59,7 +59,7 @@ export default function SoporteContractual({ onChange }: SoporteContractualProps
     setSupport((current) => ({ ...current, [key]: value }))
 
   return (
-    <section className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs" aria-labelledby={`${id}-title`}>
+    <section className="w-full bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs" aria-labelledby={`${id}-title`}>
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 id={`${id}-title`} className="text-lg font-bold text-slate-900">Soporte contractual y evidencia</h2>
@@ -68,7 +68,7 @@ export default function SoporteContractual({ onChange }: SoporteContractualProps
         <span className="text-[11px] font-medium text-slate-400 shrink-0">* Campos obligatorios</span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
         <label className="min-w-0">
           <span className={labelClassName}>Referencia o código de contrato *</span>
           <input
@@ -82,7 +82,7 @@ export default function SoporteContractual({ onChange }: SoporteContractualProps
         </label>
 
         <label className="min-w-0">
-          <span className={labelClassName}>Tipo de soporte y evidencia *</span>
+          <span className={labelClassName}>Tipo de soporte *</span>
           <select
             value={support.supportType}
             onChange={(event) => update('supportType', event.target.value as SupportType)}
@@ -162,7 +162,7 @@ export default function SoporteContractual({ onChange }: SoporteContractualProps
           <span className={labelClassName}>Observación contractual relevante</span>
           <textarea
             rows={2}
-            className="w-full h-16 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#2A4B93]/20 focus:border-[#2A4B93] placeholder:text-slate-400 placeholder:font-normal resize-none"
+            className="w-full h-14 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#2A4B93]/20 focus:border-[#2A4B93] placeholder:text-slate-400 placeholder:font-normal resize-none"
             value={support.notes}
             onChange={(event) => update('notes', event.target.value)}
             placeholder="Añade notas o cláusulas relevantes que no sustituyen datos estructurados..."
