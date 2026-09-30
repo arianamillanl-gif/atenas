@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Bell, Briefcase, Building2, Check, CheckCircle2, ChevronDown, ChevronRight, ChevronUp, Clock, Code2, Copy, Eye, FileSpreadsheet, FileText, GitCompare, Hash, History, Layers, Lock, RefreshCw, Search, ShieldAlert, ShieldCheck, Sliders, User, X, XCircle } from 'lucide-react'
+import { Bell, Briefcase, Building2, Check, CheckCircle2, ChevronDown, ChevronRight, ChevronUp, Clock, Code2, Copy, Eye, FileSpreadsheet, FileText, GitCompare, Hash, History, Layers, RefreshCw, Search, ShieldAlert, ShieldCheck, Sliders, User, X, XCircle } from 'lucide-react'
 
 type Version = { version: string; date: string; actor: string; reason: string; status: 'VIGENTE' | 'SUSTITUIDA'; integration: 'EXITOSO' | 'FALLIDO'; personId: string }
 
@@ -119,7 +119,6 @@ function CxcVinculadasModal({ onClose }: { onClose: () => void }) {
     <section role="dialog" aria-modal="true" aria-labelledby="cxc-modal-title" className="w-full max-w-lg overflow-hidden rounded-3xl border border-slate-100 bg-white shadow-2xl" onClick={(event) => event.stopPropagation()}>
       <header className="flex items-start justify-between border-b border-slate-100 p-6"><div><h2 id="cxc-modal-title" className="text-xl font-bold text-slate-900">CxC Vinculadas · V3</h2><p className="mt-1 text-xs font-medium text-slate-500">4 cuotas/documentos generados bajo esta versión de condición - solo lectura</p></div><button type="button" aria-label="Cerrar CxC vinculadas" onClick={onClose} className="rounded-full p-2 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"><X className="size-5" /></button></header>
       <div className="space-y-3 p-6">{accounts.map(([code, date, amount]) => <div key={code} className="flex items-center justify-between rounded-2xl border border-slate-200/80 bg-slate-50/70 p-3.5 transition-colors hover:bg-slate-100/50"><div><span className="block font-mono text-xs font-bold text-slate-800">{code}</span><span className="mt-1 block text-[11px] font-medium text-slate-400">Emisión / vencimiento: {date}</span></div><div className="flex flex-col items-end gap-1.5"><span className="text-xs font-bold text-slate-900">{amount}</span><span className="rounded-full border border-emerald-200/80 bg-emerald-50 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700">ACTIVA</span></div></div>)}</div>
-      <div className="mx-6 flex items-center gap-2 rounded-xl border border-amber-200/60 bg-amber-50/60 p-3 text-[11px] font-medium text-amber-800"><Lock className="size-3.5 shrink-0" />CxC mostradas en solo lectura y no modificables desde este módulo</div>
       <footer className="flex items-center justify-end border-t border-slate-100 p-6"><button type="button" onClick={onClose} className="rounded-full bg-slate-900 px-6 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-slate-800">Cerrar</button></footer>
     </section>
   </div>
