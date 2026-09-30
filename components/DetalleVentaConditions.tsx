@@ -1,7 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import BaseEconomicaIvaRetenciones from '@/components/BaseEconomicaIvaRetenciones'
+import BaseEconomicaIvaRetenciones, { type EconomicSummary } from '@/components/BaseEconomicaIvaRetenciones'
+import CalendarioObligaciones from '@/components/CalendarioObligaciones'
 import {
   AlertTriangle,
   ArrowLeft,
@@ -48,6 +49,8 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
   const [showAlert, setShowAlert] = useState(true)
   const [showHistory, setShowHistory] = useState(false)
   const [serviceConditions, setServiceConditions] = useState<string[]>(() => Array(5).fill(''))
+  const [economicSummary, setEconomicSummary] = useState<EconomicSummary>({ receivable: 68400, withholdingRate: 0.02 })
+  const [scheduleBalanced, setScheduleBalanced] = useState(true)
 
   return (
     <div className="flex flex-col min-h-screen w-full">
@@ -135,7 +138,9 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
           </div>
         </section>
 
-        <BaseEconomicaIvaRetenciones />
+        <BaseEconomicaIvaRetenciones onSummaryChange={setEconomicSummary} />
+
+        <CalendarioObligaciones contractTotal={economicSummary.receivable} withholdingRate={economicSummary.withholdingRate} onBalanceChange={setScheduleBalanced} />
 
         <section className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm mb-6">
           <div className="detail-card-heading"><h2 className="text-base font-bold text-slate-800">Versionado y trazabilidad</h2><button type="button" onClick={onHistory} className="text-xs font-semibold text-[#2A4B93] hover:bg-[#2A4B93]/5 border border-[#2A4B93]/30 px-3 py-1.5 rounded-full inline-flex items-center gap-1.5 transition-colors"><History aria-hidden="true" className="w-3.5 h-3.5" /><span>Ver historial de versiones</span></button></div>
@@ -172,8 +177,8 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
             <Save aria-hidden="true" className="w-3.5 h-3.5 text-slate-500" />
             <span>Guardar borrador</span>
           </button>
-          <button type="button" className="rounded-full bg-[#2A4B93] hover:bg-[#1e366b] text-white px-7 py-2.5 text-xs font-bold shadow-xs flex items-center gap-2 transition-all">
-            <CheckCircle2 aria-hidden="true" className="w-3.5 h-3.5" />
+          <button type="button" disabled={!scheduleBalanced} title={scheduleBalanced ? undefined : 'El cronograma no cuadra con el total contractual exigible'} className="rounded-full bg-[#2A4B93] hover:bg-[#1e366b] text-white px-7 py-2.5 text-xs font-bold shadow-xs flex items-center gap-2 transition-all disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none">
+            {scheduleBalanced ? <CheckCircle2 aria-hidden="true" className="w-3.5 h-3.5" /> : <Lock aria-hidden="true" className="w-3.5 h-3.5" />}
             <span>Confirmar condiciones</span>
           </button>
         </div>

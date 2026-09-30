@@ -1,6 +1,6 @@
 'use client'
 
-import { useId, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import { Calculator, Info, Lock, Plus, Receipt, Trash2 } from 'lucide-react'
 
 type Interpretation = 'total' | 'periodo'
@@ -119,7 +119,12 @@ function CurrencyInput({ id, value, symbol, onValueChange, className, 'aria-labe
   )
 }
 
-export default function BaseEconomicaIvaRetenciones() {
+export type EconomicSummary = {
+  receivable: number
+  withholdingRate: number
+}
+
+export default function BaseEconomicaIvaRetenciones({ onSummaryChange }: { onSummaryChange?: (summary: EconomicSummary) => void }) {
   const id = useId()
   const [interpretation, setInterpretation] = useState<Interpretation>('total')
   const [showSource, setShowSource] = useState(false)
@@ -135,6 +140,11 @@ export default function BaseEconomicaIvaRetenciones() {
   const islrTotal = islrRows.reduce((sum, row) => sum + toNumber(row.base) * (toNumber(row.rate) / 100), 0)
   const receivable = net + iva - ivaWithheld - islrTotal
   const symbol = CONTRACT_CURRENCY === 'USD' ? '$' : 'Bs.'
+  const withholdingRate = net > 0 ? (ivaWithheld + islrTotal) / net : 0
+
+  useEffect(() => {
+    onSummaryChange?.({ receivable, withholdingRate })
+  }, [receivable, withholdingRate, onSummaryChange])
 
   const changeInterpretation = (next: Interpretation) => {
     setInterpretation(next)
