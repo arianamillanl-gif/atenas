@@ -135,40 +135,13 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
 
       {showAlert && <div className="detail-alert text-xs font-medium text-amber-800 bg-amber-50/90 border border-amber-200/80 rounded-xl px-4 py-2.5 flex items-center justify-between mb-6 shadow-sm" role="alert"><span className="flex items-center"><AlertTriangle aria-hidden="true" className="w-4 h-4 text-amber-600 mr-2 flex-shrink-0" />Existen CxC asociadas a una versión anterior</span><button type="button" onClick={() => setShowAlert(false)} aria-label="Cerrar advertencia" className="text-amber-500 hover:text-amber-700 cursor-pointer">×</button></div>}
 
-      <div className="detail-sections">
+      <div className="detail-sections max-w-7xl mx-auto px-4 space-y-6">
         <section className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
           <div className="detail-card-heading"><div><h2 className="text-base font-bold text-slate-800 mb-4 flex items-center justify-between">Datos de la venta</h2></div><Lock aria-hidden="true" className="w-4 h-4 text-slate-400" /></div>
           <div className="detail-grid-three">{readOnlyFields.map(([label, value]) => <label className={labelClassName} key={label}><span>{label}</span><input value={value} disabled className={`w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2.5 text-slate-800 text-sm font-medium disabled:opacity-100 ${label === 'Importe' ? 'amount-value' : ''}`} readOnly /></label>)}</div>
         </section>
 
         <SoporteContractual onChange={setSupport} />
-
-        {isReplacement && (
-          <section className="bg-white border border-slate-200/80 rounded-3xl p-6 mb-6 shadow-sm" aria-labelledby="change-reason-title">
-            <h2 id="change-reason-title" className="text-lg font-bold text-slate-900">Motivo del cambio</h2>
-            <p className="text-xs text-slate-500 mt-0.5">{`Estás generando la versión ${nextVersion}, que reemplaza a la V${CURRENT_CONFIRMED_VERSION} confirmada`}</p>
-            <div className="mt-4 bg-amber-50/50 border border-amber-200 rounded-2xl p-4">
-              <label htmlFor="change-reason" className="flex flex-wrap items-center justify-between gap-2 mb-2">
-                <span className="text-xs font-semibold text-slate-700">Motivo del cambio *</span>
-                <span id="change-reason-note" className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-medium text-amber-800">
-                  <AlertTriangle aria-hidden="true" className="w-3 h-3" />
-                  Requerido por auditoría al generar una versión de reemplazo
-                </span>
-              </label>
-              <textarea
-                id="change-reason"
-                value={changeReason}
-                onChange={(event) => setChangeReason(event.target.value)}
-                required
-                aria-required="true"
-                aria-describedby="change-reason-note"
-                rows={3}
-                placeholder="Describe la razón del cambio (ej. Ajuste comercial de cuotas acordado con el cliente)"
-                className="w-full text-xs font-medium text-slate-700 bg-white border border-amber-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-300/40 focus:border-amber-400 placeholder:text-slate-400 placeholder:font-normal resize-none"
-              />
-            </div>
-          </section>
-        )}
 
         <section className="detail-card editable-card">
           <div className="detail-card-heading"><h2 className="text-base font-bold text-slate-800">Condiciones comerciales editables</h2><span className="required-note">* Campos obligatorios</span></div>
@@ -186,7 +159,7 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
 
         <CalendarioObligaciones contractTotal={economicSummary.receivable} withholdingRate={economicSummary.withholdingRate} onBalanceChange={setScheduleBalanced} onInstallmentsCountChange={setInstallmentsCount} />
 
-        <section className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm mb-6">
+        <section className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm">
           <div className="detail-card-heading"><h2 className="text-base font-bold text-slate-800">Versionado y trazabilidad</h2><button type="button" onClick={onHistory} className="text-xs font-semibold text-[#2A4B93] hover:bg-[#2A4B93]/5 border border-[#2A4B93]/30 px-3 py-1.5 rounded-full inline-flex items-center gap-1.5 transition-colors"><History aria-hidden="true" className="w-3.5 h-3.5" /><span>Ver historial de versiones</span></button></div>
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
             <label className="md:col-span-4"><span className="text-xs font-medium text-slate-600 mb-1.5 block h-4">Versión vigente</span><input className="w-full h-11 px-3.5 text-xs text-slate-700 font-semibold bg-slate-50 border border-slate-200 rounded-xl cursor-not-allowed disabled:opacity-100" value={confirmedVersion ? `V${confirmedVersion} · Confirmada` : 'V1 · 24/09/2026'} disabled readOnly /></label>
@@ -194,6 +167,31 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
             <div className="md:col-span-4"><span className="text-xs font-medium text-slate-600 mb-1.5 block h-4">Evidencia de versión</span><button type="button" className="w-full h-11 border-dashed border-slate-300 bg-slate-50/50 hover:bg-slate-100/80 rounded-xl px-4 py-2 text-xs text-slate-600 flex items-center justify-center gap-2 cursor-pointer transition-colors"><Upload aria-hidden="true" className="w-4 h-4 text-slate-500 flex-shrink-0" /><span className="truncate">Adjuntar (PDF/PNG)</span></button></div>
           </div>
         </section>
+
+        {isReplacement && (
+          <section className="bg-amber-50/60 border border-amber-200/80 rounded-2xl p-4 shadow-xs" aria-labelledby="change-reason-title">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+              <label id="change-reason-title" htmlFor="change-reason" className="text-xs font-bold text-amber-900">
+                {`Motivo del cambio (Versión ${nextVersion}) *`}
+              </label>
+              <span id="change-reason-note" className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-bold text-amber-800">
+                <AlertTriangle aria-hidden="true" className="w-3 h-3" />
+                {`Requerido por auditoría al reemplazar versión confirmada V${CURRENT_CONFIRMED_VERSION}`}
+              </span>
+            </div>
+            <textarea
+              id="change-reason"
+              value={changeReason}
+              onChange={(event) => setChangeReason(event.target.value)}
+              required
+              aria-required="true"
+              aria-describedby="change-reason-note"
+              rows={1}
+              placeholder="Describe brevemente la razón de la modificación contractual..."
+              className="w-full h-12 text-xs font-medium text-slate-700 bg-white border border-amber-200 rounded-xl px-3.5 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 placeholder:text-slate-400 placeholder:font-normal resize-none"
+            />
+          </section>
+        )}
       </div>
 
       {showHistory && <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="history-title">
