@@ -20,6 +20,7 @@ type CalendarioObligacionesProps = {
   contractTotal: number
   withholdingRate: number
   onBalanceChange?: (balanced: boolean) => void
+  onInstallmentsCountChange?: (count: number) => void
 }
 
 const IVA_RATE = 0.16
@@ -91,7 +92,7 @@ const buildDefaultSchedule = (): Installment[] =>
     }
   })
 
-export default function CalendarioObligaciones({ contractTotal, withholdingRate, onBalanceChange }: CalendarioObligacionesProps) {
+export default function CalendarioObligaciones({ contractTotal, withholdingRate, onBalanceChange, onInstallmentsCountChange }: CalendarioObligacionesProps) {
   const id = useId()
   const nextId = useRef(DEFAULT_COUNT + 1)
   const [mode, setMode] = useState<CaptureMode>('parametrico')
@@ -121,6 +122,12 @@ export default function CalendarioObligaciones({ contractTotal, withholdingRate,
   useEffect(() => {
     onBalanceChange?.(balanced)
   }, [balanced, onBalanceChange])
+
+  const installmentsCount = mode === 'parametrico' ? effectiveCount : installments.length
+
+  useEffect(() => {
+    onInstallmentsCountChange?.(installmentsCount)
+  }, [installmentsCount, onInstallmentsCountChange])
 
   const updateRow = (rowId: number, patch: Partial<Installment>) =>
     setInstallments((rows) => rows.map((row) => (row.id === rowId ? { ...row, ...patch } : row)))

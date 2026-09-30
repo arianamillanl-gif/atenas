@@ -1,8 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import BaseEconomicaIvaRetenciones, { type EconomicSummary } from '@/components/BaseEconomicaIvaRetenciones'
 import CalendarioObligaciones from '@/components/CalendarioObligaciones'
+import ConfirmacionCondicionesModal from '@/components/ConfirmacionCondicionesModal'
+import SoporteContractual, { type ContractSupport, getMissingSupportFields, supportTypeLabels } from '@/components/SoporteContractual'
 import {
   AlertTriangle,
   ArrowLeft,
@@ -45,12 +47,34 @@ const readOnlyFields = [
   ['Fuente y fecha de carga', 'Clientify · 02/08/2026 09:14'],
 ]
 
+const CURRENT_CONFIRMED_VERSION = 1
+const CLIENT_NAME = 'Empresa Alfa C.A.'
+const CURRENCY = 'USD'
+const formatUsd = (value: number) => `$ ${new Intl.NumberFormat('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)} ${CURRENCY}`
+
 export default function DetalleVentaConditions({ onBack, onPreview, onHistory }: DetailProps) {
   const [showAlert, setShowAlert] = useState(true)
   const [showHistory, setShowHistory] = useState(false)
   const [serviceConditions, setServiceConditions] = useState<string[]>(() => Array(5).fill(''))
   const [economicSummary, setEconomicSummary] = useState<EconomicSummary>({ receivable: 68400, withholdingRate: 0.02 })
   const [scheduleBalanced, setScheduleBalanced] = useState(true)
+  const [installmentsCount, setInstallmentsCount] = useState(12)
+  const [support, setSupport] = useState<ContractSupport | null>(null)
+  const [changeReason, setChangeReason] = useState('')
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [confirmedVersion, setConfirmedVersion] = useState<number | null>(null)
+
+  const isReplacement = CURRENT_CONFIRMED_VERSION > 0
+  const nextVersion = `V${CURRENT_CONFIRMED_VERSION + 1}`
+  const missingFields = [
+    ...(support ? getMissingSupportFields(support) : []),
+    ...(isReplacement && !changeReason.trim() ? ['Motivo del cambio'] : []),
+  ]
+  const closeConfirm = useCallback(() => setShowConfirm(false), [])
+  const handleConfirm = () => {
+    setShowConfirm(false)
+    setConfirmedVersion(CURRENT_CONFIRMED_VERSION + 1)
+  }
 
   return (
     <div className="flex flex-col min-h-screen w-full">
@@ -117,14 +141,34 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
           <div className="detail-grid-three">{readOnlyFields.map(([label, value]) => <label className={labelClassName} key={label}><span>{label}</span><input value={value} disabled className={`w-full bg-slate-50 border border-slate-200/80 rounded-xl px-3.5 py-2.5 text-slate-800 text-sm font-medium disabled:opacity-100 ${label === 'Importe' ? 'amount-value' : ''}`} readOnly /></label>)}</div>
         </section>
 
-        <section className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm mb-6">
-          <div className="detail-card-heading"><h2 className="text-base font-bold text-slate-800">Contrato y evidencia</h2></div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-            <label><span className="text-xs font-medium text-slate-600 mb-1.5 block h-4">Referencia de contrato</span><input className="w-full h-11 px-3.5 text-xs text-slate-700 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2A4B93]/20 focus:border-[#2A4B93] placeholder:text-slate-400 flex items-center" placeholder="Ej. CTR-2026-0031" /></label>
-            <div><span className="text-xs font-medium text-slate-600 mb-1.5 block h-4">Evidencia contractual</span><button type="button" className="w-full h-11 px-3.5 bg-slate-50 hover:bg-slate-100/80 border border-dashed border-slate-300 rounded-xl cursor-pointer flex items-center justify-start gap-2 transition-colors"><Upload aria-hidden="true" className="w-4 h-4 text-slate-500 flex-shrink-0" /><span className="text-xs text-slate-600 font-medium truncate">Adjuntar archivo (PDF, JPG, PNG - Máx 10MB)</span></button></div>
-            <label className="col-span-full text-xs font-medium text-slate-600"><span className="mb-1.5 block">Observación contractual</span><textarea className="w-full text-xs font-normal text-slate-700 bg-white border border-slate-200/90 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#2A4B93]/20 focus:border-[#2A4B93] placeholder:text-slate-400 resize-none" rows={2} placeholder="Añade una observación relevante para la operación" /></label>
-          </div>
-        </section>
+        <SoporteContractual onChange={setSupport} />
+
+        {isReplacement && (
+          <section className="bg-white border border-slate-200/80 rounded-3xl p-6 mb-6 shadow-sm" aria-labelledby="change-reason-title">
+            <h2 id="change-reason-title" className="text-lg font-bold text-slate-900">Motivo del cambio</h2>
+            <p className="text-xs text-slate-500 mt-0.5">{`Estás generando la versión ${nextVersion}, que reemplaza a la V${CURRENT_CONFIRMED_VERSION} confirmada`}</p>
+            <div className="mt-4 bg-amber-50/50 border border-amber-200 rounded-2xl p-4">
+              <label htmlFor="change-reason" className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <span className="text-xs font-semibold text-slate-700">Motivo del cambio *</span>
+                <span id="change-reason-note" className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-medium text-amber-800">
+                  <AlertTriangle aria-hidden="true" className="w-3 h-3" />
+                  Requerido por auditoría al generar una versión de reemplazo
+                </span>
+              </label>
+              <textarea
+                id="change-reason"
+                value={changeReason}
+                onChange={(event) => setChangeReason(event.target.value)}
+                required
+                aria-required="true"
+                aria-describedby="change-reason-note"
+                rows={3}
+                placeholder="Describe la razón del cambio (ej. Ajuste comercial de cuotas acordado con el cliente)"
+                className="w-full text-xs font-medium text-slate-700 bg-white border border-amber-200 rounded-xl px-3.5 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-300/40 focus:border-amber-400 placeholder:text-slate-400 placeholder:font-normal resize-none"
+              />
+            </div>
+          </section>
+        )}
 
         <section className="detail-card editable-card">
           <div className="detail-card-heading"><h2 className="text-base font-bold text-slate-800">Condiciones comerciales editables</h2><span className="required-note">* Campos obligatorios</span></div>
@@ -140,13 +184,13 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
 
         <BaseEconomicaIvaRetenciones onSummaryChange={setEconomicSummary} />
 
-        <CalendarioObligaciones contractTotal={economicSummary.receivable} withholdingRate={economicSummary.withholdingRate} onBalanceChange={setScheduleBalanced} />
+        <CalendarioObligaciones contractTotal={economicSummary.receivable} withholdingRate={economicSummary.withholdingRate} onBalanceChange={setScheduleBalanced} onInstallmentsCountChange={setInstallmentsCount} />
 
         <section className="bg-white border border-slate-200/90 rounded-2xl p-6 shadow-sm mb-6">
           <div className="detail-card-heading"><h2 className="text-base font-bold text-slate-800">Versionado y trazabilidad</h2><button type="button" onClick={onHistory} className="text-xs font-semibold text-[#2A4B93] hover:bg-[#2A4B93]/5 border border-[#2A4B93]/30 px-3 py-1.5 rounded-full inline-flex items-center gap-1.5 transition-colors"><History aria-hidden="true" className="w-3.5 h-3.5" /><span>Ver historial de versiones</span></button></div>
           <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-            <label className="md:col-span-3"><span className="text-xs font-medium text-slate-600 mb-1.5 block h-4">Versión vigente</span><input className="w-full h-11 px-3.5 text-xs text-slate-700 font-semibold bg-slate-50 border border-slate-200 rounded-xl cursor-not-allowed disabled:opacity-100" value="V1 · 24/09/2026" disabled readOnly /></label>
-            <label className="md:col-span-5"><span className="text-xs font-medium text-slate-600 mb-1.5 block h-4">Motivo del cambio*</span><input className="w-full h-11 px-3.5 text-xs text-slate-700 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2A4B93]/20 focus:border-[#2A4B93] placeholder:text-slate-400" placeholder="Describe la razón del cambio (ej. Ajuste comercial)..." /></label>
+            <label className="md:col-span-4"><span className="text-xs font-medium text-slate-600 mb-1.5 block h-4">Versión vigente</span><input className="w-full h-11 px-3.5 text-xs text-slate-700 font-semibold bg-slate-50 border border-slate-200 rounded-xl cursor-not-allowed disabled:opacity-100" value={confirmedVersion ? `V${confirmedVersion} · Confirmada` : 'V1 · 24/09/2026'} disabled readOnly /></label>
+            <label className="md:col-span-4"><span className="text-xs font-medium text-slate-600 mb-1.5 block h-4">Versión en edición</span><input className="w-full h-11 px-3.5 text-xs text-slate-700 font-semibold bg-slate-50 border border-slate-200 rounded-xl cursor-not-allowed disabled:opacity-100" value={`${nextVersion} · Borrador`} disabled readOnly /></label>
             <div className="md:col-span-4"><span className="text-xs font-medium text-slate-600 mb-1.5 block h-4">Evidencia de versión</span><button type="button" className="w-full h-11 border-dashed border-slate-300 bg-slate-50/50 hover:bg-slate-100/80 rounded-xl px-4 py-2 text-xs text-slate-600 flex items-center justify-center gap-2 cursor-pointer transition-colors"><Upload aria-hidden="true" className="w-4 h-4 text-slate-500 flex-shrink-0" /><span className="truncate">Adjuntar (PDF/PNG)</span></button></div>
           </div>
         </section>
@@ -163,7 +207,34 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
         </div>
       </div>}
 
-      <footer className={`fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/80 px-6 py-3 flex items-center justify-between gap-3 shadow-lg ${showHistory ? 'hidden' : ''}`}>
+      {showConfirm && (
+        <ConfirmacionCondicionesModal
+          version={nextVersion}
+          rows={[
+            { label: 'Cliente', value: CLIENT_NAME },
+            { label: 'Contrato Ref', value: support?.reference.trim() || 'Sin referencia', mono: true },
+            { label: 'Total exigible', value: formatUsd(economicSummary.receivable), mono: true },
+            { label: 'Moneda', value: 'Dólar estadounidense (USD)' },
+            { label: 'Tipo de soporte', value: support ? supportTypeLabels[support.supportType] : '—' },
+            { label: 'Evidencia', value: support?.fileName || 'Sin archivo' },
+          ]}
+          installmentsCount={installmentsCount}
+          installmentAmount={installmentsCount > 0 ? `${formatUsd(economicSummary.receivable / installmentsCount)} c/u` : '—'}
+          missingFields={missingFields}
+          onClose={closeConfirm}
+          onConfirm={handleConfirm}
+        />
+      )}
+
+      {confirmedVersion && (
+        <div role="status" className="fixed bottom-20 right-6 z-50 flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-medium text-emerald-800 shadow-lg">
+          <CheckCircle2 aria-hidden="true" className="w-4 h-4 text-emerald-600" />
+          <span>{`Versión V${confirmedVersion} registrada. Solicitud de generación de CxC enviada.`}</span>
+          <button type="button" onClick={() => setConfirmedVersion(null)} aria-label="Cerrar aviso" className="ml-1 rounded p-0.5 text-emerald-500 hover:text-emerald-800"><X aria-hidden="true" className="w-3.5 h-3.5" /></button>
+        </div>
+      )}
+
+      <footer className={`fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200/80 px-6 py-3 flex items-center justify-between gap-3 shadow-lg ${showHistory || showConfirm ? 'hidden' : ''}`}>
         <button type="button" onClick={onHistory} className="rounded-full border border-slate-200 bg-white px-5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 flex items-center gap-2 transition-all">
           <RotateCcw aria-hidden="true" className="w-3.5 h-3.5" />
           <span>Consultar Historial</span>
@@ -177,7 +248,7 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
             <Save aria-hidden="true" className="w-3.5 h-3.5 text-slate-500" />
             <span>Guardar borrador</span>
           </button>
-          <button type="button" disabled={!scheduleBalanced} title={scheduleBalanced ? undefined : 'El cronograma no cuadra con el total contractual exigible'} className="rounded-full bg-[#2A4B93] hover:bg-[#1e366b] text-white px-7 py-2.5 text-xs font-bold shadow-xs flex items-center gap-2 transition-all disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none">
+          <button type="button" onClick={() => setShowConfirm(true)} disabled={!scheduleBalanced} title={scheduleBalanced ? undefined : 'El cronograma no cuadra con el total contractual exigible'} className="rounded-full bg-[#2A4B93] hover:bg-[#1e366b] text-white px-7 py-2.5 text-xs font-bold shadow-xs flex items-center gap-2 transition-all disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none">
             {scheduleBalanced ? <CheckCircle2 aria-hidden="true" className="w-3.5 h-3.5" /> : <Lock aria-hidden="true" className="w-3.5 h-3.5" />}
             <span>Confirmar condiciones</span>
           </button>
