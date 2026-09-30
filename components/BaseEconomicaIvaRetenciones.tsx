@@ -29,7 +29,7 @@ const islrTypes = ['Servicios profesionales (PJ)', 'Honorarios profesionales (PN
 
 const labelClassName = 'text-xs font-medium text-slate-600 mb-1.5 block'
 const inputClassName = 'w-full h-11 px-3.5 text-xs font-medium text-slate-700 bg-white border border-slate-200/90 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2A4B93]/20 focus:border-[#2A4B93] placeholder:text-slate-400 placeholder:font-normal'
-const cellInputClassName = 'w-full h-9 px-2.5 text-xs font-medium text-slate-700 bg-white border border-slate-200/90 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2A4B93]/20 focus:border-[#2A4B93]'
+const cellInputClassName = 'w-full min-w-0 h-9 px-2 text-xs font-medium text-slate-700 bg-white border border-slate-200/90 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2A4B93]/20 focus:border-[#2A4B93]'
 
 const toNumber = (value: string) => {
   const parsed = Number.parseFloat(value)
@@ -273,15 +273,22 @@ export default function BaseEconomicaIvaRetenciones() {
                 </button>
               </div>
               <div className="w-full bg-slate-50/50 rounded-2xl border border-slate-200/80 overflow-hidden">
-                <div className="overflow-x-auto">
-                <table className="w-full min-w-[620px] text-xs">
+                <div className="w-full overflow-x-hidden">
+                <table className="w-full table-fixed text-xs">
+                  <colgroup>
+                    <col className="w-[40%]" />
+                    <col className="w-[15%]" />
+                    <col className="w-[20%]" />
+                    <col className="w-[18%]" />
+                    <col className="w-[7%]" />
+                  </colgroup>
                   <thead className="text-[11px] font-bold text-slate-400 uppercase tracking-wider bg-slate-100/60">
                     <tr>
-                      <th scope="col" className="text-left font-bold px-4 py-2.5 min-w-[220px]">Tipo de Retención</th>
-                      <th scope="col" className="text-left font-bold px-4 py-2.5 w-24">Tasa %</th>
-                      <th scope="col" className="text-left font-bold px-4 py-2.5 w-40">Base imponible</th>
-                      <th scope="col" className="text-right font-bold px-4 py-2.5 w-32">Importe</th>
-                      <th scope="col" className="w-12"><span className="sr-only">Acciones</span></th>
+                      <th scope="col" className="text-left font-bold px-2 first:pl-4 py-2.5 truncate">Tipo de Retención</th>
+                      <th scope="col" className="text-left font-bold px-2 py-2.5 truncate">Tasa %</th>
+                      <th scope="col" className="text-left font-bold px-2 py-2.5 truncate">Base imponible</th>
+                      <th scope="col" className="text-right font-bold px-2 py-2.5 truncate">Importe</th>
+                      <th scope="col" className="px-1"><span className="sr-only">Acciones</span></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -292,20 +299,22 @@ export default function BaseEconomicaIvaRetenciones() {
                       const amount = toNumber(row.base) * (toNumber(row.rate) / 100)
                       return (
                         <tr key={row.id} className="border-t border-slate-100">
-                          <td className="px-4 py-2.5 align-middle">
+                          <td className="pl-4 pr-2 py-2.5 align-middle">
                             <select aria-label={`Tipo de retención, fila ${index + 1}`} value={row.type} onChange={(event) => updateRow(row.id, 'type', event.target.value)} className={cellInputClassName}>
                               {islrTypes.map((type) => <option key={type} value={type}>{type}</option>)}
                             </select>
                           </td>
-                          <td className="px-4 py-2.5 align-middle">
+                          <td className="px-2 py-2.5 align-middle">
                             <input aria-label={`Tasa porcentual, fila ${index + 1}`} type="number" inputMode="decimal" min="0" max="100" step="0.01" value={row.rate} onChange={(event) => updateRow(row.id, 'rate', event.target.value)} placeholder="0" className={cellInputClassName} />
                           </td>
-                          <td className="px-4 py-2.5 align-middle">
+                          <td className="px-2 py-2.5 align-middle">
                             <CurrencyInput aria-label={`Base imponible, fila ${index + 1}`} value={row.base} symbol={symbol} onValueChange={(raw) => updateRow(row.id, 'base', raw)} className={cellInputClassName} />
                           </td>
-                          <td className="px-4 py-2.5 align-middle text-right font-mono font-bold text-slate-800 tabular-nums">{`${symbol} ${formatAmount(amount)}`}</td>
                           <td className="px-2 py-2.5 align-middle">
-                            <button type="button" onClick={() => removeRow(row.id)} aria-label={`Eliminar retención, fila ${index + 1}`} className="mx-auto flex items-center justify-center w-9 h-9 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300">
+                            <div className="flex items-center justify-end h-9 font-mono font-bold text-slate-800 tabular-nums truncate">{`${symbol} ${formatAmount(amount)}`}</div>
+                          </td>
+                          <td className="px-0 py-2.5 align-middle">
+                            <button type="button" onClick={() => removeRow(row.id)} aria-label={`Eliminar retención, fila ${index + 1}`} className="mx-auto flex items-center justify-center w-8 h-9 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300">
                               <Trash2 aria-hidden="true" className="w-3.5 h-3.5" />
                             </button>
                           </td>
@@ -316,8 +325,8 @@ export default function BaseEconomicaIvaRetenciones() {
                   {islrRows.length > 0 && (
                     <tfoot>
                       <tr className="border-t border-slate-200 bg-slate-100/40">
-                        <td colSpan={3} className="px-4 py-3 text-right text-[11px] font-bold uppercase tracking-wider text-slate-500">Total otras retenciones</td>
-                        <td className="px-4 py-3 text-right font-mono text-sm font-bold text-rose-600 tabular-nums">{`- ${symbol} ${formatAmount(islrTotal)}`}</td>
+                        <td colSpan={3} className="px-2 py-3 text-right text-[11px] font-bold uppercase tracking-wider text-slate-500">Total otras retenciones</td>
+                        <td className="px-2 py-3 text-right font-mono text-xs font-bold text-rose-600 tabular-nums truncate">{`- ${symbol} ${formatAmount(islrTotal)}`}</td>
                         <td />
                       </tr>
                     </tfoot>
