@@ -14,6 +14,7 @@ import {
   FileText,
   History,
   Lock,
+  RotateCcw,
   Save,
   Search,
   ShieldCheck,
@@ -166,19 +167,19 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
           </button>
         </div>
         <div className="flex items-center gap-2.5">
-          <button type="button" onClick={onHistory} className="h-10 px-4 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-full text-xs font-semibold flex items-center gap-2 transition-all shadow-sm">
-            <History aria-hidden="true" className="w-3.5 h-3.5 text-slate-500" />
+          <button type="button" onClick={onHistory} className="rounded-full border border-slate-200 bg-white px-5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 flex items-center gap-2 transition-all">
+            <RotateCcw aria-hidden="true" className="w-3.5 h-3.5" />
             <span>Consultar Historial</span>
           </button>
-          <button type="button" onClick={onPreview} className="h-10 px-4 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 rounded-full text-xs font-semibold flex items-center gap-2 transition-all shadow-sm">
+          <button type="button" onClick={onPreview} className="rounded-full border border-slate-200 bg-white px-5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 flex items-center gap-2 transition-all">
             <FileText aria-hidden="true" className="w-3.5 h-3.5 text-slate-500" />
             <span>Previsualizar CxC</span>
           </button>
-          <button type="button" className="h-10 px-4 border border-[#2A4B93]/30 text-[#2A4B93] bg-[#2A4B93]/5 hover:bg-[#2A4B93]/10 rounded-full text-xs font-semibold flex items-center gap-2 transition-all">
-            <Save aria-hidden="true" className="w-3.5 h-3.5 text-[#2A4B93]" />
+          <button type="button" className="rounded-full border border-slate-200 bg-white px-5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 flex items-center gap-2 transition-all">
+            <Save aria-hidden="true" className="w-3.5 h-3.5 text-slate-500" />
             <span>Guardar borrador</span>
           </button>
-          <button type="button" className="h-10 px-5 bg-[#2A4B93] hover:bg-[#1f3870] text-white rounded-full text-xs font-semibold flex items-center gap-2 shadow-md shadow-[#2A4B93]/20 transition-all">
+          <button type="button" className="rounded-full bg-[#2A4B93] hover:bg-[#1e366b] text-white px-7 py-2.5 text-xs font-bold shadow-sm flex items-center gap-2 transition-all">
             <CheckCircle2 aria-hidden="true" className="w-3.5 h-3.5" />
             <span>Confirmar condiciones</span>
           </button>

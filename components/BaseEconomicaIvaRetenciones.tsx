@@ -29,7 +29,7 @@ const islrTypes = ['Servicios profesionales (PJ)', 'Honorarios profesionales (PN
 
 const labelClassName = 'text-xs font-medium text-slate-600 mb-1.5 block'
 const inputClassName = 'w-full h-11 px-3.5 text-xs font-medium text-slate-700 bg-white border border-slate-200/90 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2A4B93]/20 focus:border-[#2A4B93] placeholder:text-slate-400 placeholder:font-normal'
-const cellInputClassName = 'w-full h-9 px-2.5 text-xs font-medium text-slate-700 bg-white border border-slate-200/90 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2A4B93]/20 focus:border-[#2A4B93]'
+const cellInputClassName = 'w-full h-9 px-2.5 text-xs font-medium text-slate-700 bg-white border border-slate-200/90 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#2A4B93]/20 focus:border-[#2A4B93]'
 
 const toNumber = (value: string) => {
   const parsed = Number.parseFloat(value)
@@ -153,25 +153,25 @@ export default function BaseEconomicaIvaRetenciones() {
 
   return (
     <section className="bg-white border border-slate-200/80 rounded-2xl p-6 shadow-xs mb-6" aria-labelledby={`${id}-title`}>
-      <div className="flex flex-wrap items-start justify-between gap-3 mb-5">
-        <div>
-          <h2 id={`${id}-title`} className="text-base font-bold text-slate-800">Base económica, IVA y retenciones</h2>
-          <p className="text-xs text-slate-500 mt-1">Define la base imponible, impuestos y retenciones que determinan el monto exigible de la CxC.</p>
-        </div>
-        <span className="text-[11px] font-medium text-slate-500 bg-slate-50 border border-slate-200 rounded-full px-3 py-1 inline-flex items-center gap-1.5">
-          <Calculator aria-hidden="true" className="w-3.5 h-3.5" />
-          Cálculo en tiempo real
-        </span>
-      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="lg:col-span-8 flex flex-col gap-6 min-w-0">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 id={`${id}-title`} className="text-lg font-bold text-slate-900">Base económica, IVA y retenciones</h2>
+              <p className="text-xs text-slate-500 mt-1">Define la base imponible, impuestos y retenciones que determinan el monto exigible de la CxC</p>
+            </div>
+            <span className="bg-blue-50 text-[#2A4B93] text-xs font-semibold px-3 py-1 rounded-full inline-flex items-center gap-1.5">
+              <Calculator aria-hidden="true" className="w-3.5 h-3.5" />
+              Cómputo automático activo
+            </span>
+          </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
-        <div className="xl:col-span-8 flex flex-col gap-6">
-          <fieldset className="flex flex-col gap-4">
-            <legend className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-3">Desglose base y moneda</legend>
+          <fieldset className="flex flex-col gap-4 min-w-0">
+            <legend className="sr-only">Desglose base y moneda</legend>
 
             <div role="radiogroup" aria-labelledby={`${id}-interpretation`}>
               <span id={`${id}-interpretation`} className={labelClassName}>Interpretación del Importe de Venta</span>
-              <div className="inline-flex p-1 bg-slate-100 border border-slate-200/80 rounded-full">
+              <div className="inline-flex p-1 bg-slate-100 rounded-full font-medium text-xs">
                 {([['total', 'Total Contractual'], ['periodo', 'Importe por Período']] as const).map(([value, label]) => {
                   const active = interpretation === value
                   return (
@@ -181,7 +181,7 @@ export default function BaseEconomicaIvaRetenciones() {
                       role="radio"
                       aria-checked={active}
                       onClick={() => changeInterpretation(value)}
-                      className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2A4B93]/30 ${active ? 'bg-[#2A4B93] text-white shadow-xs' : 'text-slate-600 hover:text-[#2A4B93]'}`}
+                      className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2A4B93]/30 ${active ? 'bg-[#2A4B93] text-white shadow-xs' : 'text-slate-600 hover:text-[#2A4B93]'}`}
                     >
                       {label}
                     </button>
@@ -198,7 +198,7 @@ export default function BaseEconomicaIvaRetenciones() {
               )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <div>
                 <label htmlFor={`${id}-contract`} className={labelClassName}>Importe Contractual a Reconciliar</label>
                 <div className="relative">
@@ -207,7 +207,7 @@ export default function BaseEconomicaIvaRetenciones() {
                     value={`${symbol} ${formatAmount(CONTRACT_AMOUNT)} ${CONTRACT_CURRENCY}`}
                     readOnly
                     aria-readonly="true"
-                    className="w-full h-11 pl-3.5 pr-11 text-sm font-semibold text-slate-800 bg-slate-50 border border-slate-200/80 rounded-xl cursor-not-allowed focus:outline-none"
+                    className="w-full h-11 pl-3.5 pr-11 text-sm font-mono font-bold text-slate-700 bg-slate-50 border border-slate-200/80 rounded-xl cursor-not-allowed tabular-nums focus:outline-none"
                   />
                   <button
                     type="button"
@@ -230,26 +230,30 @@ export default function BaseEconomicaIvaRetenciones() {
             </div>
           </fieldset>
 
-          <fieldset className="flex flex-col gap-4 pt-5 border-t border-slate-100">
-            <legend className="text-xs font-bold uppercase tracking-wide text-slate-400 mb-3">Cálculo de impuestos y retenciones</legend>
+          <fieldset className="flex flex-col gap-4 min-w-0">
+            <legend className="sr-only">Impuestos aplicables</legend>
+            <div className="flex items-center gap-3" aria-hidden="true">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Impuestos aplicables</span>
+              <span className="h-px flex-1 bg-slate-200/80" />
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <span className={labelClassName}>IVA (16%)</span>
-                <div className="h-11 px-3.5 flex items-center justify-between bg-slate-50 border border-slate-200/80 rounded-xl" aria-live="polite">
-                  <span className="text-sm font-bold text-slate-800 tabular-nums">{`${symbol} ${formatAmount(iva)}`}</span>
-                  <span className="text-[11px] font-semibold text-[#2A4B93] bg-blue-50 border border-blue-100 rounded-full px-2.5 py-0.5">Automático</span>
+                <div className="h-11 bg-slate-50/80 border border-slate-200 rounded-2xl px-3 flex justify-between items-center" aria-live="polite">
+                  <span className="text-sm font-mono font-bold text-slate-800 tabular-nums">{`${symbol} ${formatAmount(iva)}`}</span>
+                  <span className="bg-slate-200/80 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-full">Automático</span>
                 </div>
               </div>
 
-              <div>
+              <div className="min-w-0">
                 <label htmlFor={`${id}-iva-withholding`} className={labelClassName}>Retención de IVA</label>
                 <div className="flex items-center gap-2">
                   <select
                     id={`${id}-iva-withholding`}
                     value={ivaWithholding}
                     onChange={(event) => setIvaWithholding(event.target.value)}
-                    className={`${inputClassName} flex-1`}
+                    className={`${inputClassName} flex-1 min-w-0`}
                   >
                     {ivaWithholdingOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                   </select>
@@ -261,21 +265,22 @@ export default function BaseEconomicaIvaRetenciones() {
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-medium text-slate-600">Otras Retenciones (ISLR)</span>
-                <button type="button" onClick={addRow} className="text-xs font-semibold text-[#2A4B93] bg-white border border-[#2A4B93]/25 px-3 py-1.5 rounded-full inline-flex items-center gap-1.5 transition-all hover:bg-[#2A4B93]/[0.07] hover:border-[#2A4B93]/60 hover:shadow-[0_0_0_3px_rgba(42,75,147,0.08)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2A4B93]/30 active:bg-[#2A4B93]/10">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-bold text-slate-800">Otras Retenciones (ISLR)</h3>
+                <button type="button" onClick={addRow} className="text-xs font-bold text-[#2A4B93] hover:bg-blue-50 px-3 py-1.5 rounded-full border border-blue-200 inline-flex items-center gap-1.5 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2A4B93]/30">
                   <Plus aria-hidden="true" className="w-3.5 h-3.5" />
                   Agregar retención
                 </button>
               </div>
-              <div className="w-full overflow-x-auto border border-slate-200/80 rounded-xl">
+              <div className="w-full bg-slate-50/50 rounded-2xl border border-slate-200/80 overflow-hidden">
+                <div className="overflow-x-auto">
                 <table className="w-full min-w-[620px] text-xs">
-                  <thead className="bg-slate-50 text-slate-500">
+                  <thead className="text-[11px] font-bold text-slate-400 uppercase tracking-wider bg-slate-100/60">
                     <tr>
-                      <th scope="col" className="text-left font-semibold px-3 py-2.5 min-w-[220px]">Tipo de Retención</th>
-                      <th scope="col" className="text-left font-semibold px-3 py-2.5 w-24">Tasa %</th>
-                      <th scope="col" className="text-left font-semibold px-3 py-2.5 w-40">Base imponible</th>
-                      <th scope="col" className="text-right font-semibold px-3 py-2.5 w-32">Importe</th>
+                      <th scope="col" className="text-left font-bold px-4 py-2.5 min-w-[220px]">Tipo de Retención</th>
+                      <th scope="col" className="text-left font-bold px-4 py-2.5 w-24">Tasa %</th>
+                      <th scope="col" className="text-left font-bold px-4 py-2.5 w-40">Base imponible</th>
+                      <th scope="col" className="text-right font-bold px-4 py-2.5 w-32">Importe</th>
                       <th scope="col" className="w-12"><span className="sr-only">Acciones</span></th>
                     </tr>
                   </thead>
@@ -287,19 +292,19 @@ export default function BaseEconomicaIvaRetenciones() {
                       const amount = toNumber(row.base) * (toNumber(row.rate) / 100)
                       return (
                         <tr key={row.id} className="border-t border-slate-100">
-                          <td className="px-3 py-2 align-middle">
+                          <td className="px-4 py-2.5 align-middle">
                             <select aria-label={`Tipo de retención, fila ${index + 1}`} value={row.type} onChange={(event) => updateRow(row.id, 'type', event.target.value)} className={cellInputClassName}>
                               {islrTypes.map((type) => <option key={type} value={type}>{type}</option>)}
                             </select>
                           </td>
-                          <td className="px-3 py-2 align-middle">
+                          <td className="px-4 py-2.5 align-middle">
                             <input aria-label={`Tasa porcentual, fila ${index + 1}`} type="number" inputMode="decimal" min="0" max="100" step="0.01" value={row.rate} onChange={(event) => updateRow(row.id, 'rate', event.target.value)} placeholder="0" className={cellInputClassName} />
                           </td>
-                          <td className="px-3 py-2 align-middle">
+                          <td className="px-4 py-2.5 align-middle">
                             <CurrencyInput aria-label={`Base imponible, fila ${index + 1}`} value={row.base} symbol={symbol} onValueChange={(raw) => updateRow(row.id, 'base', raw)} className={cellInputClassName} />
                           </td>
-                          <td className="px-3 py-2 align-middle text-right font-bold text-slate-800 tabular-nums">{`${symbol} ${formatAmount(amount)}`}</td>
-                          <td className="px-2 py-2 align-middle">
+                          <td className="px-4 py-2.5 align-middle text-right font-mono font-bold text-slate-800 tabular-nums">{`${symbol} ${formatAmount(amount)}`}</td>
+                          <td className="px-2 py-2.5 align-middle">
                             <button type="button" onClick={() => removeRow(row.id)} aria-label={`Eliminar retención, fila ${index + 1}`} className="mx-auto flex items-center justify-center w-9 h-9 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-300">
                               <Trash2 aria-hidden="true" className="w-3.5 h-3.5" />
                             </button>
@@ -310,49 +315,50 @@ export default function BaseEconomicaIvaRetenciones() {
                   </tbody>
                   {islrRows.length > 0 && (
                     <tfoot>
-                      <tr className="border-t border-slate-200 bg-slate-50/60">
-                        <td colSpan={3} className="px-3 py-2.5 font-semibold text-slate-600">Total otras retenciones</td>
-                        <td className="px-3 py-2.5 text-right font-bold text-rose-600 tabular-nums">{`- ${symbol} ${formatAmount(islrTotal)}`}</td>
+                      <tr className="border-t border-slate-200 bg-slate-100/40">
+                        <td colSpan={3} className="px-4 py-3 text-right text-[11px] font-bold uppercase tracking-wider text-slate-500">Total otras retenciones</td>
+                        <td className="px-4 py-3 text-right font-mono text-sm font-bold text-rose-600 tabular-nums">{`- ${symbol} ${formatAmount(islrTotal)}`}</td>
                         <td />
                       </tr>
                     </tfoot>
                   )}
                 </table>
+                </div>
               </div>
             </div>
           </fieldset>
         </div>
 
-        <aside className="xl:col-span-4 bg-slate-50 border border-slate-200 rounded-2xl p-4 flex flex-col gap-4 h-fit xl:sticky xl:top-20" aria-labelledby={`${id}-summary`}>
-          <div className="flex items-center gap-2">
-            <span className="w-8 h-8 rounded-full bg-[#2A4B93]/10 text-[#2A4B93] inline-flex items-center justify-center"><Receipt aria-hidden="true" className="w-4 h-4" /></span>
-            <h3 id={`${id}-summary`} className="text-sm font-bold text-slate-800">Resumen CxC neto</h3>
-            <span className="ml-auto shrink-0 whitespace-nowrap text-[10px] font-semibold uppercase tracking-wide text-[#2A4B93] bg-blue-50 border border-blue-100 rounded-full px-2 py-0.5">Fórmula de cálculo</span>
-          </div>
+        <aside className="lg:col-span-4 lg:sticky lg:top-20 bg-slate-50/80 border border-slate-200/90 rounded-3xl p-5 shadow-xs" aria-labelledby={`${id}-summary`}>
+          <div className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm space-y-3">
+            <div className="flex items-center gap-2">
+              <span className="w-8 h-8 shrink-0 rounded-full bg-[#2A4B93]/10 text-[#2A4B93] inline-flex items-center justify-center"><Receipt aria-hidden="true" className="w-4 h-4" /></span>
+              <h3 id={`${id}-summary`} className="text-sm font-bold text-slate-800">Resumen CxC Neto</h3>
+              <span className="ml-auto shrink-0 whitespace-nowrap text-[10px] font-semibold text-[#2A4B93] bg-blue-50 border border-blue-100 rounded-full px-2 py-0.5">Fórmula de cálculo</span>
+            </div>
 
-          <div className="bg-white border border-slate-200/80 rounded-xl p-4">
             <dl className="flex flex-col gap-2 text-xs">
               {([
                 ['Neto base', '', net, 'text-slate-700'],
-                ['IVA 16%', '+', iva, 'text-emerald-600'],
-                ['Retención IVA', '−', ivaWithheld, 'text-rose-600'],
-                ['Otras retenciones', '−', islrTotal, 'text-rose-600'],
+                ['+ IVA (16%)', '+', iva, 'text-emerald-600'],
+                ['− Retención IVA', '−', ivaWithheld, ivaWithheld > 0 ? 'text-rose-600' : 'text-slate-500'],
+                ['− Otras retenciones', '−', islrTotal, islrTotal > 0 ? 'text-rose-600' : 'text-slate-500'],
               ] as const).map(([label, sign, value, color]) => (
                 <div key={label} className="flex items-baseline justify-between gap-3">
                   <dt className="text-slate-500">{label}</dt>
-                  <dd className={`font-mono text-right tabular-nums font-medium ${color}`}>{`${sign}${sign ? ' ' : ''}${formatAmount(value)}`}</dd>
+                  <dd className={`font-mono text-xs text-right tabular-nums font-medium ${color}`}>{`${sign}${sign ? ' ' : ''}${symbol} ${formatAmount(value)}`}</dd>
                 </div>
               ))}
             </dl>
-            <div className="my-3 border-b border-dashed border-slate-200" role="presentation" />
-            <div className="flex flex-col gap-1">
-              <span className="text-xs font-medium text-slate-500">Importe Neto de CxC Exigible</span>
-              <p className={`font-mono text-lg font-bold tabular-nums text-right ${receivable < 0 ? 'text-rose-600' : 'text-slate-900'}`} aria-live="polite">{`${symbol} ${formatAmount(receivable)} ${CONTRACT_CURRENCY}`}</p>
+            <div className="border-b border-dashed border-slate-200 my-2" role="presentation" />
+            <div>
+              <span className="text-xs text-slate-500 font-medium">Importe Neto de CxC Exigible</span>
+              <p className={`font-mono text-xl font-extrabold tracking-tight mt-0.5 tabular-nums ${receivable < 0 ? 'text-rose-600' : 'text-slate-900'}`} aria-live="polite">{`${symbol} ${formatAmount(receivable)} ${CONTRACT_CURRENCY}`}</p>
             </div>
           </div>
 
-          <label className="block">
-            <span className={labelClassName}>Moneda Contractual y Forma de Pago</span>
+          <label className="block mt-4">
+            <span className="text-xs font-bold text-slate-700 mb-1.5 block">Moneda Contractual y Forma de Pago</span>
             <select value={currency} onChange={(event) => changeCurrency(event.target.value as Currency)} className={inputClassName}>
               <option value="USD">USD ($)</option>
               <option value="BS">Bs (Bs.)</option>
@@ -360,7 +366,7 @@ export default function BaseEconomicaIvaRetenciones() {
           </label>
 
           {currency === 'BS' && (
-            <label className="block">
+            <label className="block mt-4">
               <span className={labelClassName}>Fuente y Momento de Tasa*</span>
               <select value={rateSource} onChange={(event) => setRateSource(event.target.value as RateSource)} className={`${inputClassName} ${rateSource === '' ? 'text-slate-400 font-normal' : ''}`}>
                 <option value="" disabled>Seleccionar tasa</option>
