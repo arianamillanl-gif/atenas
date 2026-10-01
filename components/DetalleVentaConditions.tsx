@@ -133,7 +133,7 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
         </div>
       </header>
 
-      {showAlert && <div className="detail-alert text-xs font-medium text-amber-800 bg-amber-50/90 border border-amber-200/80 rounded-xl px-4 py-2.5 flex items-center justify-between shadow-sm" role="alert"><span className="flex items-center"><AlertTriangle aria-hidden="true" className="w-4 h-4 text-amber-600 mr-2 flex-shrink-0" />Existen CxC asociadas a una versión anterior</span><button type="button" onClick={() => setShowAlert(false)} aria-label="Cerrar advertencia" className="text-amber-500 hover:text-amber-700 cursor-pointer">×</button></div>}
+      {showAlert && <div className="w-full bg-amber-50/80 border border-amber-200/90 rounded-2xl p-4 flex items-center justify-between shadow-xs mb-6" role="alert"><span className="flex items-center text-xs font-semibold text-amber-900"><AlertTriangle aria-hidden="true" className="w-4 h-4 text-amber-600 mr-2 flex-shrink-0" />Existen CxC asociadas a una versión anterior</span><button type="button" onClick={() => setShowAlert(false)} aria-label="Cerrar advertencia" className="ml-4 inline-flex items-center justify-center w-6 h-6 text-base leading-none text-amber-700 hover:bg-amber-100 rounded-lg p-1 transition-colors cursor-pointer">×</button></div>}
 
       <div className="w-full space-y-4">
         <section className="w-full bg-white border border-slate-200/80 rounded-3xl p-6 shadow-xs">
@@ -160,16 +160,21 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
         <CalendarioObligaciones contractTotal={economicSummary.receivable} withholdingRate={economicSummary.withholdingRate} onBalanceChange={setScheduleBalanced} onInstallmentsCountChange={setInstallmentsCount} />
 
         {isReplacement && (
-          <section className="bg-amber-50/60 border border-amber-200/80 rounded-2xl p-4 mt-4" aria-labelledby="change-reason-title">
-            <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
-              <label id="change-reason-title" htmlFor="change-reason" className="text-xs font-bold text-amber-900">
-                {`Motivo del cambio (Generando ${nextVersion})`}
-              </label>
-              <span id="change-reason-note" className="inline-flex items-center gap-1.5 rounded-full bg-amber-100/80 px-2.5 py-1 text-[10px] font-bold text-amber-900">
-                <AlertTriangle aria-hidden="true" className="w-3 h-3 text-amber-600" />
+          <section className="pt-4" aria-labelledby="change-reason-title">
+            <div className="flex flex-wrap items-center justify-between gap-2 bg-amber-50 border border-amber-200/80 rounded-2xl px-4 py-2.5 mb-3 shadow-xs">
+              <h2 id="change-reason-title" className="flex items-center text-xs font-bold text-amber-900">
+                <AlertTriangle aria-hidden="true" className="w-4 h-4 text-amber-600 mr-2 flex-shrink-0" />
+                {`Motivo del cambio requerido (Versión ${nextVersion})`}
+              </h2>
+              <span id="change-reason-note" className="inline-flex items-center gap-1.5 bg-amber-100 text-amber-800 text-[10px] font-bold px-3 py-1 rounded-full">
+                <AlertTriangle aria-hidden="true" className="w-3 h-3" />
                 Requerido por auditoría
               </span>
             </div>
+            <div className="w-full bg-white border border-slate-200/80 rounded-3xl p-5 shadow-xs mb-8">
+            <label htmlFor="change-reason" className="text-xs font-bold text-slate-700 mb-2 block">
+              Describe la razón de la modificación contractual *
+            </label>
             <textarea
               id="change-reason"
               value={changeReason}
@@ -179,8 +184,9 @@ export default function DetalleVentaConditions({ onBack, onPreview, onHistory }:
               aria-describedby="change-reason-note"
               rows={1}
               placeholder="Describe la razón de la modificación contractual..."
-              className="w-full h-11 text-xs font-medium text-slate-700 bg-white border border-amber-200 rounded-xl px-3.5 py-3 leading-tight focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 placeholder:text-slate-400 placeholder:font-normal resize-none"
+              className="h-14 w-full text-xs bg-slate-50/50 border border-slate-200 focus:border-[#2A4B93] focus:bg-white focus:outline-none rounded-xl p-3 text-slate-800 placeholder:text-slate-400 transition-all resize-none"
             />
+            </div>
           </section>
         )}
       </div>
