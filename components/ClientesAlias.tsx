@@ -25,7 +25,6 @@ import {
   Settings2,
   ShieldCheck,
   SlidersHorizontal,
-  UserRound,
   X,
 } from 'lucide-react'
 
@@ -46,7 +45,7 @@ function Field({ label, children, hint, className = '' }: { label: string; child
 function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
   return <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
     <header className="brand"><img src="/logo-atenas.png" alt="ATENAS Grupo Consultor" /><button className="icon-button sidebar-close" onClick={onToggle} aria-label={collapsed ? 'Expandir menú' : 'Contraer menú'}>{collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}</button></header>
-    <div className="sidebar-content"><div className="workspace-switch"><span className="workspace-avatar">LO</span><div><strong>Lo-Fi workspace</strong><span>Operaciones</span></div><ChevronDown size={15} /></div><nav className="nav"><span className="nav-label">MENÚ PRINCIPAL</span><a href="#resumen"><LayoutDashboard size={16} />Resumen</a><a href="#ventas"><FilePlus2 size={16} />Ventas verificadas</a><a href="#clientes" className="active"><UserRound size={16} />Clientes y alias</a><a href="#reportes"><SlidersHorizontal size={16} />Reportes</a><span className="nav-label second">CONFIGURACIÓN</span><a href="#integraciones"><ShieldCheck size={16} />Integraciones</a><a href="#ajustes"><Settings2 size={16} />Ajustes</a></nav></div>
+    <div className="sidebar-content"><div className="workspace-switch"><span className="workspace-avatar">LO</span><div><strong>Lo-Fi workspace</strong><span>Operaciones</span></div><ChevronDown size={15} /></div><nav className="nav"><span className="nav-label">MENÚ PRINCIPAL</span><a href="#resumen"><LayoutDashboard size={16} />Resumen</a><a href="#ventas"><FilePlus2 size={16} />Ventas verificadas</a><a href="#reportes"><SlidersHorizontal size={16} />Reportes</a><span className="nav-label second">CONFIGURACIÓN</span><a href="#integraciones"><ShieldCheck size={16} />Integraciones</a><a href="#ajustes"><Settings2 size={16} />Ajustes</a></nav></div>
     <footer className="sidebar-footer"><div className="support-card"><CircleHelp size={17} /><div><strong>¿Necesitas ayuda?</strong><span>Revisa la guía de operación</span></div><ChevronRight size={14} /></div><div className="user-card"><div className="user-avatar">MG</div><div><strong>María González</strong><span>Administradora</span></div><MoreHorizontal size={16} /></div></footer>
   </aside>
 }
@@ -147,6 +146,11 @@ export default function ClientesAlias() {
   return <main className="app-shell"><Sidebar collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} /><section className="content">
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-slate-200/80 bg-white px-6"><div className="flex items-center gap-3"><button className="mobile-menu icon-button" aria-label="Abrir menú"><Menu size={19} /></button><span className="workspace-top-pill"><span />Lo-Fi workspace · Operaciones</span></div><div className="top-actions"><label className="quick-search"><Search size={14} /><span className="sr-only">Búsqueda rápida</span><input aria-label="Búsqueda rápida" placeholder="Búsqueda rápida" /></label><button className="icon-button" aria-label="Notificaciones"><Bell size={18} /></button><span className="top-user"><span className="user-avatar">MG</span>María González<ChevronDown size={14} /></span></div></header>
     <div className="page-wrap clients-page">
+      <nav aria-label="Ruta de navegación" className="mb-3 flex items-center gap-1.5 text-sm font-medium text-slate-500">
+        <span>Bandeja de homologaciones (F07)</span>
+        <ChevronRight size={14} aria-hidden="true" className="shrink-0 text-slate-400" />
+        <span>Resolución manual de identidad</span>
+      </nav>
       <div className="client-heading"><div><h1 className="!m-0 !mb-1.5 !tracking-normal">Clientes y alias</h1><p>Administra la identidad canónica, sus denominaciones y la trazabilidad operativa.</p></div><div className="client-heading-meta"><span className="system-id"><Lock size={12} /> ID: 11-2016</span><button type="button" className="trace-link" aria-haspopup="dialog" aria-expanded={traceOpen} onClick={() => setTraceOpen(true)}><FileSearch size={15} />Ver trazabilidad del registro</button></div></div>
       {traceOpen && <TraceabilityDrawer recordId="ID: 11-2016" onClose={closeTrace} />}
       {evidenceAlias && <EvidenceDrawer alias={evidenceAlias} onClose={closeEvidence} />}
