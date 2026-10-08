@@ -85,16 +85,15 @@ function AddAliasModal({ existingNames, onClose, onSave }: { existingNames: stri
   </div>
 }
 
-function RowActions({ alias, onViewEvidence, onInactivate }: { alias: Alias; onViewEvidence: () => void; onInactivate: () => void }) {
+function RowActions({ alias, onInactivate }: { alias: Alias; onInactivate: () => void }) {
   const [open, setOpen] = useState(false)
   const run = (action: () => void) => { setOpen(false); action() }
 
   return <div className="relative inline-flex" onKeyDown={(event) => event.key === 'Escape' && setOpen(false)}>
-    <button type="button" aria-label={`Acciones para ${alias.name}`} aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen((value) => !value)} className="flex size-8 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"><MoreHorizontal size={17} /></button>
+    <button type="button" aria-label={`Acciones para ${alias.name}`} aria-haspopup="menu" aria-expanded={open} onClick={() => setOpen((value) => !value)} className={`flex size-8 items-center justify-center rounded-full border bg-white text-slate-500 shadow-sm transition hover:border-[#2A4B93]/30 hover:bg-slate-50 hover:text-[#2A4B93] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#2A4B93]/15 ${open ? 'border-[#2A4B93]/30 text-[#2A4B93]' : 'border-slate-200'}`}><MoreHorizontal size={16} aria-hidden="true" /></button>
     {open && <>
       <button type="button" tabIndex={-1} aria-hidden="true" className="fixed inset-0 z-10 cursor-default" onClick={() => setOpen(false)} />
-      <div role="menu" className="absolute right-0 top-9 z-20 w-64 whitespace-nowrap overflow-hidden rounded-2xl border border-slate-200 bg-white p-1.5 shadow-lg">
-        <button role="menuitem" type="button" onClick={() => run(onViewEvidence)} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-[13px] text-slate-700 transition hover:bg-slate-50"><FileSearch size={15} className="text-[#2A4B93]" aria-hidden="true" />Ver evidencia</button>
+      <div role="menu" className="absolute right-0 top-10 z-20 w-64 whitespace-nowrap overflow-hidden rounded-2xl border border-slate-200 bg-white p-1.5 shadow-lg">
         {alias.status === 'Vigente'
           ? <button role="menuitem" type="button" onClick={() => run(onInactivate)} className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-left text-[13px] text-amber-800 transition hover:bg-amber-50"><Archive size={15} aria-hidden="true" />Inactivar / Cerrar vigencia</button>
           : <span role="menuitem" aria-disabled="true" className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-[13px] text-slate-400"><Archive size={15} aria-hidden="true" />Vigencia ya cerrada</span>}
@@ -120,17 +119,17 @@ export default function AliasMapping({ aliases, onAdd, onViewEvidence, onRequest
     <div className="overflow-x-auto">
       <table className="w-full min-w-[760px] border-collapse font-[Poppins,sans-serif]">
         <thead className="border-b border-slate-200/70 bg-slate-50/60">
-          <tr><th className={th}>Denominación / alias</th><th className={th}>Fuente</th><th className={th}>Método</th><th className={th}>Vigencia</th><th className={th}>Estado</th><th className={th}>Evidencia</th><th className={th}><span className="sr-only">Acciones</span></th></tr>
+          <tr><th className={`${th} !pl-6`}>Denominación / alias</th><th className={th}>Fuente</th><th className={th}>Método</th><th className={th}>Vigencia</th><th className={th}>Estado</th><th className={th}>Evidencia</th><th className={`${th} !pr-6`}><span className="sr-only">Acciones</span></th></tr>
         </thead>
         <tbody className="divide-y divide-slate-100">
           {aliases.map((alias, index) => <tr key={alias.name} className="transition-colors hover:bg-slate-50/60">
-            <td className={td}><div className="flex flex-col gap-0.5"><strong className={`!text-[13px] font-semibold ${alias.status === 'Vigente' ? '!text-slate-900' : '!text-slate-500'}`}>{alias.name}</strong><span className="text-[11px] text-slate-400">{index === 0 ? 'Denominación preferida' : alias.status === 'Vigente' ? 'Alias vigente' : 'Registro histórico'}</span></div></td>
+            <td className={`${td} !pl-6`}><div className="flex flex-col gap-0.5"><strong className={`!text-[13px] font-semibold ${alias.status === 'Vigente' ? '!text-slate-900' : '!text-slate-500'}`}>{alias.name}</strong><span className="text-[11px] text-slate-400">{index === 0 ? 'Denominación preferida' : alias.status === 'Vigente' ? 'Alias vigente' : 'Registro histórico'}</span></div></td>
             <td className={td}>{alias.source}</td>
             <td className={td}>{alias.method}</td>
             <td className={td}><span className="inline-flex items-center gap-1.5 whitespace-nowrap"><Clock3 size={13} className="text-slate-400" aria-hidden="true" />{alias.validity}</span></td>
             <td className={td}><StatusBadge status={alias.status} /></td>
             <td className={td}><button type="button" onClick={() => onViewEvidence(alias)} className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2 py-1 text-[13px] font-medium text-[#2A4B93] transition hover:bg-[#2A4B93]/[0.06]"><FileSearch size={14} aria-hidden="true" />{alias.evidence}</button></td>
-            <td className={`${td} text-right`}><RowActions alias={alias} onViewEvidence={() => onViewEvidence(alias)} onInactivate={() => onRequestInactivate(index)} /></td>
+            <td className={`${td} !pr-6 text-right`}><RowActions alias={alias} onInactivate={() => onRequestInactivate(index)} /></td>
           </tr>)}
         </tbody>
       </table>
