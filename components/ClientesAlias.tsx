@@ -31,6 +31,7 @@ import {
 
 import AliasMapping, { type Alias } from './AliasMapping'
 import TraceabilityDrawer from './TraceabilityDrawer'
+import EvidenceDrawer from './EvidenceDrawer'
 
 const initialAliases: Alias[] = [
   { name: 'Alfa Consultoría Integral', source: 'Clientify', method: 'ETL automático', validity: '01/01/2026 — Actual', status: 'Vigente', evidence: 'Ver evidencia' },
@@ -132,7 +133,9 @@ export default function ClientesAlias() {
   const [modal, setModal] = useState<'cancel' | number | null>(null)
   const [notice, setNotice] = useState('')
   const [traceOpen, setTraceOpen] = useState(false)
+  const [evidenceAlias, setEvidenceAlias] = useState<Alias | null>(null)
   const closeTrace = useCallback(() => setTraceOpen(false), [])
+  const closeEvidence = useCallback(() => setEvidenceAlias(null), [])
 
   const flash = (message: string) => { setNotice(message); window.setTimeout(() => setNotice(''), 3500) }
   const inactivate = (index: number) => { setAliases((current) => current.map((alias, item) => item === index ? { ...alias, status: 'Inactivo', validity: `${alias.validity.split(' — ')[0]} — 08/10/2026` } : alias)); setModal(null); flash('Vigencia cerrada · el registro se conserva en el historial') }
@@ -142,6 +145,7 @@ export default function ClientesAlias() {
     <div className="page-wrap clients-page">
       <div className="client-heading"><div><h1 className="!m-0 !mb-1.5 !tracking-normal">Clientes y alias</h1><p>Administra la identidad canónica, sus denominaciones y la trazabilidad operativa.</p></div><div className="client-heading-meta"><span className="system-id"><Lock size={12} /> ID: 11-2016</span><button type="button" className="trace-link" aria-haspopup="dialog" aria-expanded={traceOpen} onClick={() => setTraceOpen(true)}><FileSearch size={15} />Ver trazabilidad del registro</button></div></div>
       {traceOpen && <TraceabilityDrawer recordId="ID: 11-2016" onClose={closeTrace} />}
+      {evidenceAlias && <EvidenceDrawer alias={evidenceAlias} onClose={closeEvidence} />}
 
       <section className="client-card"><div className="client-card-header"><div><h2>Ficha canónica del cliente</h2><p>Los datos de origen se conservan sin sobrescritura. Los campos editables requieren autorización.</p></div><span className="status-badge active"><Check size={13} /> Registro activo</span></div><div className="client-form-grid">
         <Field label="Razón social"><input className="origin-input" value="Empresa Alfa C.A." readOnly aria-readonly="true" /><span className="field-lock"><Lock size={12} /> Clientify / ETL</span></Field>
@@ -154,7 +158,7 @@ export default function ClientesAlias() {
         <Field label="Motivo de cambio"><input value={reason} onChange={(event) => setReason(event.target.value)} placeholder="Describe el motivo de la actualización" /></Field>
       </div></section>
 
-      <AliasMapping aliases={aliases} onAdd={(alias) => { setAliases((current) => [...current, alias]); flash(`Alias "${alias.name}" registrado con vigencia abierta`) }} onViewEvidence={(alias) => flash(`Evidencia de ${alias.name}`)} onRequestInactivate={(index) => setModal(index)} />
+      <AliasMapping aliases={aliases} onAdd={(alias) => { setAliases((current) => [...current, alias]); flash(`Alias "${alias.name}" registrado con vigencia abierta`) }} onViewEvidence={setEvidenceAlias} onRequestInactivate={(index) => setModal(index)} />
 
       <IdentityResolution reason={collisionReason} onReasonChange={setCollisionReason} onFile={(name) => flash(`Evidencia adjunta: ${name}`)} />
 
