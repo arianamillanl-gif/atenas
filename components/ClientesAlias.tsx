@@ -58,7 +58,12 @@ function IdentityResolution({ reason, onReasonChange, onFile }: { reason: string
 
   return <section className="client-card" aria-labelledby="identity-resolution-title">
     <div className="flex flex-col gap-4 border-b border-slate-200/70 px-6 py-5 sm:flex-row sm:items-start sm:justify-between">
-      <div>
+      <div className="min-w-0">
+        <nav aria-label="Ruta de navegación" className="mb-2 flex items-center gap-1.5 text-xs text-slate-500 sm:text-sm">
+          <span>Bandeja de homologaciones (F07)</span>
+          <ChevronRight size={14} aria-hidden="true" className="shrink-0 text-slate-400" />
+          <span>Resolución manual de identidad</span>
+        </nav>
         <h2 id="identity-resolution-title">Resolución manual de identidad</h2>
         <p className="m-0 text-xs text-slate-500">Se detectó una posible colisión fiscal. La homologación requiere evidencia y responsable.</p>
       </div>
