@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { FilePlus2, GitMerge, History, RefreshCw, ShieldCheck, X } from 'lucide-react'
 
 type AuditEvent = {
@@ -30,33 +30,45 @@ const toneStyles = {
 
 export default function TraceabilityDrawer({ recordId, onClose }: { recordId: string; onClose: () => void }) {
   const closeRef = useRef<HTMLButtonElement>(null)
+  const [visible, setVisible] = useState(false)
 
-  useEffect(() => {
-    closeRef.current?.focus()
-    const handleKey = (event: KeyboardEvent) => event.key === 'Escape' && onClose()
-    window.addEventListener('keydown', handleKey)
-    return () => window.removeEventListener('keydown', handleKey)
+  const requestClose = useCallback(() => {
+    setVisible(false)
+    window.setTimeout(onClose, 300)
   }, [onClose])
 
-  return <div className="fixed inset-0 z-50 flex justify-end bg-slate-900/40 p-3 backdrop-blur-sm sm:p-4" onClick={onClose}>
-    <section role="dialog" aria-modal="true" aria-labelledby="trace-title" className="flex h-full w-full max-w-md flex-col rounded-3xl border border-slate-200 bg-white p-6 font-[Poppins,sans-serif] shadow-2xl" onClick={(event) => event.stopPropagation()}>
-      <header className="flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
-        <div className="flex items-start gap-3">
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setVisible(true))
+    closeRef.current?.focus()
+    const handleKey = (event: KeyboardEvent) => event.key === 'Escape' && requestClose()
+    window.addEventListener('keydown', handleKey)
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener('keydown', handleKey)
+    }
+  }, [requestClose])
+
+  return <>
+    <div aria-hidden="true" onClick={requestClose} className={`fixed inset-0 z-40 bg-slate-900/30 backdrop-blur-xs transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`} />
+    <aside role="dialog" aria-modal="true" aria-labelledby="trace-title" className={`fixed inset-y-0 right-0 z-50 flex w-full max-w-md transform flex-col border-l border-slate-200 bg-white font-[Poppins,sans-serif] shadow-2xl transition-transform duration-300 ease-out ${visible ? 'translate-x-0' : 'translate-x-full'}`}>
+      <header className="flex shrink-0 items-start justify-between gap-4 border-b border-slate-200 px-6 py-5">
+        <div className="flex min-w-0 items-start gap-3">
           <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-[#2A4B93]/10 text-[#2A4B93]"><History size={18} aria-hidden="true" /></span>
-          <div>
-            <h2 id="trace-title" className="!m-0 !text-base font-semibold !text-slate-900">Historial de auditoría</h2>
-            <p className="!m-0 mt-0.5 text-xs text-slate-500">Trazabilidad del registro {recordId}</p>
+          <div className="min-w-0">
+            <p className="!m-0 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">Historial de auditoría</p>
+            <h2 id="trace-title" className="!m-0 mt-0.5 !text-base font-semibold !text-slate-900">Trazabilidad del registro</h2>
+            <p className="!m-0 mt-0.5 truncate font-mono text-[11px] text-slate-500">{recordId}</p>
           </div>
         </div>
-        <button ref={closeRef} type="button" aria-label="Cerrar historial" onClick={onClose} className="flex size-8 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-[#2A4B93] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#2A4B93]/15"><X size={16} aria-hidden="true" /></button>
+        <button ref={closeRef} type="button" aria-label="Cerrar panel" onClick={requestClose} className="shrink-0 rounded-full p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#2A4B93]/15"><X size={18} aria-hidden="true" /></button>
       </header>
 
-      <div className="flex items-center justify-between py-4 text-xs text-slate-500">
+      <div className="flex shrink-0 items-center justify-between border-b border-slate-100 bg-slate-50/50 px-6 py-3 text-xs text-slate-500">
         <span>{events.length} eventos registrados</span>
         <span className="rounded-full bg-emerald-50 px-2.5 py-1 font-medium text-emerald-700">Cadena íntegra</span>
       </div>
 
-      <ol className="!m-0 flex-1 !list-none overflow-y-auto !py-1 !pl-1 !pr-1">
+      <ol className="!m-0 min-h-0 flex-1 !list-none overflow-y-auto overscroll-contain !px-6 !py-5">
         {events.map((event, index) => {
           const Icon = event.icon
           const isLast = index === events.length - 1
@@ -76,9 +88,9 @@ export default function TraceabilityDrawer({ recordId, onClose }: { recordId: st
         })}
       </ol>
 
-      <footer className="mt-5 border-t border-slate-100 pt-4">
-        <button type="button" onClick={onClose} className="w-full rounded-2xl bg-[#2A4B93] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#233f7c] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#2A4B93]/20">Cerrar</button>
+      <footer className="flex shrink-0 justify-end border-t border-slate-200 bg-white px-6 py-4">
+        <button type="button" onClick={requestClose} className="min-w-36 rounded-2xl bg-[#2A4B93] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#233f7c] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#2A4B93]/20">Cerrar panel</button>
       </footer>
-    </section>
-  </div>
+    </aside>
+  </>
 }
