@@ -26,7 +26,7 @@ export default function EvidenceDrawer({ alias, onClose }: { alias: Alias; onClo
     <div aria-hidden="true" onClick={requestClose} className={`fixed inset-0 z-40 bg-slate-900/30 backdrop-blur-xs transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`} />
     <aside role="dialog" aria-modal="true" aria-labelledby="evidence-title" className={`fixed inset-y-0 right-0 z-50 flex w-full max-w-md transform flex-col border-l border-slate-200 bg-white font-[Poppins,sans-serif] shadow-2xl transition-transform duration-300 ease-out ${visible ? 'translate-x-0' : 'translate-x-full'}`}>
       <header className="flex shrink-0 items-start justify-between gap-4 border-b border-slate-200 px-6 py-5">
-        <div className="min-w-0">
+        <div className="min-w-0 max-w-[65%] flex-1">
           <p className="!m-0 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">Validación documental</p>
           <h2 id="evidence-title" className="!m-0 mt-1 truncate !text-base font-semibold !text-slate-900">{fileName}</h2>
           <p className="!m-0 mt-1 truncate text-xs text-slate-500">{alias.name}</p>
