@@ -29,7 +29,7 @@ import {
   X,
 } from 'lucide-react'
 
-type Alias = { name: string; source: string; method: string; validity: string; status: 'Vigente' | 'Inactivo'; evidence: string }
+import AliasMapping, { type Alias } from './AliasMapping'
 
 const initialAliases: Alias[] = [
   { name: 'Alfa Consultoría Integral', source: 'Clientify', method: 'ETL automático', validity: '01/01/2026 — Actual', status: 'Vigente', evidence: 'Ver evidencia' },
@@ -132,7 +132,7 @@ export default function ClientesAlias() {
   const [notice, setNotice] = useState('')
 
   const flash = (message: string) => { setNotice(message); window.setTimeout(() => setNotice(''), 3500) }
-  const inactivate = (index: number) => { setAliases((current) => current.map((alias, item) => item === index ? { ...alias, status: 'Inactivo', validity: `${alias.validity.split(' — ')[0]} — 07/10/2026` } : alias)); setModal(null); flash('Alias inactivado y conservado en el historial') }
+  const inactivate = (index: number) => { setAliases((current) => current.map((alias, item) => item === index ? { ...alias, status: 'Inactivo', validity: `${alias.validity.split(' — ')[0]} — 08/10/2026` } : alias)); setModal(null); flash('Vigencia cerrada · el registro se conserva en el historial') }
 
   return <main className="app-shell"><Sidebar collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} /><section className="content">
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-slate-200/80 bg-white px-6"><div className="flex items-center gap-3"><button className="mobile-menu icon-button" aria-label="Abrir menú"><Menu size={19} /></button><span className="workspace-top-pill"><span />Lo-Fi workspace · Operaciones</span></div><div className="top-actions"><label className="quick-search"><Search size={14} /><span className="sr-only">Búsqueda rápida</span><input aria-label="Búsqueda rápida" placeholder="Búsqueda rápida" /></label><button className="icon-button" aria-label="Notificaciones"><Bell size={18} /></button><span className="top-user"><span className="user-avatar">MG</span>María González<ChevronDown size={14} /></span></div></header>
@@ -150,7 +150,7 @@ export default function ClientesAlias() {
         <Field label="Motivo de cambio"><input value={reason} onChange={(event) => setReason(event.target.value)} placeholder="Describe el motivo de la actualización" /></Field>
       </div></section>
 
-      <section className="client-card"><div className="client-card-header"><div><h2>Mapeo de alias y homologación</h2><p>Las vigencias se cierran, nunca se eliminan, para preservar el histórico del cliente.</p></div><button className="primary-button" onClick={() => flash('Nuevo alias listo para registrar')}><FilePlus2 size={15} />Agregar nuevo alias</button></div><div className="alias-table-wrap"><table className="alias-table"><thead><tr><th>Denominación / alias encontrado</th><th>Fuente</th><th>Método</th><th>Vigencia</th><th>Estado</th><th>Evidencia</th><th><span className="sr-only">Acciones</span></th></tr></thead><tbody>{aliases.map((alias, index) => <tr key={alias.name}><td><strong>{alias.name}</strong><small>{index === 0 ? 'Denominación preferida' : 'Registro histórico'}</small></td><td>{alias.source}</td><td>{alias.method}</td><td><span className="validity"><Clock3 size={13} />{alias.validity}</span></td><td><span className={`status-badge ${alias.status === 'Vigente' ? 'active' : 'inactive'}`}>{alias.status}</span></td><td><button className="evidence-link" onClick={() => flash(`Evidencia de ${alias.name}`)}><FileSearch size={14} />{alias.evidence}</button></td><td><button className="row-more" aria-label={`Acciones para ${alias.name}`} onClick={() => alias.status === 'Vigente' && setModal(index)}><MoreHorizontal size={17} /></button></td></tr>)}</tbody></table></div></section>
+      <AliasMapping aliases={aliases} onAdd={(alias) => { setAliases((current) => [...current, alias]); flash(`Alias "${alias.name}" registrado con vigencia abierta`) }} onViewEvidence={(alias) => flash(`Evidencia de ${alias.name}`)} onRequestInactivate={(index) => setModal(index)} />
 
       <IdentityResolution reason={collisionReason} onReasonChange={setCollisionReason} onFile={(name) => flash(`Evidencia adjunta: ${name}`)} />
 
