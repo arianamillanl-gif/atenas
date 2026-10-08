@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import {
   AlertTriangle,
   Archive,
@@ -30,6 +30,7 @@ import {
 } from 'lucide-react'
 
 import AliasMapping, { type Alias } from './AliasMapping'
+import TraceabilityDrawer from './TraceabilityDrawer'
 
 const initialAliases: Alias[] = [
   { name: 'Alfa Consultoría Integral', source: 'Clientify', method: 'ETL automático', validity: '01/01/2026 — Actual', status: 'Vigente', evidence: 'Ver evidencia' },
@@ -130,14 +131,17 @@ export default function ClientesAlias() {
   const [collisionReason, setCollisionReason] = useState('')
   const [modal, setModal] = useState<'cancel' | number | null>(null)
   const [notice, setNotice] = useState('')
+  const [traceOpen, setTraceOpen] = useState(false)
+  const closeTrace = useCallback(() => setTraceOpen(false), [])
 
   const flash = (message: string) => { setNotice(message); window.setTimeout(() => setNotice(''), 3500) }
   const inactivate = (index: number) => { setAliases((current) => current.map((alias, item) => item === index ? { ...alias, status: 'Inactivo', validity: `${alias.validity.split(' — ')[0]} — 08/10/2026` } : alias)); setModal(null); flash('Vigencia cerrada · el registro se conserva en el historial') }
 
   return <main className="app-shell"><Sidebar collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} /><section className="content">
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-slate-200/80 bg-white px-6"><div className="flex items-center gap-3"><button className="mobile-menu icon-button" aria-label="Abrir menú"><Menu size={19} /></button><span className="workspace-top-pill"><span />Lo-Fi workspace · Operaciones</span></div><div className="top-actions"><label className="quick-search"><Search size={14} /><span className="sr-only">Búsqueda rápida</span><input aria-label="Búsqueda rápida" placeholder="Búsqueda rápida" /></label><button className="icon-button" aria-label="Notificaciones"><Bell size={18} /></button><span className="top-user"><span className="user-avatar">MG</span>María González<ChevronDown size={14} /></span></div></header>
-    <div className="page-wrap clients-page"><nav className="client-breadcrumb" aria-label="Migas de pan"><span>Gobierno de datos</span><ChevronRight size={14} /><strong>Clientes y alias</strong></nav>
-      <div className="client-heading"><div><div className="eyebrow"><ShieldCheck size={14} /> MAESTRO DE IDENTIDADES</div><h1>CLIENTES Y ALIAS</h1><p>Administra la identidad canónica, sus denominaciones y la trazabilidad operativa.</p></div><div className="client-heading-meta"><span className="system-id"><Lock size={12} /> ID: 11-2016</span><button className="trace-link" onClick={() => flash('Trazabilidad disponible en el historial de auditoría')}><FileSearch size={15} />Ver trazabilidad del registro</button></div></div>
+    <div className="page-wrap clients-page">
+      <div className="client-heading"><div><h1 className="!m-0 !mb-1.5 !tracking-normal">Clientes y alias</h1><p>Administra la identidad canónica, sus denominaciones y la trazabilidad operativa.</p></div><div className="client-heading-meta"><span className="system-id"><Lock size={12} /> ID: 11-2016</span><button type="button" className="trace-link" aria-haspopup="dialog" aria-expanded={traceOpen} onClick={() => setTraceOpen(true)}><FileSearch size={15} />Ver trazabilidad del registro</button></div></div>
+      {traceOpen && <TraceabilityDrawer recordId="ID: 11-2016" onClose={closeTrace} />}
 
       <section className="client-card"><div className="client-card-header"><div><h2>Ficha canónica del cliente</h2><p>Los datos de origen se conservan sin sobrescritura. Los campos editables requieren autorización.</p></div><span className="status-badge active"><Check size={13} /> Registro activo</span></div><div className="client-form-grid">
         <Field label="Razón social"><input className="origin-input" value="Empresa Alfa C.A." readOnly aria-readonly="true" /><span className="field-lock"><Lock size={12} /> Clientify / ETL</span></Field>
