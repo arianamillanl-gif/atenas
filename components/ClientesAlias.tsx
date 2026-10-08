@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import {
   AlertTriangle,
   Archive,
   Bell,
+  Calendar,
   Check,
   ChevronDown,
   ChevronRight,
@@ -28,7 +29,8 @@ import {
   X,
 } from 'lucide-react'
 
-type Alias = { name: string; source: string; method: string; validity: string; status: 'Vigente' | 'Inactivo'; evidence: string }
+import AliasMapping, { type Alias } from './AliasMapping'
+import TraceabilityDrawer from './TraceabilityDrawer'
 
 const initialAliases: Alias[] = [
   { name: 'Alfa Consultoría Integral', source: 'Clientify', method: 'ETL automático', validity: '01/01/2026 — Actual', status: 'Vigente', evidence: 'Ver evidencia' },
@@ -48,6 +50,77 @@ function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => 
   </aside>
 }
 
+function IdentityResolution({ reason, onReasonChange, onFile }: { reason: string; onReasonChange: (value: string) => void; onFile: (name: string) => void }) {
+  const [fileName, setFileName] = useState('')
+  const inputBase = 'w-full rounded-xl border border-slate-200 bg-white text-[13px] text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-[#2A4B93] focus:ring-4 focus:ring-[#2A4B93]/10'
+  const labelBase = 'flex items-center gap-1.5 text-xs font-semibold text-slate-700'
+
+  return <section className="client-card" aria-labelledby="identity-resolution-title">
+    <div className="flex flex-col gap-4 border-b border-slate-200/70 px-6 py-5 sm:flex-row sm:items-start sm:justify-between">
+      <div>
+        <h2 id="identity-resolution-title">Resolución manual de identidad</h2>
+        <p className="m-0 text-xs text-slate-500">Se detectó una posible colisión fiscal. La homologación requiere evidencia y responsable.</p>
+      </div>
+      <span className="inline-flex shrink-0 items-center gap-1.5 self-start rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800"><AlertTriangle size={13} aria-hidden="true" />Requiere revisión</span>
+    </div>
+
+    <div className="space-y-5 p-6">
+      <div role="alert" className="flex items-start gap-3 rounded-xl border border-amber-200/60 bg-amber-50/80 p-4">
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#ECB421]/20 text-amber-700"><AlertTriangle size={16} aria-hidden="true" /></span>
+        <div className="flex flex-col gap-0.5">
+          <strong className="text-[13px] font-semibold text-amber-900">Coincidencia fiscal detectada</strong>
+          <span className="text-xs leading-relaxed text-amber-800/80">El RIF <span className="font-medium text-amber-900">J-40123456-7</span> aparece asociado a 2 denominaciones en fuentes activas.</span>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+        <div className="space-y-5 lg:col-span-7">
+          <div className="flex flex-col gap-2">
+            <label htmlFor="collision-reason" className={labelBase}>Motivo de homologación<span className="font-normal text-slate-400">· Obligatorio</span></label>
+            <textarea id="collision-reason" value={reason} onChange={(event) => onReasonChange(event.target.value)} placeholder="Explica por qué ambas denominaciones corresponden a la misma identidad" rows={5} maxLength={500} required className={`${inputBase} min-h-32 resize-y px-4 py-3 leading-relaxed`} />
+            <span className="text-[11px] text-slate-400">{reason.length} / 500 caracteres</span>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <span id="evidence-label" className={labelBase}>Evidencia documental</span>
+            <label htmlFor="evidence-file" aria-labelledby="evidence-label" className="group flex cursor-pointer items-center gap-4 rounded-xl border border-dashed border-slate-300 bg-white px-4 py-3.5 transition hover:border-[#2A4B93] hover:bg-[#2A4B93]/[0.03] focus-within:border-[#2A4B93] focus-within:ring-4 focus-within:ring-[#2A4B93]/10">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-[#2A4B93]/10 text-[#2A4B93]"><Paperclip size={16} aria-hidden="true" /></span>
+              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <span className="truncate text-[13px] font-semibold text-slate-800">{fileName || 'Adjuntar evidencia'}</span>
+                <span className="text-[11px] text-slate-500">{fileName ? 'Archivo listo para registrar' : 'Arrastra o selecciona · PDF, XLSX o imagen · Máx. 10 MB'}</span>
+              </span>
+              <span className="hidden rounded-full border border-slate-200 px-3 py-1 text-xs font-medium text-slate-600 transition group-hover:border-[#2A4B93] group-hover:text-[#2A4B93] sm:inline-flex">{fileName ? 'Cambiar' : 'Examinar'}</span>
+              <input id="evidence-file" type="file" accept=".pdf,.xlsx,image/*" className="sr-only" onChange={(event) => { const file = event.target.files?.[0]; if (file) { setFileName(file.name); onFile(file.name) } }} />
+            </label>
+          </div>
+        </div>
+
+        <aside className="space-y-4 rounded-2xl border border-slate-200/60 bg-slate-50/70 p-5 lg:col-span-5" aria-label="Metadatos de control">
+          <span className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500">Metadatos de control</span>
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between gap-2">
+              <label htmlFor="collision-owner" className={labelBase}>Responsable</label>
+              <span className="inline-flex items-center gap-1 rounded-full bg-[#2A4B93]/10 px-2.5 py-0.5 text-[11px] font-medium text-[#2A4B93]"><Lock size={11} aria-hidden="true" />Sesión actual</span>
+            </div>
+            <div className="relative">
+              <span className="pointer-events-none absolute left-3 top-1/2 flex size-6 -translate-y-1/2 items-center justify-center rounded-full bg-[#2A4B93] text-[10px] font-semibold text-white">MG</span>
+              <input id="collision-owner" value="María González" readOnly aria-readonly="true" className="h-11 w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-100/80 pl-11 pr-3 text-[13px] text-slate-600 outline-none" />
+            </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="collision-date" className={labelBase}>Fecha de vigencia</label>
+            <div className="relative">
+              <Calendar size={16} aria-hidden="true" className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#2A4B93]" />
+              <input id="collision-date" type="date" defaultValue="2026-10-07" onClick={(event) => event.currentTarget.showPicker?.()} className={`${inputBase} h-11 cursor-pointer pl-10 pr-3 [&::-webkit-calendar-picker-indicator]:hidden`} />
+            </div>
+            <span className="text-[11px] text-slate-400">La homologación aplicará desde esta fecha.</span>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+}
+
 export default function ClientesAlias() {
   const [collapsed, setCollapsed] = useState(false)
   const [aliases, setAliases] = useState(initialAliases)
@@ -58,14 +131,17 @@ export default function ClientesAlias() {
   const [collisionReason, setCollisionReason] = useState('')
   const [modal, setModal] = useState<'cancel' | number | null>(null)
   const [notice, setNotice] = useState('')
+  const [traceOpen, setTraceOpen] = useState(false)
+  const closeTrace = useCallback(() => setTraceOpen(false), [])
 
   const flash = (message: string) => { setNotice(message); window.setTimeout(() => setNotice(''), 3500) }
-  const inactivate = (index: number) => { setAliases((current) => current.map((alias, item) => item === index ? { ...alias, status: 'Inactivo', validity: `${alias.validity.split(' — ')[0]} — 07/10/2026` } : alias)); setModal(null); flash('Alias inactivado y conservado en el historial') }
+  const inactivate = (index: number) => { setAliases((current) => current.map((alias, item) => item === index ? { ...alias, status: 'Inactivo', validity: `${alias.validity.split(' — ')[0]} — 08/10/2026` } : alias)); setModal(null); flash('Vigencia cerrada · el registro se conserva en el historial') }
 
   return <main className="app-shell"><Sidebar collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} /><section className="content">
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-slate-200/80 bg-white px-6"><div className="flex items-center gap-3"><button className="mobile-menu icon-button" aria-label="Abrir menú"><Menu size={19} /></button><span className="workspace-top-pill"><span />Lo-Fi workspace · Operaciones</span></div><div className="top-actions"><label className="quick-search"><Search size={14} /><span className="sr-only">Búsqueda rápida</span><input aria-label="Búsqueda rápida" placeholder="Búsqueda rápida" /></label><button className="icon-button" aria-label="Notificaciones"><Bell size={18} /></button><span className="top-user"><span className="user-avatar">MG</span>María González<ChevronDown size={14} /></span></div></header>
-    <div className="page-wrap clients-page"><nav className="client-breadcrumb" aria-label="Migas de pan"><span>Gobierno de datos</span><ChevronRight size={14} /><strong>Clientes y alias</strong></nav>
-      <div className="client-heading"><div><div className="eyebrow"><ShieldCheck size={14} /> MAESTRO DE IDENTIDADES</div><h1>CLIENTES Y ALIAS</h1><p>Administra la identidad canónica, sus denominaciones y la trazabilidad operativa.</p></div><div className="client-heading-meta"><span className="system-id"><Lock size={12} /> ID: 11-2016</span><button className="trace-link" onClick={() => flash('Trazabilidad disponible en el historial de auditoría')}><FileSearch size={15} />Ver trazabilidad del registro</button></div></div>
+    <div className="page-wrap clients-page">
+      <div className="client-heading"><div><h1 className="!m-0 !mb-1.5 !tracking-normal">Clientes y alias</h1><p>Administra la identidad canónica, sus denominaciones y la trazabilidad operativa.</p></div><div className="client-heading-meta"><span className="system-id"><Lock size={12} /> ID: 11-2016</span><button type="button" className="trace-link" aria-haspopup="dialog" aria-expanded={traceOpen} onClick={() => setTraceOpen(true)}><FileSearch size={15} />Ver trazabilidad del registro</button></div></div>
+      {traceOpen && <TraceabilityDrawer recordId="ID: 11-2016" onClose={closeTrace} />}
 
       <section className="client-card"><div className="client-card-header"><div><h2>Ficha canónica del cliente</h2><p>Los datos de origen se conservan sin sobrescritura. Los campos editables requieren autorización.</p></div><span className="status-badge active"><Check size={13} /> Registro activo</span></div><div className="client-form-grid">
         <Field label="Razón social"><input className="origin-input" value="Empresa Alfa C.A." readOnly aria-readonly="true" /><span className="field-lock"><Lock size={12} /> Clientify / ETL</span></Field>
@@ -78,9 +154,9 @@ export default function ClientesAlias() {
         <Field label="Motivo de cambio"><input value={reason} onChange={(event) => setReason(event.target.value)} placeholder="Describe el motivo de la actualización" /></Field>
       </div></section>
 
-      <section className="client-card"><div className="client-card-header"><div><h2>Mapeo de alias y homologación</h2><p>Las vigencias se cierran, nunca se eliminan, para preservar el histórico del cliente.</p></div><button className="primary-button" onClick={() => flash('Nuevo alias listo para registrar')}><FilePlus2 size={15} />Agregar nuevo alias</button></div><div className="alias-table-wrap"><table className="alias-table"><thead><tr><th>Denominación / alias encontrado</th><th>Fuente</th><th>Método</th><th>Vigencia</th><th>Estado</th><th>Evidencia</th><th><span className="sr-only">Acciones</span></th></tr></thead><tbody>{aliases.map((alias, index) => <tr key={alias.name}><td><strong>{alias.name}</strong><small>{index === 0 ? 'Denominación preferida' : 'Registro histórico'}</small></td><td>{alias.source}</td><td>{alias.method}</td><td><span className="validity"><Clock3 size={13} />{alias.validity}</span></td><td><span className={`status-badge ${alias.status === 'Vigente' ? 'active' : 'inactive'}`}>{alias.status}</span></td><td><button className="evidence-link" onClick={() => flash(`Evidencia de ${alias.name}`)}><FileSearch size={14} />{alias.evidence}</button></td><td><button className="row-more" aria-label={`Acciones para ${alias.name}`} onClick={() => alias.status === 'Vigente' && setModal(index)}><MoreHorizontal size={17} /></button></td></tr>)}</tbody></table></div></section>
+      <AliasMapping aliases={aliases} onAdd={(alias) => { setAliases((current) => [...current, alias]); flash(`Alias "${alias.name}" registrado con vigencia abierta`) }} onViewEvidence={(alias) => flash(`Evidencia de ${alias.name}`)} onRequestInactivate={(index) => setModal(index)} />
 
-      <section className="client-card collision-card"><div className="client-card-header"><div><h2><AlertTriangle size={20} /> Resolución manual de identidad</h2><p>Se detectó una posible colisión fiscal. La homologación requiere evidencia y responsable.</p></div><span className="status-badge warning"><AlertTriangle size={13} /> Requiere revisión</span></div><div className="collision-alert"><AlertTriangle size={17} /><div><strong>Coincidencia fiscal detectada</strong><span>El RIF aparece asociado a 2 denominaciones en fuentes activas.</span></div></div><div className="collision-grid"><Field label="Motivo de homologación" className="wide-field"><textarea value={collisionReason} onChange={(event) => setCollisionReason(event.target.value)} placeholder="Explica por qué ambas denominaciones corresponden a la misma identidad" rows={3} required /></Field><Field label="Responsable"><input value="María González" readOnly className="origin-input" /><span className="field-lock"><Lock size={12} /> Sesión actual</span></Field><Field label="Fecha de vigencia"><input type="date" defaultValue="2026-10-07" /></Field><Field label="Evidencia documental" className="wide-field"><button className="upload-box" onClick={() => flash('Selector de evidencia abierto')}><Paperclip size={17} /><span><strong>Adjuntar evidencia</strong><small>PDF, XLSX o imagen · Máx. 10 MB</small></span></button></Field></div></section>
+      <IdentityResolution reason={collisionReason} onReasonChange={setCollisionReason} onFile={(name) => flash(`Evidencia adjunta: ${name}`)} />
 
       <footer className="footer"><span>ATENAS · P85-01/02 · Lo-Fi · v0.2</span><span>master_cliente_alias</span></footer>
     </div>
