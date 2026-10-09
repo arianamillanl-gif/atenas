@@ -49,12 +49,7 @@ export default function UnitsCard({ mainUnit, adscriptions, onMainUnitChange, on
         </div>
 
         <div className="flex flex-col gap-3">
-          <div className="flex items-baseline justify-between gap-2">
-            <h3 id="adscriptions-title" className="m-0 text-sm font-semibold text-slate-800">Otras adscripciones válidas</h3>
-            <span className="text-xs text-slate-500">
-              {activeUnits.length} {activeUnits.length === 1 ? 'activa' : 'activas'} · {adscriptions.length} en total
-            </span>
-          </div>
+          <h3 id="adscriptions-title" className="m-0 text-sm font-semibold text-slate-800">Otras adscripciones válidas</h3>
 
           <div className="overflow-x-auto rounded-2xl border border-slate-200">
             <table aria-labelledby="adscriptions-title" className="w-full min-w-[680px] border-collapse text-left text-sm">
@@ -64,7 +59,7 @@ export default function UnitsCard({ mainUnit, adscriptions, onMainUnitChange, on
                   <th scope="col" className="px-4 py-3 font-semibold">Tipo relación</th>
                   <th scope="col" className="px-4 py-3 font-semibold">Vigencia</th>
                   <th scope="col" className="px-4 py-3 font-semibold">Estado</th>
-                  <th scope="col" className="w-32 px-4 py-3 font-semibold">Acción</th>
+                  <th scope="col" className="w-32 px-5 py-3 font-semibold" style={{ textAlign: 'right' }}>Acción</th>
                 </tr>
               </thead>
               <tbody>
@@ -88,7 +83,7 @@ export default function UnitsCard({ mainUnit, adscriptions, onMainUnitChange, on
                           {item.active ? 'Activo' : 'Inactivo'}
                         </span>
                       </td>
-                      <td className="px-4 py-3.5">
+                      <td className="px-5 py-3.5 text-right" style={{ textAlign: 'right' }}>
                         {item.active ? (
                           <button
                             type="button"
@@ -118,7 +113,7 @@ export default function UnitsCard({ mainUnit, adscriptions, onMainUnitChange, on
 
           <p className="m-0 text-xs italic text-slate-500">Sin botón eliminar — acción máxima permitida: Inactivar.</p>
 
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
+          <div className="mt-4 flex flex-col gap-2 rounded-2xl border border-slate-100 bg-slate-50/70 p-4 sm:flex-row sm:items-stretch">
             <label htmlFor="persona-secondaryUnit" className="sr-only">Unidad a adscribir</label>
             <select
               id="persona-secondaryUnit"
@@ -151,7 +146,7 @@ export default function UnitsCard({ mainUnit, adscriptions, onMainUnitChange, on
               type="button"
               onClick={add}
               disabled={!pendingUnit}
-              className="inline-flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-[#2A4B93] px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#2A4B93]/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2A4B93]/40 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Plus size={15} aria-hidden="true" />
               Adscribir
