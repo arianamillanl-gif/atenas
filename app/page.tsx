@@ -1,5 +1,5 @@
-import ClientesAlias from '@/components/ClientesAlias'
+import PersonasModule from '@/components/personas/PersonasModule'
 
 export default function Page() {
-  return <ClientesAlias />
+  return <PersonasModule />
 }

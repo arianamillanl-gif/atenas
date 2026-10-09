@@ -2,12 +2,12 @@ import { Analytics } from '@vercel/analytics/next'
 import { Poppins } from 'next/font/google'
 import type { Metadata, Viewport } from 'next'
 
-const poppins = Poppins({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-poppins' })
+const poppins = Poppins({ subsets: ['latin'], weight: ['400', '500', '600', '700'], variable: '--font-poppins' })
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Clientes y Alias | ATENAS',
-  description: 'Administra identidades canónicas, alias y trazabilidad operativa en ATENAS.',
+  title: 'Personas | ATENAS',
+  description: 'Mantén identidad, contacto, estado laboral y relaciones organizacionales históricas de las personas en ATENAS.',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -42,7 +42,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es">
+    <html lang="es" className="bg-background">
       <body className={`${poppins.variable} antialiased`}>
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}

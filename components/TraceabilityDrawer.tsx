@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { FilePlus2, GitMerge, History, RefreshCw, ShieldCheck, X } from 'lucide-react'
 
-type AuditEvent = {
+export type AuditEvent = {
   date: string
   time: string
   user: string
@@ -15,7 +15,7 @@ type AuditEvent = {
   tone: 'primary' | 'accent' | 'neutral'
 }
 
-const events: AuditEvent[] = [
+const defaultEvents: AuditEvent[] = [
   { date: '14 sep 2026', time: '10:42', user: 'María González', role: 'Administradora', action: 'Actualización de estado', detail: 'Estado de la ficha cambiado de "En revisión" a "Activo" tras validación fiscal.', reference: 'AUD-2026-0914-0042', icon: RefreshCw, tone: 'primary' },
   { date: '02 sep 2026', time: '16:08', user: 'Luis Herrera', role: 'Analista de datos', action: 'Homologación de alias', detail: 'Alias "Alfa Consultores C.A." vinculado a la identidad canónica por coincidencia de RIF.', reference: 'AUD-2026-0902-0117', icon: GitMerge, tone: 'accent' },
   { date: '21 ago 2026', time: '09:15', user: 'Sistema ATENAS', role: 'Proceso automático', action: 'Validación fiscal', detail: 'RIF J-12345678-9 verificado contra el registro tributario. Resultado: coincidencia exacta.', reference: 'AUD-2026-0821-0003', icon: ShieldCheck, tone: 'neutral' },
@@ -28,7 +28,7 @@ const toneStyles = {
   neutral: 'bg-slate-100 text-slate-500 ring-slate-200',
 }
 
-export default function TraceabilityDrawer({ recordId, onClose }: { recordId: string; onClose: () => void }) {
+export default function TraceabilityDrawer({ recordId, onClose, events = defaultEvents }: { recordId: string; onClose: () => void; events?: AuditEvent[] }) {
   const closeRef = useRef<HTMLButtonElement>(null)
   const [visible, setVisible] = useState(false)
 
