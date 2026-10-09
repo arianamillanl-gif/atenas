@@ -1,4 +1,4 @@
-import { AlertTriangle, Calendar, CalendarClock } from 'lucide-react'
+import { AlertTriangle, Calendar } from 'lucide-react'
 import { Card, Field, inputClass } from './fields'
 import { DRASTIC_STATUSES, EMPLOYMENT_STATUSES, type EmploymentStatus, type FormErrors, type PersonaForm } from './data'
 
@@ -43,7 +43,7 @@ export default function EmploymentStatusCard({ form, errors, statusChanged, show
   return (
     <Card
       id="estado"
-      icon={CalendarClock}
+
       title="Estado laboral y vigencia"
       description="Controla el ciclo de vida de la persona. Todo cambio de estado queda registrado con su motivo."
       aside={

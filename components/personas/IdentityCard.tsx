@@ -1,4 +1,3 @@
-import { Fingerprint } from 'lucide-react'
 import { Card, Field, ReadOnlyInput, inputClass } from './fields'
 import type { FormErrors, PersonaForm } from './data'
 
@@ -15,7 +14,7 @@ export default function IdentityCard({ form, errors, onChange }: Props) {
   return (
     <Card
       id="identidad"
-      icon={Fingerprint}
+
       title="Identificación estable y contacto"
       description="El documento proviene del registro de origen y no se sobrescribe. Nombres y contacto son editables según permisos."
     >

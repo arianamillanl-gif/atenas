@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Network, Plus, Star } from 'lucide-react'
+import { Plus, Star } from 'lucide-react'
 import { Card, Field, inputClass } from './fields'
 import { ROLES, STRUCTURES, TODAY, formatDate, type RoleRecord } from './data'
 
@@ -25,7 +25,7 @@ export default function RolesCard({ roles, onAssign }: Props) {
   return (
     <Card
       id="roles"
-      icon={Network}
+
       title="Roles y estructuras"
       description="Pertenencia a estructuras o equipos de trabajo. Los roles cerrados se conservan como historial."
       aside={<span className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">{activeCount} vigentes</span>}

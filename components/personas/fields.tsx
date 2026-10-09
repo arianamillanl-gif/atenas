@@ -1,4 +1,3 @@
-import type { LucideIcon } from 'lucide-react'
 import { Lock } from 'lucide-react'
 
 export const inputClass =
@@ -67,7 +66,6 @@ export function Card({
   id,
   title,
   description,
-  icon: Icon,
   aside,
   className = '',
   children,
@@ -75,7 +73,6 @@ export function Card({
   id: string
   title: string
   description: string
-  icon: LucideIcon
   aside?: React.ReactNode
   className?: string
   children: React.ReactNode
@@ -87,14 +84,11 @@ export function Card({
       className={`flex scroll-mt-24 flex-col gap-8 border-b border-slate-100 pb-10 last:border-b-0 last:pb-0 ${className}`}
     >
       <header className="flex flex-col gap-3 border-b border-slate-100 pb-6 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex min-w-0 items-start gap-3">
-          <Icon size={20} aria-hidden="true" className="mt-0.5 shrink-0 text-primary" />
-          <div className="min-w-0">
-            <h3 id={`${id}-title`} className="m-0 text-base font-semibold text-slate-900">
-              {title}
-            </h3>
-            <p className="m-0 mt-1 text-sm leading-relaxed text-slate-500 text-pretty">{description}</p>
-          </div>
+        <div className="min-w-0">
+          <h3 id={`${id}-title`} className="m-0 text-base font-semibold text-slate-900">
+            {title}
+          </h3>
+          <p className="m-0 mt-1 text-sm leading-relaxed text-slate-500 text-pretty">{description}</p>
         </div>
         {aside && <div className="shrink-0">{aside}</div>}
       </header>

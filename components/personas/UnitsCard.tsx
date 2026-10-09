@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Building2, Plus, X } from 'lucide-react'
+import { Plus, X } from 'lucide-react'
 import { Card, Field, inputClass } from './fields'
 import { UNIT_TREE } from './data'
 
@@ -27,7 +27,7 @@ export default function UnitsCard({ mainUnit, secondaryUnits, onMainUnitChange, 
   return (
     <Card
       id="adscripcion"
-      icon={Building2}
+
       title="Adscripción organizacional"
       description="Unidad principal vigente y otras unidades donde la persona mantiene una adscripción válida."
     >
