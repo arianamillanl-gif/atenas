@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useRef, useState } from 'react'
-import { AlertTriangle, BadgeCheck, Building2, CalendarClock, Check, FileSearch, Fingerprint, Lock, PencilLine, RefreshCw, UserMinus, UserPlus } from 'lucide-react'
+import { AlertTriangle, BadgeCheck, Check, FileSearch, Lock, PencilLine, RefreshCw, UserMinus, UserPlus } from 'lucide-react'
 
 import TraceabilityDrawer, { type AuditEvent } from '../TraceabilityDrawer'
 import ConfirmDialog from './ConfirmDialog'
@@ -20,20 +20,6 @@ import {
   type PersonaForm,
   type RoleRecord,
 } from './data'
-
-type TabId = 'identidad' | 'estado' | 'adscripcion'
-
-const TABS: { id: TabId; label: string; icon: typeof Fingerprint }[] = [
-  { id: 'identidad', label: 'Identificación y Contacto', icon: Fingerprint },
-  { id: 'estado', label: 'Estado Laboral y Ciclo de Vida', icon: CalendarClock },
-  { id: 'adscripcion', label: 'Adscripción y Estructuras', icon: Building2 },
-]
-
-const TAB_FIELDS: Record<TabId, (keyof PersonaForm)[]> = {
-  identidad: ['firstNames', 'lastNames', 'email', 'phone'],
-  estado: ['status', 'validFrom', 'validTo', 'reason'],
-  adscripcion: ['mainUnit'],
-}
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 const PHONE_PATTERN = /^\+?[\d\s()-]{10,18}$/
@@ -65,19 +51,8 @@ export default function PersonasModule() {
   const [dialog, setDialog] = useState<'cancel' | 'status' | null>(null)
   const [traceOpen, setTraceOpen] = useState(false)
   const [notice, setNotice] = useState('')
-  const [activeTab, setActiveTab] = useState<TabId>('identidad')
   const noticeTimer = useRef<number | undefined>(undefined)
   const principalRole = roles.find((role) => role.principal && !role.end)
-
-  const onTabKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
-    const step = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0
-    if (!step) return
-    event.preventDefault()
-    const index = TABS.findIndex((tab) => tab.id === activeTab)
-    const next = TABS[(index + step + TABS.length) % TABS.length].id
-    setActiveTab(next)
-    document.getElementById(`tab-${next}`)?.focus()
-  }
 
   const closeTrace = useCallback(() => setTraceOpen(false), [])
   const closeDialog = useCallback(() => setDialog(null), [])
@@ -101,15 +76,9 @@ export default function PersonasModule() {
   }
 
   const focusField = (id: string) => {
-    const key = id.replace('persona-', '') as keyof PersonaForm
-    const tab = TABS.find((item) => TAB_FIELDS[item.id].includes(key))
-    if (tab) setActiveTab(tab.id)
-    // Wait for the target tab panel to mount before focusing.
-    window.requestAnimationFrame(() => {
-      const element = document.getElementById(id)
-      element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      element?.focus({ preventScroll: true })
-    })
+    const element = document.getElementById(id)
+    element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    element?.focus({ preventScroll: true })
   }
 
   const validate = () => {
@@ -244,60 +213,22 @@ export default function PersonasModule() {
             </div>
           </div>
 
-          <div className="flex flex-col rounded-3xl border border-slate-100 bg-white shadow-sm">
-            <div
-              role="tablist"
-              aria-label="Secciones de la ficha de persona"
-              className="flex gap-1 overflow-x-auto border-b border-slate-100 px-4 md:px-8"
-            >
-              {TABS.map((tab) => {
-                const selected = activeTab === tab.id
-                const tabErrors = TAB_FIELDS[tab.id].filter((key) => errors[key]).length
-                return (
-                  <button
-                    key={tab.id}
-                    id={`tab-${tab.id}`}
-                    type="button"
-                    role="tab"
-                    aria-selected={selected}
-                    aria-controls={`panel-${tab.id}`}
-                    tabIndex={selected ? 0 : -1}
-                    onClick={() => setActiveTab(tab.id)}
-                    onKeyDown={onTabKeyDown}
-                    className={`-mb-px inline-flex shrink-0 items-center gap-2 border-b-2 px-3 py-5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 ${selected ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
-                  >
-                    <tab.icon size={16} aria-hidden="true" />
-                    {tab.label}
-                    {tabErrors > 0 && (
-                      <span className="inline-flex size-5 items-center justify-center rounded-full bg-red-50 text-[11px] font-semibold text-red-600">
-                        {tabErrors}
-                        <span className="sr-only"> errores</span>
-                      </span>
-                    )}
-                  </button>
-                )
-              })}
-            </div>
+          <div className="flex flex-col rounded-3xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
+            <IdentityCard form={form} errors={errors} onChange={update} />
+          </div>
 
-            <div
-              id={`panel-${activeTab}`}
-              role="tabpanel"
-              aria-labelledby={`tab-${activeTab}`}
-              className="flex flex-col gap-10 p-6 md:p-8"
-            >
-              {activeTab === 'identidad' && <IdentityCard form={form} errors={errors} onChange={update} />}
-              {activeTab === 'estado' && (
-                <EmploymentStatusCard
-                  form={form}
-                  errors={errors}
-                  statusChanged={statusChanged}
-                  showWarning={showWarning}
-                  onChange={update}
-                  onViewHistory={() => setTraceOpen(true)}
-                />
-              )}
-              {activeTab === 'adscripcion' && (
-                <>
+          <div className="flex flex-col rounded-3xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
+            <EmploymentStatusCard
+              form={form}
+              errors={errors}
+              statusChanged={statusChanged}
+              showWarning={showWarning}
+              onChange={update}
+              onViewHistory={() => setTraceOpen(true)}
+            />
+          </div>
+
+          <div className="flex flex-col gap-10 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
             <UnitsCard
               mainUnit={form.mainUnit}
               secondaryUnits={secondaryUnits}
@@ -311,10 +242,7 @@ export default function PersonasModule() {
               }}
               onRemoveSecondary={(unit) => setSecondaryUnits((current) => current.filter((item) => item !== unit))}
             />
-                  <RolesCard roles={roles} onAssign={assignRole} />
-                </>
-              )}
-            </div>
+            <RolesCard roles={roles} onAssign={assignRole} />
           </div>
 
           <footer className="flex flex-col justify-between gap-1 text-[11px] text-slate-400 sm:flex-row">
