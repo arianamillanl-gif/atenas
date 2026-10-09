@@ -58,11 +58,6 @@ function IdentityResolution({ reason, onReasonChange, onFile }: { reason: string
   return <section className="client-card" aria-labelledby="identity-resolution-title">
     <div className="flex flex-col gap-4 border-b border-slate-200/70 px-6 py-5 sm:flex-row sm:items-start sm:justify-between">
       <div className="min-w-0">
-        <nav aria-label="Ruta de navegación" className="mb-2 flex items-center gap-1.5 text-xs text-slate-500 sm:text-sm">
-          <span>Bandeja de homologaciones (F07)</span>
-          <ChevronRight size={14} aria-hidden="true" className="shrink-0 text-slate-400" />
-          <span>Resolución manual de identidad</span>
-        </nav>
         <h2 id="identity-resolution-title">Resolución manual de identidad</h2>
         <p className="m-0 text-xs text-slate-500">Se detectó una posible colisión fiscal. La homologación requiere evidencia y responsable.</p>
       </div>
@@ -146,10 +141,12 @@ export default function ClientesAlias() {
   return <main className="app-shell"><Sidebar collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} /><section className="content">
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-slate-200/80 bg-white px-6"><div className="flex items-center gap-3"><button className="mobile-menu icon-button" aria-label="Abrir menú"><Menu size={19} /></button><span className="workspace-top-pill"><span />Lo-Fi workspace · Operaciones</span></div><div className="top-actions"><label className="quick-search"><Search size={14} /><span className="sr-only">Búsqueda rápida</span><input aria-label="Búsqueda rápida" placeholder="Búsqueda rápida" /></label><button className="icon-button" aria-label="Notificaciones"><Bell size={18} /></button><span className="top-user"><span className="user-avatar">MG</span>María González<ChevronDown size={14} /></span></div></header>
     <div className="page-wrap clients-page">
-      <nav aria-label="Ruta de navegación" className="mb-3 flex items-center gap-1.5 text-sm font-medium text-slate-500">
-        <span>Bandeja de homologaciones (F07)</span>
-        <ChevronRight size={14} aria-hidden="true" className="shrink-0 text-slate-400" />
-        <span>Resolución manual de identidad</span>
+      <nav aria-label="Ruta de navegación" className="mb-3 flex items-center gap-2 text-sm text-slate-500">
+        <a href="/homologaciones" className="transition-colors hover:text-[#2A4B93]">
+          Bandeja de homologaciones
+        </a>
+        <span className="text-slate-400" aria-hidden="true">›</span>
+        <span className="font-medium text-slate-700">Resolución manual de identidad</span>
       </nav>
       <div className="client-heading"><div><h1 className="!m-0 !mb-1.5 !tracking-normal">Clientes y alias</h1><p>Administra la identidad canónica, sus denominaciones y la trazabilidad operativa.</p></div><div className="client-heading-meta"><span className="system-id"><Lock size={12} /> ID: 11-2016</span><button type="button" className="trace-link" aria-haspopup="dialog" aria-expanded={traceOpen} onClick={() => setTraceOpen(true)}><FileSearch size={15} />Ver trazabilidad del registro</button></div></div>
       {traceOpen && <TraceabilityDrawer recordId="ID: 11-2016" onClose={closeTrace} />}
