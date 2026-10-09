@@ -37,13 +37,16 @@ function StatusBadge({ active }: { active: boolean }) {
   )
 }
 
+const rowActionBase =
+  'inline-flex h-8 min-w-24 items-center justify-center rounded-full border px-4 text-xs font-semibold transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2A4B93]/40 focus-visible:ring-offset-1'
+
 function RowAction({ active, label, onInactivate, onHistory }: { active: boolean; label: string; onInactivate: () => void; onHistory: () => void }) {
   return active ? (
     <button
       type="button"
       onClick={onInactivate}
       aria-label={`Inactivar ${label}`}
-      className="inline-flex h-8 items-center rounded-full border border-slate-300 bg-white px-3.5 text-xs font-medium text-slate-700 transition hover:border-primary/40 hover:text-primary"
+      className={`${rowActionBase} border-slate-300 bg-white text-slate-700 hover:border-red-300 hover:bg-red-50 hover:text-red-700`}
     >
       Inactivar
     </button>
@@ -52,28 +55,35 @@ function RowAction({ active, label, onInactivate, onHistory }: { active: boolean
       type="button"
       onClick={onHistory}
       aria-label={`Ver historial de ${label}`}
-      className="inline-flex h-8 items-center rounded-full border border-slate-200 bg-white px-3.5 text-xs font-medium text-slate-500 transition hover:border-primary/40 hover:text-primary"
+      className={`${rowActionBase} border-slate-200 bg-slate-100 text-slate-600 hover:border-[#2A4B93]/30 hover:bg-[#2A4B93]/10 hover:text-[#2A4B93]`}
     >
       Historial
     </button>
   )
 }
 
-function TableFooter({ note, actionLabel, onAction }: { note: string; actionLabel: string; onAction: () => void }) {
+function SectionHeader({ id, title, description, actionLabel, onAction }: { id: string; title: string; description: string; actionLabel: string; onAction: () => void }) {
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <p className="m-0 text-xs italic text-slate-500">{note}</p>
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+      <div className="flex min-w-0 flex-col gap-1">
+        <h3 id={id} className="m-0 font-sans text-lg font-bold text-slate-900">{title}</h3>
+        <p className="m-0 text-pretty text-sm text-slate-500">{description}</p>
+      </div>
       <button
         type="button"
         onClick={onAction}
         aria-haspopup="dialog"
-        className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-full border border-[#2A4B93] bg-white px-5 text-sm font-semibold text-[#2A4B93] transition hover:bg-[#2A4B93] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2A4B93]/40 focus-visible:ring-offset-2"
+        className="inline-flex h-11 shrink-0 items-center justify-center gap-2 self-start rounded-full border border-[#2A4B93] bg-white px-5 text-sm font-semibold text-[#2A4B93] transition hover:bg-[#2A4B93] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2A4B93]/40 focus-visible:ring-offset-2"
       >
         <Plus size={16} aria-hidden="true" />
         {actionLabel}
       </button>
     </div>
   )
+}
+
+function TableNote({ children }: { children: string }) {
+  return <p className="m-0 text-xs italic text-slate-500">{children}</p>
 }
 
 export default function RolesCard({ orgRoles, memberships, onAssignOrgRole, onAssignMembership, onInactivateOrgRole, onInactivateMembership, onHistory }: Props) {
@@ -112,10 +122,13 @@ export default function RolesCard({ orgRoles, memberships, onAssignOrgRole, onAs
   return (
     <div id="roles" className="flex flex-col">
       <section aria-labelledby="org-roles-title" className="flex flex-col gap-5">
-        <div className="flex flex-col gap-1">
-          <h3 id="org-roles-title" className="m-0 font-sans text-lg font-bold text-[#2A4B93]">Roles organizacionales históricos</h3>
-          <p className="m-0 text-sm text-slate-500">Cargos formales que la persona ha ocupado en la organización, con su condición y vigencia.</p>
-        </div>
+        <SectionHeader
+          id="org-roles-title"
+          title="Roles organizacionales históricos"
+          description="Cargos formales que la persona ha ocupado en la organización, con su condición y vigencia."
+          actionLabel="Asignar nuevo rol"
+          onAction={openOrgRole}
+        />
 
         <div className="overflow-x-auto rounded-2xl border border-slate-200">
           <table aria-labelledby="org-roles-title" className="w-full min-w-[720px] border-collapse text-left text-sm">
@@ -149,14 +162,17 @@ export default function RolesCard({ orgRoles, memberships, onAssignOrgRole, onAs
           </table>
         </div>
 
-        <TableFooter note="Los roles simultáneos no deben solapar fechas · Historial inmutable" actionLabel="Asignar nuevo rol" onAction={openOrgRole} />
+        <TableNote>Los roles simultáneos no deben solapar fechas · Historial inmutable</TableNote>
       </section>
 
       <section aria-labelledby="memberships-title" className="mt-12 flex flex-col gap-5 border-t border-slate-100 pt-8">
-        <div className="flex flex-col gap-1">
-          <h3 id="memberships-title" className="m-0 font-sans text-lg font-bold text-[#2A4B93]">Pertenencia a estructura o equipo de trabajo</h3>
-          <p className="m-0 text-sm text-slate-500">Equipos, comités y proyectos en los que participa la persona y el rol que desempeña en cada uno.</p>
-        </div>
+        <SectionHeader
+          id="memberships-title"
+          title="Pertenencia a estructura o equipo de trabajo"
+          description="Equipos, comités y proyectos en los que participa la persona y el rol que desempeña en cada uno."
+          actionLabel="Asignar a estructura / Equipo"
+          onAction={openMembership}
+        />
 
         <div className="overflow-x-auto rounded-2xl border border-slate-200">
           <table aria-labelledby="memberships-title" className="w-full min-w-[760px] border-collapse text-left text-sm">
@@ -201,7 +217,7 @@ export default function RolesCard({ orgRoles, memberships, onAssignOrgRole, onAs
           </table>
         </div>
 
-        <TableFooter note="Sin opción de eliminación — historial de pertenencia a equipos es inmutable" actionLabel="Asignar a estructura / Equipo" onAction={openMembership} />
+        <TableNote>Sin opción de eliminación — historial de pertenencia a equipos es inmutable</TableNote>
       </section>
 
       {dialog === 'orgRole' && (
