@@ -30,11 +30,12 @@ export default function UnitsCard({ mainUnit, adscriptions, onMainUnitChange, on
   return (
     <Card
       id="adscripcion"
-      title="Adscripción organizacional y unidades"
+      title="Adscripción organizacional"
+      titleClassName="font-sans text-lg font-bold text-[#2A4B93]"
       description="Unidad principal vigente y otras unidades donde la persona mantiene una adscripción válida."
     >
       <div className="flex flex-col gap-8">
-        <div className="max-w-xl">
+        <section aria-label="Jerarquía principal" className="max-w-xl">
           <Field id="persona-mainUnit" label="Unidad principal vigente" required hint="Selector de jerarquía organizativa. Define la unidad de dependencia formal de la persona.">
             <select id="persona-mainUnit" className={`${inputClass} h-11 cursor-pointer py-0`} value={mainUnit} onChange={(event) => onMainUnitChange(event.target.value)}>
               {UNIT_TREE.map((group) => (
@@ -46,10 +47,55 @@ export default function UnitsCard({ mainUnit, adscriptions, onMainUnitChange, on
               ))}
             </select>
           </Field>
-        </div>
+        </section>
 
-        <div className="flex flex-col gap-3">
-          <h3 id="adscriptions-title" className="m-0 text-sm font-semibold text-slate-800">Otras adscripciones válidas</h3>
+        <hr className="m-0 border-0 border-t border-slate-100" />
+
+        <section aria-labelledby="adscriptions-title" className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1">
+            <h3 id="adscriptions-title" className="m-0 font-sans text-base font-bold text-[#2A4B93]">Otras adscripciones válidas</h3>
+            <p className="m-0 text-sm text-slate-500">Unidades adicionales donde la persona mantiene una relación vigente o histórica.</p>
+          </div>
+
+          <div className="flex flex-col gap-2 rounded-2xl border border-slate-100 bg-slate-50/70 p-3 sm:flex-row sm:items-stretch">
+            <label htmlFor="persona-secondaryUnit" className="sr-only">Unidad a adscribir</label>
+            <select
+              id="persona-secondaryUnit"
+              className={`${inputClass} h-11 cursor-pointer py-0 sm:flex-1`}
+              value={pendingUnit}
+              onChange={(event) => setPendingUnit(event.target.value)}
+              disabled={available.length === 0}
+            >
+              <option value="">Seleccionar unidad…</option>
+              {available.map((group) => (
+                <optgroup key={group.area} label={group.area}>
+                  {group.units.map((unit) => (
+                    <option key={unit}>{unit}</option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+            <label htmlFor="persona-adscriptionType" className="sr-only">Tipo de relación</label>
+            <select
+              id="persona-adscriptionType"
+              className={`${inputClass} h-11 cursor-pointer py-0 sm:w-44`}
+              value={pendingType}
+              onChange={(event) => setPendingType(event.target.value as AdscriptionType)}
+            >
+              {ADSCRIPTION_TYPES.map((type) => (
+                <option key={type}>{type}</option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={add}
+              disabled={!pendingUnit}
+              className="inline-flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-full bg-[#2A4B93] px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-[#2A4B93]/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2A4B93]/40 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Plus size={15} aria-hidden="true" />
+              Adscribir
+            </button>
+          </div>
 
           <div className="overflow-x-auto rounded-2xl border border-slate-200">
             <table aria-labelledby="adscriptions-title" className="w-full min-w-[680px] border-collapse text-left text-sm">
@@ -112,47 +158,7 @@ export default function UnitsCard({ mainUnit, adscriptions, onMainUnitChange, on
           </div>
 
           <p className="m-0 text-xs italic text-slate-500">Sin botón eliminar — acción máxima permitida: Inactivar.</p>
-
-          <div className="mt-4 flex flex-col gap-2 rounded-2xl border border-slate-100 bg-slate-50/70 p-4 sm:flex-row sm:items-stretch">
-            <label htmlFor="persona-secondaryUnit" className="sr-only">Unidad a adscribir</label>
-            <select
-              id="persona-secondaryUnit"
-              className={`${inputClass} h-11 cursor-pointer py-0 sm:flex-1`}
-              value={pendingUnit}
-              onChange={(event) => setPendingUnit(event.target.value)}
-              disabled={available.length === 0}
-            >
-              <option value="">Seleccionar unidad…</option>
-              {available.map((group) => (
-                <optgroup key={group.area} label={group.area}>
-                  {group.units.map((unit) => (
-                    <option key={unit}>{unit}</option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
-            <label htmlFor="persona-adscriptionType" className="sr-only">Tipo de relación</label>
-            <select
-              id="persona-adscriptionType"
-              className={`${inputClass} h-11 cursor-pointer py-0 sm:w-44`}
-              value={pendingType}
-              onChange={(event) => setPendingType(event.target.value as AdscriptionType)}
-            >
-              {ADSCRIPTION_TYPES.map((type) => (
-                <option key={type}>{type}</option>
-              ))}
-            </select>
-            <button
-              type="button"
-              onClick={add}
-              disabled={!pendingUnit}
-              className="inline-flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-[#2A4B93] px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#2A4B93]/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2A4B93]/40 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <Plus size={15} aria-hidden="true" />
-              Adscribir
-            </button>
-          </div>
-        </div>
+        </section>
       </div>
     </Card>
   )

@@ -68,13 +68,15 @@ export function Card({
   description,
   aside,
   className = '',
+  titleClassName = 'font-semibold text-slate-900',
   children,
-}: {
+  }: {
   id: string
   title: string
   description: string
   aside?: React.ReactNode
   className?: string
+  titleClassName?: string
   children: React.ReactNode
 }) {
   return (
@@ -85,7 +87,7 @@ export function Card({
     >
       <header className="flex flex-col gap-3 border-b border-slate-100 pb-6 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <h3 id={`${id}-title`} className="m-0 text-base font-semibold text-slate-900">
+          <h3 id={`${id}-title`} className={`m-0 text-base ${titleClassName}`}>
             {title}
           </h3>
           <p className="m-0 mt-1 text-sm leading-relaxed text-slate-500 text-pretty">{description}</p>
