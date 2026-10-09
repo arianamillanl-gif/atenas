@@ -31,26 +31,31 @@ export default function UnitsCard({ mainUnit, secondaryUnits, onMainUnitChange, 
       title="Adscripción organizacional"
       description="Unidad principal vigente y otras unidades donde la persona mantiene una adscripción válida."
     >
-      <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2">
-      <Field id="persona-mainUnit" label="Unidad principal vigente" required hint="Selector de jerarquía organizativa">
-        <select id="persona-mainUnit" className={`${inputClass} h-11 cursor-pointer py-0`} value={mainUnit} onChange={(event) => onMainUnitChange(event.target.value)}>
-          {UNIT_TREE.map((group) => (
-            <optgroup key={group.area} label={group.area}>
-              {group.units.map((unit) => (
-                <option key={unit}>{unit}</option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
-      </Field>
+      <div className="grid grid-cols-1 items-start gap-8 md:grid-cols-2">
+      <div className="min-w-0">
+        <Field id="persona-mainUnit" label="Unidad principal vigente" required hint="Selector de jerarquía organizativa. Define la unidad de dependencia formal de la persona.">
+          <select id="persona-mainUnit" className={`${inputClass} h-11 cursor-pointer py-0`} value={mainUnit} onChange={(event) => onMainUnitChange(event.target.value)}>
+            {UNIT_TREE.map((group) => (
+              <optgroup key={group.area} label={group.area}>
+                {group.units.map((unit) => (
+                  <option key={unit}>{unit}</option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+        </Field>
+      </div>
 
       <div className="flex min-w-0 flex-col gap-3">
-        <span id="secondary-units-label" className="text-sm font-medium text-slate-700">Otras adscripciones válidas</span>
+        <div className="flex items-baseline justify-between gap-2">
+          <span id="secondary-units-label" className="text-sm font-medium text-slate-700">Otras adscripciones válidas</span>
+          <span className="text-xs text-slate-500">{secondaryUnits.length} {secondaryUnits.length === 1 ? 'unidad' : 'unidades'}</span>
+        </div>
 
         {secondaryUnits.length > 0 ? (
-          <ul aria-labelledby="secondary-units-label" className="m-0 flex list-none flex-wrap gap-2 p-0">
+          <ul aria-labelledby="secondary-units-label" className="m-0 flex min-h-11 list-none flex-wrap items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 p-2">
             {secondaryUnits.map((unit) => (
-              <li key={unit} className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 py-1 pl-3 pr-1 text-xs font-medium text-slate-700">
+              <li key={unit} className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white py-1 pl-3 pr-1 text-xs font-medium text-slate-700">
                 {unit}
                 <button
                   type="button"
@@ -64,10 +69,10 @@ export default function UnitsCard({ mainUnit, secondaryUnits, onMainUnitChange, 
             ))}
           </ul>
         ) : (
-          <p className="m-0 rounded-xl border border-dashed border-slate-200 px-4 py-3 text-xs text-slate-500">Sin adscripciones secundarias registradas.</p>
+          <p className="m-0 flex min-h-11 items-center rounded-xl border border-dashed border-slate-200 px-4 text-xs text-slate-500">Sin adscripciones secundarias registradas.</p>
         )}
 
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
           <label htmlFor="persona-secondaryUnit" className="sr-only">Unidad secundaria a adscribir</label>
           <select
             id="persona-secondaryUnit"
@@ -89,7 +94,7 @@ export default function UnitsCard({ mainUnit, secondaryUnits, onMainUnitChange, 
             type="button"
             onClick={add}
             disabled={!pending}
-            className="inline-flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-primary/10 px-5 text-sm font-medium text-primary transition hover:bg-primary/15 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Plus size={15} aria-hidden="true" />
             Adscribir
