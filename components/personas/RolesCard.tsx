@@ -33,20 +33,20 @@ export default function RolesCard({ roles, onAssign }: Props) {
       <fieldset className="m-0 flex flex-col gap-4 rounded-xl border border-slate-200 bg-slate-50/60 p-4">
         <legend className="px-1 text-xs font-semibold uppercase tracking-wider text-slate-500">Nueva asignación</legend>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Field id="assign-structure" label="Estructura / equipo" showSource={false}>
+          <Field id="assign-structure" label="Estructura / equipo">
             <select id="assign-structure" className={`${inputClass} cursor-pointer`} value={structure} onChange={(event) => setStructure(event.target.value)}>
               {STRUCTURES.map((item) => <option key={item}>{item}</option>)}
             </select>
           </Field>
-          <Field id="assign-role" label="Rol asignado" showSource={false}>
+          <Field id="assign-role" label="Rol asignado">
             <select id="assign-role" className={`${inputClass} cursor-pointer`} value={role} onChange={(event) => setRole(event.target.value)}>
               {ROLES.map((item) => <option key={item}>{item}</option>)}
             </select>
           </Field>
-          <Field id="assign-start" label="Vigencia desde" showSource={false}>
+          <Field id="assign-start" label="Vigencia desde">
             <input id="assign-start" type="date" className={inputClass} value={start} onChange={(event) => setStart(event.target.value)} />
           </Field>
-          <Field id="assign-end" label="Vigencia hasta" showSource={false}>
+          <Field id="assign-end" label="Vigencia hasta">
             <input id="assign-end" type="date" className={inputClass} value={end} min={start} onChange={(event) => setEnd(event.target.value)} />
           </Field>
         </div>
@@ -68,7 +68,7 @@ export default function RolesCard({ roles, onAssign }: Props) {
       </fieldset>
 
       <div className="flex flex-col gap-2">
-        <h3 className="m-0 text-xs font-semibold text-slate-700">Roles organizacionales históricos</h3>
+        <h3 className="m-0 text-sm font-medium text-slate-700">Roles organizacionales históricos</h3>
         <ol className="m-0 flex list-none flex-col divide-y divide-slate-100 rounded-xl border border-slate-200 p-0">
           {roles.map((item) => {
             const active = !item.end
@@ -88,7 +88,7 @@ export default function RolesCard({ roles, onAssign }: Props) {
                 </div>
                 <div className="flex shrink-0 items-center gap-3">
                   <span className="font-mono text-xs text-slate-500">{formatDate(item.start)} — {formatDate(item.end)}</span>
-                  <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium ${active ? 'bg-primary/10 text-primary' : 'bg-slate-100 text-slate-500'}`}>
+                  <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-medium ${active ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'bg-slate-100 text-slate-500 ring-1 ring-slate-200'}`}>
                     {active ? 'Vigente' : 'Cerrado'}
                   </span>
                 </div>

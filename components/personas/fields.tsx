@@ -1,59 +1,56 @@
 import type { LucideIcon } from 'lucide-react'
-import { Lock, PencilLine } from 'lucide-react'
+import { Lock } from 'lucide-react'
 
 export const inputClass =
-  'h-11 w-full rounded-xl border border-slate-200 bg-white px-3.5 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-4 focus:ring-primary/10 aria-[invalid=true]:border-red-400 aria-[invalid=true]:focus:ring-red-100'
+  'w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 transition-all placeholder:text-slate-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 aria-[invalid=true]:border-red-400 aria-[invalid=true]:focus:ring-red-100'
 
 export const readOnlyClass =
-  'h-11 w-full cursor-not-allowed rounded-xl border border-dashed border-slate-300 bg-slate-50 px-3.5 font-mono text-sm font-medium text-slate-600 outline-none'
+  'w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-4 pr-28 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-200'
 
-export function SourceBadge({ origin }: { origin?: string }) {
-  if (origin) {
-    return (
-      <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600">
-        <Lock size={11} aria-hidden="true" />
+export function ReadOnlyInput({ id, value, origin }: { id: string; value: string; origin: string }) {
+  return (
+    <div className="relative">
+      <input id={id} className={readOnlyClass} value={value} readOnly aria-readonly="true" aria-describedby={`${id}-origin`} />
+      <span
+        id={`${id}-origin`}
+        className="pointer-events-none absolute inset-y-0 right-3 flex items-center gap-1.5 text-xs font-medium text-slate-400"
+      >
+        <Lock size={12} aria-hidden="true" />
+        <span className="sr-only">Solo lectura, origen:</span>
         {origin}
       </span>
-    )
-  }
-  return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
-      <PencilLine size={11} aria-hidden="true" />
-      Editable
-    </span>
+    </div>
   )
 }
 
 export function Field({
   id,
   label,
-  origin,
   required,
   error,
   hint,
-  showSource = true,
   className = '',
   children,
 }: {
   id: string
   label: string
-  origin?: string
   required?: boolean
   error?: string
   hint?: string
-  showSource?: boolean
   className?: string
   children: React.ReactNode
 }) {
   return (
     <div className={`flex min-w-0 flex-col gap-2 ${className}`}>
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <label htmlFor={id} className="text-xs font-semibold text-slate-700">
-          {label}
-          {required && <span className="ml-1 font-normal text-slate-400">· Obligatorio</span>}
-        </label>
-        {showSource && <SourceBadge origin={origin} />}
-      </div>
+      <label htmlFor={id} className="text-sm font-medium text-slate-700">
+        {label}
+        {required && (
+          <span className="ml-0.5 text-red-400" aria-hidden="true">
+            *
+          </span>
+        )}
+        {required && <span className="sr-only"> (obligatorio)</span>}
+      </label>
       {children}
       {error ? (
         <span id={`${id}-error`} role="alert" className="text-xs text-red-600">
@@ -87,23 +84,23 @@ export function Card({
     <section
       id={id}
       aria-labelledby={`${id}-title`}
-      className={`flex scroll-mt-24 flex-col rounded-2xl bg-white shadow-sm ring-1 ring-slate-200/70 ${className}`}
+      className={`flex scroll-mt-24 flex-col gap-6 rounded-2xl border border-slate-100 bg-white p-8 shadow-sm ${className}`}
     >
-      <header className="flex flex-col gap-3 border-b border-slate-100 px-6 py-5 sm:flex-row sm:items-start sm:justify-between">
+      <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 items-start gap-3">
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
             <Icon size={18} aria-hidden="true" />
           </span>
           <div className="min-w-0">
-            <h2 id={`${id}-title`} className="m-0 text-base font-semibold text-slate-800">
+            <h2 id={`${id}-title`} className="m-0 text-base font-semibold text-slate-900">
               {title}
             </h2>
-            <p className="m-0 mt-0.5 text-xs leading-relaxed text-slate-500 text-pretty">{description}</p>
+            <p className="m-0 mt-1 text-sm leading-relaxed text-slate-500 text-pretty">{description}</p>
           </div>
         </div>
         {aside && <div className="shrink-0">{aside}</div>}
       </header>
-      <div className="flex flex-1 flex-col gap-5 p-6">{children}</div>
+      <div className="flex flex-1 flex-col gap-5">{children}</div>
     </section>
   )
 }

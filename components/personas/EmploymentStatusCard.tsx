@@ -53,7 +53,7 @@ export default function EmploymentStatusCard({ form, errors, statusChanged, show
       }
     >
       {showWarning && (
-        <div role="alert" className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-800">
+        <div role="alert" className="flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
           <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#ECB421]/25 text-amber-700">
             <AlertTriangle size={16} aria-hidden="true" />
           </span>

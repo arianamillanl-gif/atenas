@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Building2, Plus, X } from 'lucide-react'
-import { Card, Field, SourceBadge, inputClass } from './fields'
+import { Card, Field, inputClass } from './fields'
 import { UNIT_TREE } from './data'
 
 type Props = {
@@ -44,10 +44,7 @@ export default function UnitsCard({ mainUnit, secondaryUnits, onMainUnitChange, 
       </Field>
 
       <div className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <span id="secondary-units-label" className="text-xs font-semibold text-slate-700">Otras adscripciones válidas</span>
-          <SourceBadge />
-        </div>
+        <span id="secondary-units-label" className="text-sm font-medium text-slate-700">Otras adscripciones válidas</span>
 
         {secondaryUnits.length > 0 ? (
           <ul aria-labelledby="secondary-units-label" className="m-0 flex list-none flex-wrap gap-2 p-0">

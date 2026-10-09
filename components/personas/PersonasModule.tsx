@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useRef, useState } from 'react'
-import { AlertTriangle, BadgeCheck, Check, FileSearch, Lock, PencilLine, RefreshCw, UserMinus, UserPlus, Users } from 'lucide-react'
+import { AlertTriangle, BadgeCheck, Check, FileSearch, Lock, PencilLine, RefreshCw, UserMinus, UserPlus } from 'lucide-react'
 
 import TraceabilityDrawer, { type AuditEvent } from '../TraceabilityDrawer'
 import ConfirmDialog from './ConfirmDialog'
@@ -151,24 +151,51 @@ export default function PersonasModule() {
       <section className="content flex min-h-screen flex-col">
         <Topbar />
 
-        <div className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col gap-6 px-4 py-6 md:px-8 md:py-8">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div className="flex flex-col gap-2">
-              <nav aria-label="Ruta de navegación" className="flex items-center gap-2 text-sm text-slate-500">
-                <a href="#talento" className="transition-colors hover:text-primary">Gestión de talento</a>
-                <span className="text-slate-400" aria-hidden="true">›</span>
-                <span className="font-medium text-slate-700" aria-current="page">Personas</span>
-              </nav>
-              <h1 className="m-0 text-3xl font-semibold text-primary">Personas</h1>
-              <p className="m-0 text-sm leading-relaxed text-slate-500 text-pretty">
-                Mantener identidad, contacto, estado laboral y relaciones organizacionales históricas.
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center gap-3">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 font-mono text-xs font-medium text-slate-700">
-                <Lock size={12} aria-hidden="true" />
-                ID: {PERSONA_ID}
+        <div className="mx-auto flex w-full max-w-[1440px] flex-1 flex-col gap-8 px-4 py-6 md:px-8 md:py-8">
+          <div className="flex flex-col gap-2">
+            <nav aria-label="Ruta de navegación" className="flex items-center gap-2 text-sm text-slate-500">
+              <a href="#talento" className="transition-colors hover:text-primary">Gestión de talento</a>
+              <span className="text-slate-400" aria-hidden="true">›</span>
+              <span className="font-medium text-slate-700" aria-current="page">Personas</span>
+            </nav>
+            <h1 className="m-0 text-3xl font-semibold text-primary">Personas</h1>
+            <p className="m-0 text-sm leading-relaxed text-slate-500 text-pretty">
+              Mantener identidad, contacto, estado laboral y relaciones organizacionales históricas.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-5 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between md:px-8">
+            <div className="flex min-w-0 items-center gap-4">
+              <span
+                aria-hidden="true"
+                className="flex size-14 shrink-0 items-center justify-center rounded-full bg-primary text-lg font-semibold text-primary-foreground"
+              >
+                {(form.firstNames.trim()[0] ?? '').toUpperCase()}
+                {(form.lastNames.trim()[0] ?? '').toUpperCase()}
               </span>
+              <div className="flex min-w-0 flex-col gap-1">
+                <p className="m-0 truncate text-lg font-semibold text-slate-900">
+                  {form.firstNames} {form.lastNames}
+                </p>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-500">
+                  <span>{form.mainUnit}</span>
+                  <span aria-hidden="true" className="text-slate-300">|</span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <span
+                      aria-hidden="true"
+                      className={`size-2 rounded-full ${DRASTIC_STATUSES.includes(savedStatus) ? 'bg-slate-400' : 'bg-emerald-500'}`}
+                    />
+                    {savedStatus}
+                  </span>
+                  <span aria-hidden="true" className="text-slate-300">|</span>
+                  <span className="inline-flex items-center gap-1.5 font-mono text-xs">
+                    <Lock size={12} aria-hidden="true" />
+                    ID {PERSONA_ID}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="flex shrink-0">
               <button
                 type="button"
                 aria-haspopup="dialog"
@@ -182,25 +209,9 @@ export default function PersonasModule() {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-2xl bg-white px-5 py-3 text-xs text-slate-500 shadow-sm ring-1 ring-slate-200/70">
-            <span className="inline-flex items-center gap-2 font-medium text-slate-700">
-              <Users size={14} aria-hidden="true" className="text-primary" />
-              {form.firstNames} {form.lastNames}
-            </span>
-            <span className="inline-flex items-center gap-1.5"><Lock size={12} aria-hidden="true" />Solo lectura: dato de origen o sistema</span>
-            <span className="inline-flex items-center gap-1.5"><PencilLine size={12} aria-hidden="true" className="text-primary" />Editable según permisos</span>
-          </div>
-
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-2">
+            <div className="flex min-w-0 flex-col gap-8">
             <IdentityCard form={form} errors={errors} onChange={update} />
-            <EmploymentStatusCard
-              form={form}
-              errors={errors}
-              statusChanged={statusChanged}
-              showWarning={showWarning}
-              onChange={update}
-              onViewHistory={() => setTraceOpen(true)}
-            />
             <UnitsCard
               mainUnit={form.mainUnit}
               secondaryUnits={secondaryUnits}
@@ -214,7 +225,18 @@ export default function PersonasModule() {
               }}
               onRemoveSecondary={(unit) => setSecondaryUnits((current) => current.filter((item) => item !== unit))}
             />
-            <RolesCard roles={roles} onAssign={assignRole} />
+            </div>
+            <div className="flex min-w-0 flex-col gap-8">
+              <EmploymentStatusCard
+                form={form}
+                errors={errors}
+                statusChanged={statusChanged}
+                showWarning={showWarning}
+                onChange={update}
+                onViewHistory={() => setTraceOpen(true)}
+              />
+              <RolesCard roles={roles} onAssign={assignRole} />
+            </div>
           </div>
 
           <footer className="flex flex-col justify-between gap-1 text-[11px] text-slate-400 sm:flex-row">
@@ -223,7 +245,7 @@ export default function PersonasModule() {
           </footer>
         </div>
 
-        <div className="sticky bottom-0 z-20 flex flex-col gap-3 border-t border-slate-100 bg-white px-4 py-4 shadow-md sm:flex-row sm:items-center sm:justify-between md:px-8">
+        <div className="sticky bottom-0 z-20 flex flex-col gap-3 border-t border-slate-100 bg-white px-4 py-4 shadow-[0_-8px_24px_-12px_rgba(15,23,42,0.15)] sm:flex-row sm:items-center sm:justify-between md:px-8">
           <button
             type="button"
             onClick={() => setDialog('cancel')}
@@ -235,7 +257,7 @@ export default function PersonasModule() {
             <button
               type="button"
               onClick={requestStatusChange}
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-700 bg-white px-6 py-2.5 text-sm font-medium text-slate-800 transition hover:bg-slate-50"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-slate-900 bg-white px-6 py-2.5 text-sm font-medium text-slate-800 transition hover:bg-slate-50"
             >
               <UserMinus size={15} aria-hidden="true" />
               Registrar baja / Cambio estado

@@ -1,5 +1,5 @@
 import { Fingerprint } from 'lucide-react'
-import { Card, Field, inputClass, readOnlyClass } from './fields'
+import { Card, Field, ReadOnlyInput, inputClass } from './fields'
 import type { FormErrors, PersonaForm } from './data'
 
 type Props = {
@@ -19,8 +19,8 @@ export default function IdentityCard({ form, errors, onChange }: Props) {
       title="Identificación estable y contacto"
       description="El documento proviene del registro de origen y no se sobrescribe. Nombres y contacto son editables según permisos."
     >
-      <Field id="persona-document" label="Documento de identidad" origin="Origen: SAIME" hint="Dato de origen · solo lectura">
-        <input id="persona-document" className={readOnlyClass} value="V-12345678" readOnly aria-readonly="true" />
+      <Field id="persona-document" label="Documento de identidad">
+        <ReadOnlyInput id="persona-document" value="V-12345678" origin="SAIME" />
       </Field>
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
