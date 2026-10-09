@@ -25,6 +25,23 @@ export type RoleRecord = {
   principal: boolean
 }
 
+export const ADSCRIPTION_TYPES = ['Secundaria', 'Temporal'] as const
+export type AdscriptionType = (typeof ADSCRIPTION_TYPES)[number]
+
+export type AdscriptionRecord = {
+  id: string
+  unit: string
+  type: AdscriptionType
+  start: string
+  end: string | null
+  active: boolean
+}
+
+export const initialAdscriptions: AdscriptionRecord[] = [
+  { id: 'a-2', unit: 'Talento Humano', type: 'Secundaria', start: '2025-01-01', end: null, active: true },
+  { id: 'a-1', unit: 'Auditoría Externa', type: 'Temporal', start: '2024-04-15', end: '2024-12-31', active: false },
+]
+
 export const UNIT_TREE: { area: string; units: string[] }[] = [
   { area: 'Dirección General', units: ['Gerencia de Operaciones', 'Gerencia de Planificación'] },
   { area: 'Dirección de Consultoría', units: ['Consultoría Tributaria', 'Consultoría Financiera', 'Auditoría Externa'] },

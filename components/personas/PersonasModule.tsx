@@ -14,8 +14,10 @@ import {
   DRASTIC_STATUSES,
   PERSONA_ID,
   TODAY,
+  initialAdscriptions,
   initialForm,
   initialRoles,
+  type AdscriptionRecord,
   type FormErrors,
   type PersonaForm,
   type RoleRecord,
@@ -44,7 +46,7 @@ export default function PersonasModule() {
   const [form, setForm] = useState<PersonaForm>(initialForm)
   const [savedStatus, setSavedStatus] = useState(initialForm.status)
   const [errors, setErrors] = useState<FormErrors>({})
-  const [secondaryUnits, setSecondaryUnits] = useState(['Auditoría Externa', 'Talento Humano'])
+  const [adscriptions, setAdscriptions] = useState<AdscriptionRecord[]>(initialAdscriptions)
   const [roles, setRoles] = useState<RoleRecord[]>(initialRoles)
   const [events, setEvents] = useState(initialEvents)
   const [bajaIntent, setBajaIntent] = useState(false)
@@ -231,16 +233,26 @@ export default function PersonasModule() {
           <div className="flex flex-col rounded-3xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
             <UnitsCard
               mainUnit={form.mainUnit}
-              secondaryUnits={secondaryUnits}
+              adscriptions={adscriptions}
               onMainUnitChange={(unit) => {
                 update('mainUnit', unit)
-                setSecondaryUnits((current) => current.filter((item) => item !== unit))
+                setAdscriptions((current) =>
+                  current.map((item) => (item.active && item.unit === unit ? { ...item, active: false, end: TODAY } : item)),
+                )
               }}
-              onAddSecondary={(unit) => {
-                setSecondaryUnits((current) => [...current, unit])
+              onAdd={(unit, type) => {
+                setAdscriptions((current) => [{ id: `a-${Date.now()}`, unit, type, start: TODAY, end: null, active: true }, ...current])
+                logEvent({ user: 'María González', role: 'Administradora', action: 'Nueva adscripción', detail: `Adscripción ${type.toLowerCase()} a ${unit} registrada.`, icon: BadgeCheck, tone: 'primary' })
                 flash(`Adscripción a ${unit} añadida`)
               }}
-              onRemoveSecondary={(unit) => setSecondaryUnits((current) => current.filter((item) => item !== unit))}
+              onInactivate={(id) => {
+                const target = adscriptions.find((item) => item.id === id)
+                if (!target) return
+                setAdscriptions((current) => current.map((item) => (item.id === id ? { ...item, active: false, end: TODAY } : item)))
+                logEvent({ user: 'María González', role: 'Administradora', action: 'Inactivación de adscripción', detail: `Adscripción a ${target.unit} inactivada. Se conserva en el historial.`, icon: UserMinus, tone: 'accent' })
+                flash(`Adscripción a ${target.unit} inactivada`)
+              }}
+              onView={() => setTraceOpen(true)}
             />
           </div>
 
