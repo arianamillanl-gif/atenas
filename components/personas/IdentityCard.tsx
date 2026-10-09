@@ -19,11 +19,10 @@ export default function IdentityCard({ form, errors, onChange }: Props) {
       title="Identificación estable y contacto"
       description="El documento proviene del registro de origen y no se sobrescribe. Nombres y contacto son editables según permisos."
     >
-      <Field id="persona-document" label="Documento de identidad">
-        <ReadOnlyInput id="persona-document" value="V-12345678" origin="SAIME" />
-      </Field>
-
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+        <Field id="persona-document" label="Documento de identidad">
+          <ReadOnlyInput id="persona-document" value="V-12345678" origin="SAIME" />
+        </Field>
         <Field id="persona-firstNames" label="Nombres" required error={errors.firstNames}>
           <input
             id="persona-firstNames"
@@ -48,7 +47,7 @@ export default function IdentityCard({ form, errors, onChange }: Props) {
         </Field>
       </div>
 
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <Field id="persona-email" label="Correo electrónico" required error={errors.email} hint="Formato: nombre@dominio.com">
           <input
             id="persona-email"

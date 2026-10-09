@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useRef, useState } from 'react'
-import { AlertTriangle, BadgeCheck, Check, FileSearch, Lock, PencilLine, RefreshCw, UserMinus, UserPlus } from 'lucide-react'
+import { AlertTriangle, BadgeCheck, Building2, CalendarClock, Check, FileSearch, Fingerprint, Lock, PencilLine, RefreshCw, UserMinus, UserPlus } from 'lucide-react'
 
 import TraceabilityDrawer, { type AuditEvent } from '../TraceabilityDrawer'
 import ConfirmDialog from './ConfirmDialog'
@@ -20,6 +20,20 @@ import {
   type PersonaForm,
   type RoleRecord,
 } from './data'
+
+type TabId = 'identidad' | 'estado' | 'adscripcion'
+
+const TABS: { id: TabId; label: string; icon: typeof Fingerprint }[] = [
+  { id: 'identidad', label: 'Identificación y Contacto', icon: Fingerprint },
+  { id: 'estado', label: 'Estado Laboral y Ciclo de Vida', icon: CalendarClock },
+  { id: 'adscripcion', label: 'Adscripción y Estructuras', icon: Building2 },
+]
+
+const TAB_FIELDS: Record<TabId, (keyof PersonaForm)[]> = {
+  identidad: ['firstNames', 'lastNames', 'email', 'phone'],
+  estado: ['status', 'validFrom', 'validTo', 'reason'],
+  adscripcion: ['mainUnit'],
+}
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 const PHONE_PATTERN = /^\+?[\d\s()-]{10,18}$/
@@ -51,7 +65,19 @@ export default function PersonasModule() {
   const [dialog, setDialog] = useState<'cancel' | 'status' | null>(null)
   const [traceOpen, setTraceOpen] = useState(false)
   const [notice, setNotice] = useState('')
+  const [activeTab, setActiveTab] = useState<TabId>('identidad')
   const noticeTimer = useRef<number | undefined>(undefined)
+  const principalRole = roles.find((role) => role.principal && !role.end)
+
+  const onTabKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    const step = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0
+    if (!step) return
+    event.preventDefault()
+    const index = TABS.findIndex((tab) => tab.id === activeTab)
+    const next = TABS[(index + step + TABS.length) % TABS.length].id
+    setActiveTab(next)
+    document.getElementById(`tab-${next}`)?.focus()
+  }
 
   const closeTrace = useCallback(() => setTraceOpen(false), [])
   const closeDialog = useCallback(() => setDialog(null), [])
@@ -75,9 +101,15 @@ export default function PersonasModule() {
   }
 
   const focusField = (id: string) => {
-    const element = document.getElementById(id)
-    element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    element?.focus({ preventScroll: true })
+    const key = id.replace('persona-', '') as keyof PersonaForm
+    const tab = TABS.find((item) => TAB_FIELDS[item.id].includes(key))
+    if (tab) setActiveTab(tab.id)
+    // Wait for the target tab panel to mount before focusing.
+    window.requestAnimationFrame(() => {
+      const element = document.getElementById(id)
+      element?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      element?.focus({ preventScroll: true })
+    })
   }
 
   const validate = () => {
@@ -164,29 +196,32 @@ export default function PersonasModule() {
             </p>
           </div>
 
-          <div className="flex flex-col gap-5 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between md:px-8">
+          <div className="flex flex-col gap-5 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm sm:flex-row sm:items-center sm:justify-between md:px-8">
             <div className="flex min-w-0 items-center gap-4">
               <span
                 aria-hidden="true"
-                className="flex size-14 shrink-0 items-center justify-center rounded-full bg-primary text-lg font-semibold text-primary-foreground"
+                className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary text-base font-semibold text-primary-foreground"
               >
                 {(form.firstNames.trim()[0] ?? '').toUpperCase()}
                 {(form.lastNames.trim()[0] ?? '').toUpperCase()}
               </span>
-              <div className="flex min-w-0 flex-col gap-1">
-                <p className="m-0 truncate text-lg font-semibold text-slate-900">
-                  {form.firstNames} {form.lastNames}
-                </p>
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-500">
-                  <span>{form.mainUnit}</span>
-                  <span aria-hidden="true" className="text-slate-300">|</span>
-                  <span className="inline-flex items-center gap-1.5">
+              <div className="flex min-w-0 flex-col gap-1.5">
+                <div className="flex flex-wrap items-center gap-3">
+                  <h2 className="m-0 truncate text-xl font-semibold text-slate-900">
+                    {form.firstNames} {form.lastNames}
+                  </h2>
+                  <span
+                    className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${DRASTIC_STATUSES.includes(savedStatus) ? 'bg-slate-100 text-slate-600' : 'bg-emerald-50 text-emerald-700'}`}
+                  >
                     <span
                       aria-hidden="true"
-                      className={`size-2 rounded-full ${DRASTIC_STATUSES.includes(savedStatus) ? 'bg-slate-400' : 'bg-emerald-500'}`}
+                      className={`size-1.5 rounded-full ${DRASTIC_STATUSES.includes(savedStatus) ? 'bg-slate-400' : 'bg-emerald-500'}`}
                     />
                     {savedStatus}
                   </span>
+                </div>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-500">
+                  <span>{principalRole ? `${principalRole.role} · ${form.mainUnit}` : form.mainUnit}</span>
                   <span aria-hidden="true" className="text-slate-300">|</span>
                   <span className="inline-flex items-center gap-1.5 font-mono text-xs">
                     <Lock size={12} aria-hidden="true" />
@@ -209,9 +244,60 @@ export default function PersonasModule() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-2">
-            <div className="flex min-w-0 flex-col gap-8">
-            <IdentityCard form={form} errors={errors} onChange={update} />
+          <div className="flex flex-col rounded-3xl border border-slate-100 bg-white shadow-sm">
+            <div
+              role="tablist"
+              aria-label="Secciones de la ficha de persona"
+              className="flex gap-1 overflow-x-auto border-b border-slate-100 px-4 md:px-8"
+            >
+              {TABS.map((tab) => {
+                const selected = activeTab === tab.id
+                const tabErrors = TAB_FIELDS[tab.id].filter((key) => errors[key]).length
+                return (
+                  <button
+                    key={tab.id}
+                    id={`tab-${tab.id}`}
+                    type="button"
+                    role="tab"
+                    aria-selected={selected}
+                    aria-controls={`panel-${tab.id}`}
+                    tabIndex={selected ? 0 : -1}
+                    onClick={() => setActiveTab(tab.id)}
+                    onKeyDown={onTabKeyDown}
+                    className={`-mb-px inline-flex shrink-0 items-center gap-2 border-b-2 px-3 py-5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 ${selected ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-800'}`}
+                  >
+                    <tab.icon size={16} aria-hidden="true" />
+                    {tab.label}
+                    {tabErrors > 0 && (
+                      <span className="inline-flex size-5 items-center justify-center rounded-full bg-red-50 text-[11px] font-semibold text-red-600">
+                        {tabErrors}
+                        <span className="sr-only"> errores</span>
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+
+            <div
+              id={`panel-${activeTab}`}
+              role="tabpanel"
+              aria-labelledby={`tab-${activeTab}`}
+              className="flex flex-col gap-10 p-6 md:p-8"
+            >
+              {activeTab === 'identidad' && <IdentityCard form={form} errors={errors} onChange={update} />}
+              {activeTab === 'estado' && (
+                <EmploymentStatusCard
+                  form={form}
+                  errors={errors}
+                  statusChanged={statusChanged}
+                  showWarning={showWarning}
+                  onChange={update}
+                  onViewHistory={() => setTraceOpen(true)}
+                />
+              )}
+              {activeTab === 'adscripcion' && (
+                <>
             <UnitsCard
               mainUnit={form.mainUnit}
               secondaryUnits={secondaryUnits}
@@ -225,17 +311,9 @@ export default function PersonasModule() {
               }}
               onRemoveSecondary={(unit) => setSecondaryUnits((current) => current.filter((item) => item !== unit))}
             />
-            </div>
-            <div className="flex min-w-0 flex-col gap-8">
-              <EmploymentStatusCard
-                form={form}
-                errors={errors}
-                statusChanged={statusChanged}
-                showWarning={showWarning}
-                onChange={update}
-                onViewHistory={() => setTraceOpen(true)}
-              />
-              <RolesCard roles={roles} onAssign={assignRole} />
+                  <RolesCard roles={roles} onAssign={assignRole} />
+                </>
+              )}
             </div>
           </div>
 
@@ -245,7 +323,7 @@ export default function PersonasModule() {
           </footer>
         </div>
 
-        <div className="sticky bottom-0 z-20 flex flex-col gap-3 border-t border-slate-100 bg-white px-4 py-4 shadow-[0_-8px_24px_-12px_rgba(15,23,42,0.15)] sm:flex-row sm:items-center sm:justify-between md:px-8">
+        <div className="sticky bottom-0 z-30 flex flex-col gap-3 border-t border-slate-100 bg-white/95 px-4 py-4 shadow-lg backdrop-blur-md sm:flex-row sm:items-center sm:justify-between md:px-8">
           <button
             type="button"
             onClick={() => setDialog('cancel')}

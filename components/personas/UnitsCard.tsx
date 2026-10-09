@@ -31,6 +31,7 @@ export default function UnitsCard({ mainUnit, secondaryUnits, onMainUnitChange, 
       title="Adscripción organizacional"
       description="Unidad principal vigente y otras unidades donde la persona mantiene una adscripción válida."
     >
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
       <Field id="persona-mainUnit" label="Unidad principal vigente" required hint="Selector de jerarquía organizativa">
         <select id="persona-mainUnit" className={`${inputClass} cursor-pointer`} value={mainUnit} onChange={(event) => onMainUnitChange(event.target.value)}>
           {UNIT_TREE.map((group) => (
@@ -94,6 +95,7 @@ export default function UnitsCard({ mainUnit, secondaryUnits, onMainUnitChange, 
             Adscribir
           </button>
         </div>
+      </div>
       </div>
     </Card>
   )

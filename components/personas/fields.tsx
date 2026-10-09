@@ -2,10 +2,10 @@ import type { LucideIcon } from 'lucide-react'
 import { Lock } from 'lucide-react'
 
 export const inputClass =
-  'w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 transition-all placeholder:text-slate-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 aria-[invalid=true]:border-red-400 aria-[invalid=true]:focus:ring-red-100'
+  'w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 transition-all placeholder:text-slate-400 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 aria-[invalid=true]:border-red-400 aria-[invalid=true]:focus:ring-red-100'
 
 export const readOnlyClass =
-  'w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-50 py-2.5 pl-4 pr-28 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-200'
+  'w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-50 py-3 pl-4 pr-28 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-200'
 
 export function ReadOnlyInput({ id, value, origin }: { id: string; value: string; origin: string }) {
   return (
@@ -84,23 +84,21 @@ export function Card({
     <section
       id={id}
       aria-labelledby={`${id}-title`}
-      className={`flex scroll-mt-24 flex-col gap-6 rounded-2xl border border-slate-100 bg-white p-8 shadow-sm ${className}`}
+      className={`flex scroll-mt-24 flex-col gap-8 border-b border-slate-100 pb-10 last:border-b-0 last:pb-0 ${className}`}
     >
-      <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <header className="flex flex-col gap-3 border-b border-slate-100 pb-6 sm:flex-row sm:items-start sm:justify-between">
         <div className="flex min-w-0 items-start gap-3">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-            <Icon size={18} aria-hidden="true" />
-          </span>
+          <Icon size={20} aria-hidden="true" className="mt-0.5 shrink-0 text-primary" />
           <div className="min-w-0">
-            <h2 id={`${id}-title`} className="m-0 text-base font-semibold text-slate-900">
+            <h3 id={`${id}-title`} className="m-0 text-base font-semibold text-slate-900">
               {title}
-            </h2>
+            </h3>
             <p className="m-0 mt-1 text-sm leading-relaxed text-slate-500 text-pretty">{description}</p>
           </div>
         </div>
         {aside && <div className="shrink-0">{aside}</div>}
       </header>
-      <div className="flex flex-1 flex-col gap-5">{children}</div>
+      <div className="flex flex-1 flex-col gap-6">{children}</div>
     </section>
   )
 }

@@ -66,6 +66,7 @@ export default function EmploymentStatusCard({ form, errors, statusChanged, show
         </div>
       )}
 
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
       <Field id="persona-status" label="Estado laboral vigente" required hint="Catálogo gobernado por Talento Humano">
         <select
           id="persona-status"
@@ -85,6 +86,7 @@ export default function EmploymentStatusCard({ form, errors, statusChanged, show
           <DateInput id="persona-validTo" label="Fin de vigencia" value={form.validTo} min={form.validFrom} onChange={(value) => onChange('validTo', value)} />
         </div>
       </Field>
+      </div>
 
       <Field
         id="persona-reason"
