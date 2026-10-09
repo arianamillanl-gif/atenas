@@ -32,7 +32,7 @@ export default function RolesCard({ roles, onAssign }: Props) {
     >
       <fieldset className="m-0 flex min-w-0 flex-col gap-5 rounded-2xl border border-slate-100 bg-slate-50/70 p-6">
         <legend className="float-left mb-1 w-full p-0 text-xs font-semibold uppercase tracking-wider text-slate-500">Nueva asignación</legend>
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
           <Field id="assign-structure" label="Estructura / equipo">
             <select id="assign-structure" className={`${inputClass} cursor-pointer`} value={structure} onChange={(event) => setStructure(event.target.value)}>
               {STRUCTURES.map((item) => <option key={item}>{item}</option>)}
@@ -50,18 +50,18 @@ export default function RolesCard({ roles, onAssign }: Props) {
             <input id="assign-end" type="date" className={inputClass} value={end} min={start} onChange={(event) => setEnd(event.target.value)} />
           </Field>
         </div>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 border-t border-slate-200 pt-5 sm:flex-row sm:items-center sm:justify-between">
           <label className="inline-flex cursor-pointer items-center gap-2.5 text-sm text-slate-700">
-            <input type="checkbox" checked={principal} onChange={(event) => setPrincipal(event.target.checked)} className="size-4 accent-primary" />
+            <input type="checkbox" checked={principal} onChange={(event) => setPrincipal(event.target.checked)} className="size-4 cursor-pointer accent-[#2A4B93]" />
             Condición principal
           </label>
           <button
             type="button"
             onClick={assign}
             disabled={!start}
-            className="inline-flex h-11 items-center justify-center gap-1.5 rounded-full border border-primary/30 px-5 text-sm font-medium text-primary transition hover:bg-primary/5 disabled:opacity-50"
+            className="inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-full bg-[#2A4B93] px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-[#223d7a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2A4B93]/40 focus-visible:ring-offset-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
           >
-            <Plus size={15} aria-hidden="true" />
+            <Plus size={16} aria-hidden="true" />
             Asignar rol
           </button>
         </div>
