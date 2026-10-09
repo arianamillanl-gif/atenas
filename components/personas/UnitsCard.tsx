@@ -31,7 +31,7 @@ export default function UnitsCard({ mainUnit, adscriptions, onMainUnitChange, on
     <Card
       id="adscripcion"
       title="Adscripción organizacional"
-      titleClassName="font-sans text-lg font-bold text-[#2A4B93]"
+      titleClassName="font-sans text-lg font-bold text-slate-900"
       description="Unidad principal vigente y otras unidades donde la persona mantiene una adscripción válida."
     >
       <div className="flex flex-col gap-8">
@@ -53,7 +53,7 @@ export default function UnitsCard({ mainUnit, adscriptions, onMainUnitChange, on
 
         <section aria-labelledby="adscriptions-title" className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
-            <h3 id="adscriptions-title" className="m-0 font-sans text-base font-bold text-[#2A4B93]">Otras adscripciones válidas</h3>
+            <h3 id="adscriptions-title" className="m-0 font-sans text-base font-bold text-slate-900">Otras adscripciones válidas</h3>
             <p className="m-0 text-sm text-slate-500">Unidades adicionales donde la persona mantiene una relación vigente o histórica.</p>
           </div>
 

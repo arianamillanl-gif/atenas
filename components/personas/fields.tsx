@@ -68,7 +68,7 @@ export function Card({
   description,
   aside,
   className = '',
-  titleClassName = 'font-semibold text-slate-900',
+  titleClassName = 'font-sans text-lg font-bold text-slate-900',
   children,
   }: {
   id: string

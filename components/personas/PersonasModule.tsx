@@ -187,7 +187,7 @@ export default function PersonasModule() {
               <span className="text-slate-400" aria-hidden="true">›</span>
               <span className="font-medium text-slate-700" aria-current="page">Personas</span>
             </nav>
-            <h1 className="m-0 font-sans text-3xl font-bold text-[#2A4B93]">Personas</h1>
+            <h1 className="m-0 font-sans text-3xl font-bold text-slate-900">Personas</h1>
             <p className="m-0 text-sm leading-relaxed text-slate-500 text-pretty">
               Mantener identidad, contacto, estado laboral y relaciones organizacionales históricas.
             </p>
