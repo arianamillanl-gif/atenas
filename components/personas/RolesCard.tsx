@@ -30,8 +30,8 @@ export default function RolesCard({ roles, onAssign }: Props) {
       description="Pertenencia a estructuras o equipos de trabajo. Los roles cerrados se conservan como historial."
       aside={<span className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">{activeCount} vigentes</span>}
     >
-      <fieldset className="m-0 flex min-w-0 flex-col gap-5 border-0 p-0">
-        <legend className="mb-4 p-0 text-xs font-semibold uppercase tracking-wider text-slate-500">Nueva asignación</legend>
+      <fieldset className="m-0 flex min-w-0 flex-col gap-5 rounded-2xl border border-slate-100 bg-slate-50/70 p-6">
+        <legend className="float-left mb-1 w-full p-0 text-xs font-semibold uppercase tracking-wider text-slate-500">Nueva asignación</legend>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
           <Field id="assign-structure" label="Estructura / equipo">
             <select id="assign-structure" className={`${inputClass} cursor-pointer`} value={structure} onChange={(event) => setStructure(event.target.value)}>
@@ -67,7 +67,7 @@ export default function RolesCard({ roles, onAssign }: Props) {
         </div>
       </fieldset>
 
-      <div className="flex flex-col gap-4 border-t border-slate-100 pt-6">
+      <div className="flex flex-col gap-4 pt-2">
         <h4 id="roles-history-title" className="m-0 text-xs font-semibold uppercase tracking-wider text-slate-500">Roles organizacionales históricos</h4>
         <div className="overflow-x-auto">
           <table aria-labelledby="roles-history-title" className="w-full min-w-[640px] border-collapse text-left text-sm">

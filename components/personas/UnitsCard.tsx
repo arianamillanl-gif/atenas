@@ -31,9 +31,9 @@ export default function UnitsCard({ mainUnit, secondaryUnits, onMainUnitChange, 
       title="Adscripción organizacional"
       description="Unidad principal vigente y otras unidades donde la persona mantiene una adscripción válida."
     >
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2">
       <Field id="persona-mainUnit" label="Unidad principal vigente" required hint="Selector de jerarquía organizativa">
-        <select id="persona-mainUnit" className={`${inputClass} cursor-pointer`} value={mainUnit} onChange={(event) => onMainUnitChange(event.target.value)}>
+        <select id="persona-mainUnit" className={`${inputClass} h-11 cursor-pointer py-0`} value={mainUnit} onChange={(event) => onMainUnitChange(event.target.value)}>
           {UNIT_TREE.map((group) => (
             <optgroup key={group.area} label={group.area}>
               {group.units.map((unit) => (
@@ -44,7 +44,7 @@ export default function UnitsCard({ mainUnit, secondaryUnits, onMainUnitChange, 
         </select>
       </Field>
 
-      <div className="flex flex-col gap-3">
+      <div className="flex min-w-0 flex-col gap-3">
         <span id="secondary-units-label" className="text-sm font-medium text-slate-700">Otras adscripciones válidas</span>
 
         {secondaryUnits.length > 0 ? (
@@ -67,11 +67,11 @@ export default function UnitsCard({ mainUnit, secondaryUnits, onMainUnitChange, 
           <p className="m-0 rounded-xl border border-dashed border-slate-200 px-4 py-3 text-xs text-slate-500">Sin adscripciones secundarias registradas.</p>
         )}
 
-        <div className="flex flex-col gap-2 sm:flex-row">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <label htmlFor="persona-secondaryUnit" className="sr-only">Unidad secundaria a adscribir</label>
           <select
             id="persona-secondaryUnit"
-            className={`${inputClass} cursor-pointer sm:flex-1`}
+            className={`${inputClass} h-11 cursor-pointer py-0 sm:flex-1`}
             value={pending}
             onChange={(event) => setPending(event.target.value)}
             disabled={available.length === 0}
@@ -89,7 +89,7 @@ export default function UnitsCard({ mainUnit, secondaryUnits, onMainUnitChange, 
             type="button"
             onClick={add}
             disabled={!pending}
-            className="inline-flex h-11 items-center justify-center gap-1.5 rounded-full border border-primary/30 px-5 text-sm font-medium text-primary transition hover:bg-primary/5 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex h-11 shrink-0 items-center justify-center gap-1.5 rounded-xl bg-primary/10 px-5 text-sm font-medium text-primary transition hover:bg-primary/15 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Plus size={15} aria-hidden="true" />
             Adscribir

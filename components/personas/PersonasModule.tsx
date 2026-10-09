@@ -228,7 +228,7 @@ export default function PersonasModule() {
             />
           </div>
 
-          <div className="flex flex-col gap-10 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
+          <div className="flex flex-col rounded-3xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
             <UnitsCard
               mainUnit={form.mainUnit}
               secondaryUnits={secondaryUnits}
@@ -242,6 +242,9 @@ export default function PersonasModule() {
               }}
               onRemoveSecondary={(unit) => setSecondaryUnits((current) => current.filter((item) => item !== unit))}
             />
+          </div>
+
+          <div className="flex flex-col rounded-3xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
             <RolesCard roles={roles} onAssign={assignRole} />
           </div>
 
