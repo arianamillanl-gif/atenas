@@ -7,6 +7,7 @@ import TraceabilityDrawer, { type AuditEvent } from '../TraceabilityDrawer'
 import ConfirmDialog from './ConfirmDialog'
 import EmploymentStatusCard from './EmploymentStatusCard'
 import IdentityCard from './IdentityCard'
+import InactivationDialog from './InactivationDialog'
 import RolesCard from './RolesCard'
 import { Sidebar, Topbar } from './Shell'
 import UnitsCard from './UnitsCard'
@@ -24,6 +25,12 @@ import {
   type OrgRoleRecord,
   initialOrgRoles,
 } from './data'
+
+type PendingInactivation = {
+  kind: 'adscription' | 'orgRole' | 'membership'
+  id: string
+  subject: string
+}
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 const PHONE_PATTERN = /^\+?[\d\s()-]{10,18}$/
@@ -61,6 +68,8 @@ export default function PersonasModule() {
 
   const closeTrace = useCallback(() => setTraceOpen(false), [])
   const closeDialog = useCallback(() => setDialog(null), [])
+  const [pendingInactivation, setPendingInactivation] = useState<PendingInactivation | null>(null)
+  const closeInactivation = useCallback(() => setPendingInactivation(null), [])
 
   const statusChanged = form.status !== savedStatus
   const hasActiveAssignments = roles.some((role) => !role.end) || orgRoles.some((role) => !role.end)
@@ -158,20 +167,47 @@ export default function PersonasModule() {
     flash(`Rol organizacional "${role.role}" asignado`)
   }
 
-  const inactivateOrgRole = (id: string) => {
+  const inactivateAdscription = (id: string, reason: string) => {
+    const target = adscriptions.find((item) => item.id === id)
+    if (!target) return
+    setAdscriptions((current) => current.map((item) => (item.id === id ? { ...item, active: false, end: TODAY } : item)))
+    logEvent({ user: 'María González', role: 'Administradora', action: 'Inactivación de adscripción', detail: `Adscripción a ${target.unit} inactivada. Motivo: ${reason}`, icon: UserMinus, tone: 'accent' })
+    flash(`Adscripción a ${target.unit} inactivada`)
+  }
+
+  const inactivateOrgRole = (id: string, reason: string) => {
     const target = orgRoles.find((item) => item.id === id)
     if (!target) return
     setOrgRoles((current) => current.map((item) => (item.id === id ? { ...item, end: TODAY } : item)))
-    logEvent({ user: 'María González', role: 'Administradora', action: 'Inactivación de rol organizacional', detail: `Rol "${target.role}" inactivado. Se conserva en el historial.`, icon: UserMinus, tone: 'accent' })
+    logEvent({ user: 'María González', role: 'Administradora', action: 'Inactivación de rol organizacional', detail: `Rol "${target.role}" inactivado. Motivo: ${reason}`, icon: UserMinus, tone: 'accent' })
     flash(`Rol "${target.role}" inactivado`)
   }
 
-  const inactivateMembership = (id: string) => {
+  const inactivateMembership = (id: string, reason: string) => {
     const target = roles.find((item) => item.id === id)
     if (!target) return
     setRoles((current) => current.map((item) => (item.id === id ? { ...item, end: TODAY } : item)))
-    logEvent({ user: 'María González', role: 'Administradora', action: 'Inactivación de pertenencia', detail: `Pertenencia a ${target.structure} inactivada. Se conserva en el historial.`, icon: UserMinus, tone: 'accent' })
+    logEvent({ user: 'María González', role: 'Administradora', action: 'Inactivación de pertenencia', detail: `Pertenencia a ${target.structure} inactivada. Motivo: ${reason}`, icon: UserMinus, tone: 'accent' })
     flash(`Pertenencia a ${target.structure} inactivada`)
+  }
+
+  const requestInactivation = (kind: PendingInactivation['kind'], id: string) => {
+    const subject =
+      kind === 'adscription'
+        ? `la adscripción a ${adscriptions.find((item) => item.id === id)?.unit ?? ''}`
+        : kind === 'orgRole'
+          ? `el rol "${orgRoles.find((item) => item.id === id)?.role ?? ''}"`
+          : `la pertenencia a ${roles.find((item) => item.id === id)?.structure ?? ''}`
+    setPendingInactivation({ kind, id, subject })
+  }
+
+  const confirmInactivation = (reason: string) => {
+    if (!pendingInactivation) return
+    const { kind, id } = pendingInactivation
+    if (kind === 'adscription') inactivateAdscription(id, reason)
+    else if (kind === 'orgRole') inactivateOrgRole(id, reason)
+    else inactivateMembership(id, reason)
+    setPendingInactivation(null)
   }
 
   return (
@@ -271,13 +307,7 @@ export default function PersonasModule() {
                 logEvent({ user: 'María González', role: 'Administradora', action: 'Nueva adscripción', detail: `Adscripción ${type.toLowerCase()} a ${unit} registrada.`, icon: BadgeCheck, tone: 'primary' })
                 flash(`Adscripción a ${unit} añadida`)
               }}
-              onInactivate={(id) => {
-                const target = adscriptions.find((item) => item.id === id)
-                if (!target) return
-                setAdscriptions((current) => current.map((item) => (item.id === id ? { ...item, active: false, end: TODAY } : item)))
-                logEvent({ user: 'María González', role: 'Administradora', action: 'Inactivación de adscripción', detail: `Adscripción a ${target.unit} inactivada. Se conserva en el historial.`, icon: UserMinus, tone: 'accent' })
-                flash(`Adscripción a ${target.unit} inactivada`)
-              }}
+              onInactivate={(id) => requestInactivation('adscription', id)}
               onView={() => setTraceOpen(true)}
             />
           </div>
@@ -288,8 +318,8 @@ export default function PersonasModule() {
               memberships={roles}
               onAssignOrgRole={assignOrgRole}
               onAssignMembership={assignRole}
-              onInactivateOrgRole={inactivateOrgRole}
-              onInactivateMembership={inactivateMembership}
+              onInactivateOrgRole={(id) => requestInactivation('orgRole', id)}
+              onInactivateMembership={(id) => requestInactivation('membership', id)}
               onHistory={() => setTraceOpen(true)}
             />
           </div>
@@ -356,6 +386,15 @@ export default function PersonasModule() {
           confirmLabel="Confirmar operación"
           onConfirm={confirmStatusChange}
           onCancel={closeDialog}
+        />
+      )}
+
+      {pendingInactivation && (
+        <InactivationDialog
+          key={`${pendingInactivation.kind}-${pendingInactivation.id}`}
+          subject={pendingInactivation.subject}
+          onConfirm={confirmInactivation}
+          onCancel={closeInactivation}
         />
       )}
 
