@@ -1,109 +1,146 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Plus, Star } from 'lucide-react'
-import { Card, Field, inputClass } from './fields'
-import { ROLES, STRUCTURES, TODAY, formatDate, type RoleRecord } from './data'
+import { Field, inputClass } from './fields'
+import FormDialog from './FormDialog'
+import {
+  ORG_ROLES,
+  ROLES,
+  ROLE_CONDITIONS,
+  STRUCTURES,
+  TODAY,
+  formatDate,
+  rangesOverlap,
+  type OrgRoleRecord,
+  type RoleCondition,
+  type RoleRecord,
+} from './data'
 
 type Props = {
-  roles: RoleRecord[]
-  onAssign: (role: Omit<RoleRecord, 'id'>) => void
+  orgRoles: OrgRoleRecord[]
+  memberships: RoleRecord[]
+  onAssignOrgRole: (role: Omit<OrgRoleRecord, 'id'>) => void
+  onAssignMembership: (membership: Omit<RoleRecord, 'id'>) => void
+  onInactivateOrgRole: (id: string) => void
+  onInactivateMembership: (id: string) => void
+  onHistory: () => void
 }
 
-export default function RolesCard({ roles, onAssign }: Props) {
-  const [structure, setStructure] = useState(STRUCTURES[3])
-  const [role, setRole] = useState(ROLES[3])
-  const [principal, setPrincipal] = useState(false)
-  const [start, setStart] = useState(TODAY)
-  const [end, setEnd] = useState('')
-  const activeCount = roles.filter((item) => !item.end).length
+const headCell = 'px-4 py-3 font-semibold'
+const bodyCell = 'px-4 py-3.5'
 
-  const assign = () => {
-    onAssign({ structure, role, principal, start, end: end || null })
+function StatusBadge({ active }: { active: boolean }) {
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide ${active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
+      <span aria-hidden="true" className={`size-1.5 rounded-full ${active ? 'bg-emerald-500' : 'bg-slate-400'}`} />
+      {active ? 'Activo' : 'Inactivo'}
+    </span>
+  )
+}
+
+function RowAction({ active, label, onInactivate, onHistory }: { active: boolean; label: string; onInactivate: () => void; onHistory: () => void }) {
+  return active ? (
+    <button
+      type="button"
+      onClick={onInactivate}
+      aria-label={`Inactivar ${label}`}
+      className="inline-flex h-8 items-center rounded-full border border-slate-300 bg-white px-3.5 text-xs font-medium text-slate-700 transition hover:border-primary/40 hover:text-primary"
+    >
+      Inactivar
+    </button>
+  ) : (
+    <button
+      type="button"
+      onClick={onHistory}
+      aria-label={`Ver historial de ${label}`}
+      className="inline-flex h-8 items-center rounded-full border border-slate-200 bg-white px-3.5 text-xs font-medium text-slate-500 transition hover:border-primary/40 hover:text-primary"
+    >
+      Historial
+    </button>
+  )
+}
+
+function TableFooter({ note, actionLabel, onAction }: { note: string; actionLabel: string; onAction: () => void }) {
+  return (
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <p className="m-0 text-xs italic text-slate-500">{note}</p>
+      <button
+        type="button"
+        onClick={onAction}
+        aria-haspopup="dialog"
+        className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-full border border-[#2A4B93] bg-white px-5 text-sm font-semibold text-[#2A4B93] transition hover:bg-[#2A4B93] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2A4B93]/40 focus-visible:ring-offset-2"
+      >
+        <Plus size={16} aria-hidden="true" />
+        {actionLabel}
+      </button>
+    </div>
+  )
+}
+
+export default function RolesCard({ orgRoles, memberships, onAssignOrgRole, onAssignMembership, onInactivateOrgRole, onInactivateMembership, onHistory }: Props) {
+  const [dialog, setDialog] = useState<'orgRole' | 'membership' | null>(null)
+  const closeDialog = useCallback(() => setDialog(null), [])
+
+  const [orgRole, setOrgRole] = useState(ORG_ROLES[0])
+  const [condition, setCondition] = useState<RoleCondition>('Titular')
+  const [orgStart, setOrgStart] = useState(TODAY)
+  const [orgEnd, setOrgEnd] = useState('')
+
+  const [structure, setStructure] = useState(STRUCTURES[3])
+  const [teamRole, setTeamRole] = useState(ROLES[3])
+  const [principal, setPrincipal] = useState(false)
+  const [teamStart, setTeamStart] = useState(TODAY)
+  const [teamEnd, setTeamEnd] = useState('')
+
+  const draftOrgRole = { start: orgStart, end: orgEnd || null }
+  const overlapping = orgRoles.find((item) => item.role === orgRole && rangesOverlap(item, draftOrgRole))
+  const invalidOrgRange = Boolean(orgEnd && orgEnd < orgStart)
+  const invalidTeamRange = Boolean(teamEnd && teamEnd < teamStart)
+
+  const openOrgRole = () => {
+    setOrgStart(TODAY)
+    setOrgEnd('')
+    setDialog('orgRole')
+  }
+
+  const openMembership = () => {
+    setTeamStart(TODAY)
+    setTeamEnd('')
     setPrincipal(false)
-    setEnd('')
+    setDialog('membership')
   }
 
   return (
-    <Card
-      id="roles"
-
-      title="Roles y estructuras"
-      description="Pertenencia a estructuras o equipos de trabajo. Los roles cerrados se conservan como historial."
-      aside={<span className="inline-flex items-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">{activeCount} vigentes</span>}
-    >
-      <fieldset className="m-0 flex min-w-0 flex-col gap-5 rounded-2xl border border-slate-100 bg-slate-50/70 p-6">
-        <legend className="float-left mb-1 w-full p-0 text-xs font-semibold uppercase tracking-wider text-slate-500">Nueva asignación</legend>
-        <div className="grid grid-cols-1 gap-x-6 gap-y-5 md:grid-cols-2">
-          <Field id="assign-structure" label="Estructura / equipo">
-            <select id="assign-structure" className={`${inputClass} cursor-pointer`} value={structure} onChange={(event) => setStructure(event.target.value)}>
-              {STRUCTURES.map((item) => <option key={item}>{item}</option>)}
-            </select>
-          </Field>
-          <Field id="assign-role" label="Rol asignado">
-            <select id="assign-role" className={`${inputClass} cursor-pointer`} value={role} onChange={(event) => setRole(event.target.value)}>
-              {ROLES.map((item) => <option key={item}>{item}</option>)}
-            </select>
-          </Field>
-          <Field id="assign-start" label="Vigencia desde">
-            <input id="assign-start" type="date" className={inputClass} value={start} onChange={(event) => setStart(event.target.value)} />
-          </Field>
-          <Field id="assign-end" label="Vigencia hasta">
-            <input id="assign-end" type="date" className={inputClass} value={end} min={start} onChange={(event) => setEnd(event.target.value)} />
-          </Field>
+    <div id="roles" className="flex flex-col">
+      <section aria-labelledby="org-roles-title" className="flex flex-col gap-5">
+        <div className="flex flex-col gap-1">
+          <h3 id="org-roles-title" className="m-0 font-sans text-lg font-bold text-[#2A4B93]">Roles organizacionales históricos</h3>
+          <p className="m-0 text-sm text-slate-500">Cargos formales que la persona ha ocupado en la organización, con su condición y vigencia.</p>
         </div>
-        <div className="flex flex-col gap-4 border-t border-slate-200 pt-5 sm:flex-row sm:items-center sm:justify-between">
-          <label className="inline-flex cursor-pointer items-center gap-2.5 text-sm text-slate-700">
-            <input type="checkbox" checked={principal} onChange={(event) => setPrincipal(event.target.checked)} className="size-4 cursor-pointer accent-[#2A4B93]" />
-            Condición principal
-          </label>
-          <button
-            type="button"
-            onClick={assign}
-            disabled={!start}
-            className="inline-flex h-11 cursor-pointer items-center justify-center gap-2 rounded-full bg-[#2A4B93] px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-[#223d7a] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#2A4B93]/40 focus-visible:ring-offset-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <Plus size={16} aria-hidden="true" />
-            Asignar rol
-          </button>
-        </div>
-      </fieldset>
 
-      <div className="flex flex-col gap-4 pt-2">
-        <h4 id="roles-history-title" className="m-0 text-xs font-semibold uppercase tracking-wider text-slate-500">Roles organizacionales históricos</h4>
-        <div className="overflow-x-auto">
-          <table aria-labelledby="roles-history-title" className="w-full min-w-[640px] border-collapse text-left text-sm">
-            <thead>
-              <tr className="border-b border-slate-100 text-xs font-medium text-slate-500">
-                <th scope="col" className="py-3 pr-4 font-medium">Rol</th>
-                <th scope="col" className="py-3 pr-4 font-medium">Estructura / equipo</th>
-                <th scope="col" className="py-3 pr-4 font-medium">Vigencia</th>
-                <th scope="col" className="py-3 text-right font-medium">Estado</th>
+        <div className="overflow-x-auto rounded-2xl border border-slate-200">
+          <table aria-labelledby="org-roles-title" className="w-full min-w-[720px] border-collapse text-left text-sm">
+            <thead className="bg-slate-50">
+              <tr className="border-b border-slate-200 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                <th scope="col" className={headCell}>Rol organizacional</th>
+                <th scope="col" className={headCell}>Condición</th>
+                <th scope="col" className={headCell}>Fecha inicio</th>
+                <th scope="col" className={headCell}>Fecha fin</th>
+                <th scope="col" className={headCell}>Estado</th>
+                <th scope="col" className="w-32 px-5 py-3 font-semibold" style={{ textAlign: 'right' }}>Acción</th>
               </tr>
             </thead>
             <tbody>
-              {roles.map((item) => {
-                const active = !item.end
+              {orgRoles.map((item) => {
+                const active = !item.end || item.end >= TODAY
                 return (
                   <tr key={item.id} className="border-b border-slate-100 last:border-b-0">
-                    <td className="py-4 pr-4">
-                      <span className="flex flex-wrap items-center gap-2 font-medium text-slate-800">
-                        {item.role}
-                        {item.principal && (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-[#ECB421]/20 px-2 py-0.5 text-[11px] font-medium text-amber-800">
-                            <Star size={10} aria-hidden="true" />
-                            Principal
-                          </span>
-                        )}
-                      </span>
-                    </td>
-                    <td className="py-4 pr-4 text-slate-600">{item.structure}</td>
-                    <td className="whitespace-nowrap py-4 pr-4 font-mono text-xs text-slate-500">
-                      {formatDate(item.start)} — {formatDate(item.end)}
-                    </td>
-                    <td className="py-4 text-right">
-                      <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium ${active ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'}`}>
-                        <span aria-hidden="true" className={`size-1.5 rounded-full ${active ? 'bg-emerald-500' : 'bg-slate-400'}`} />
-                        {active ? 'Vigente' : 'Cerrado'}
-                      </span>
+                    <td className={`${bodyCell} font-medium ${active ? 'text-slate-800' : 'text-slate-500'}`}>{item.role}</td>
+                    <td className={`${bodyCell} text-slate-600`}>{item.condition}</td>
+                    <td className={`${bodyCell} whitespace-nowrap font-mono text-xs text-slate-500`}>{formatDate(item.start)}</td>
+                    <td className={`${bodyCell} whitespace-nowrap font-mono text-xs text-slate-500`}>{item.end ? formatDate(item.end) : 'Vigente'}</td>
+                    <td className={bodyCell}><StatusBadge active={active} /></td>
+                    <td className="px-5 py-3.5" style={{ textAlign: 'right' }}>
+                      <RowAction active={active} label={`rol ${item.role}`} onInactivate={() => onInactivateOrgRole(item.id)} onHistory={onHistory} />
                     </td>
                   </tr>
                 )
@@ -111,7 +148,136 @@ export default function RolesCard({ roles, onAssign }: Props) {
             </tbody>
           </table>
         </div>
-      </div>
-    </Card>
+
+        <TableFooter note="Los roles simultáneos no deben solapar fechas · Historial inmutable" actionLabel="Asignar nuevo rol" onAction={openOrgRole} />
+      </section>
+
+      <section aria-labelledby="memberships-title" className="mt-12 flex flex-col gap-5 border-t border-slate-100 pt-8">
+        <div className="flex flex-col gap-1">
+          <h3 id="memberships-title" className="m-0 font-sans text-lg font-bold text-[#2A4B93]">Pertenencia a estructura o equipo de trabajo</h3>
+          <p className="m-0 text-sm text-slate-500">Equipos, comités y proyectos en los que participa la persona y el rol que desempeña en cada uno.</p>
+        </div>
+
+        <div className="overflow-x-auto rounded-2xl border border-slate-200">
+          <table aria-labelledby="memberships-title" className="w-full min-w-[760px] border-collapse text-left text-sm">
+            <thead className="bg-slate-50">
+              <tr className="border-b border-slate-200 text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                <th scope="col" className={headCell}>Estructura / equipo</th>
+                <th scope="col" className={headCell}>Rol en equipo</th>
+                <th scope="col" className={headCell}>Cond. principal</th>
+                <th scope="col" className={headCell}>Vigencia (inicio — fin)</th>
+                <th scope="col" className={headCell}>Estado</th>
+                <th scope="col" className="w-32 px-5 py-3 font-semibold" style={{ textAlign: 'right' }}>Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              {memberships.map((item) => {
+                const active = !item.end || item.end >= TODAY
+                return (
+                  <tr key={item.id} className="border-b border-slate-100 last:border-b-0">
+                    <td className={`${bodyCell} font-medium ${active ? 'text-slate-800' : 'text-slate-500'}`}>{item.structure}</td>
+                    <td className={`${bodyCell} text-slate-600`}>{item.role}</td>
+                    <td className={bodyCell}>
+                      {item.principal ? (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-[#ECB421]/20 px-2.5 py-1 text-[11px] font-semibold text-amber-800">
+                          <Star size={10} aria-hidden="true" />
+                          Sí
+                        </span>
+                      ) : (
+                        <span className="text-slate-400">No</span>
+                      )}
+                    </td>
+                    <td className={`${bodyCell} whitespace-nowrap font-mono text-xs text-slate-500`}>
+                      {formatDate(item.start)} — {item.end ? formatDate(item.end) : 'Vigente'}
+                    </td>
+                    <td className={bodyCell}><StatusBadge active={active} /></td>
+                    <td className="px-5 py-3.5" style={{ textAlign: 'right' }}>
+                      <RowAction active={active} label={`pertenencia a ${item.structure}`} onInactivate={() => onInactivateMembership(item.id)} onHistory={onHistory} />
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        <TableFooter note="Sin opción de eliminación — historial de pertenencia a equipos es inmutable" actionLabel="Asignar a estructura / Equipo" onAction={openMembership} />
+      </section>
+
+      {dialog === 'orgRole' && (
+        <FormDialog
+          title="Asignar nuevo rol organizacional"
+          description="El registro quedará en el historial y no podrá eliminarse, solo inactivarse."
+          submitLabel="Asignar rol"
+          submitDisabled={!orgStart || invalidOrgRange || Boolean(overlapping)}
+          onCancel={closeDialog}
+          onSubmit={() => {
+            onAssignOrgRole({ role: orgRole, condition, start: orgStart, end: orgEnd || null })
+            closeDialog()
+          }}
+        >
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <Field id="org-role" label="Rol organizacional" required>
+              <select id="org-role" className={`${inputClass} cursor-pointer`} value={orgRole} onChange={(event) => setOrgRole(event.target.value)}>
+                {ORG_ROLES.map((item) => <option key={item}>{item}</option>)}
+              </select>
+            </Field>
+            <Field id="org-condition" label="Condición" required>
+              <select id="org-condition" className={`${inputClass} cursor-pointer`} value={condition} onChange={(event) => setCondition(event.target.value as RoleCondition)}>
+                {ROLE_CONDITIONS.map((item) => <option key={item}>{item}</option>)}
+              </select>
+            </Field>
+            <Field id="org-start" label="Fecha inicio" required>
+              <input id="org-start" type="date" className={inputClass} value={orgStart} onChange={(event) => setOrgStart(event.target.value)} />
+            </Field>
+            <Field id="org-end" label="Fecha fin" error={invalidOrgRange ? 'Debe ser posterior al inicio.' : undefined}>
+              <input id="org-end" type="date" className={inputClass} value={orgEnd} min={orgStart} onChange={(event) => setOrgEnd(event.target.value)} />
+            </Field>
+          </div>
+          {overlapping && (
+            <p role="alert" className="m-0 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+              {`Se solapa con "${overlapping.role}" (${formatDate(overlapping.start)} — ${overlapping.end ? formatDate(overlapping.end) : 'Vigente'}). Ajusta las fechas.`}
+            </p>
+          )}
+        </FormDialog>
+      )}
+
+      {dialog === 'membership' && (
+        <FormDialog
+          title="Asignar a estructura / equipo"
+          description="La pertenencia quedará registrada en el historial inmutable del equipo."
+          submitLabel="Asignar a equipo"
+          submitDisabled={!teamStart || invalidTeamRange}
+          onCancel={closeDialog}
+          onSubmit={() => {
+            onAssignMembership({ structure, role: teamRole, principal, start: teamStart, end: teamEnd || null })
+            closeDialog()
+          }}
+        >
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <Field id="team-structure" label="Estructura / equipo" required>
+              <select id="team-structure" className={`${inputClass} cursor-pointer`} value={structure} onChange={(event) => setStructure(event.target.value)}>
+                {STRUCTURES.map((item) => <option key={item}>{item}</option>)}
+              </select>
+            </Field>
+            <Field id="team-role" label="Rol en equipo" required>
+              <select id="team-role" className={`${inputClass} cursor-pointer`} value={teamRole} onChange={(event) => setTeamRole(event.target.value)}>
+                {ROLES.map((item) => <option key={item}>{item}</option>)}
+              </select>
+            </Field>
+            <Field id="team-start" label="Vigencia desde" required>
+              <input id="team-start" type="date" className={inputClass} value={teamStart} onChange={(event) => setTeamStart(event.target.value)} />
+            </Field>
+            <Field id="team-end" label="Vigencia hasta" error={invalidTeamRange ? 'Debe ser posterior al inicio.' : undefined}>
+              <input id="team-end" type="date" className={inputClass} value={teamEnd} min={teamStart} onChange={(event) => setTeamEnd(event.target.value)} />
+            </Field>
+          </div>
+          <label className="inline-flex cursor-pointer items-center gap-2.5 text-sm text-slate-700">
+            <input type="checkbox" checked={principal} onChange={(event) => setPrincipal(event.target.checked)} className="size-4 cursor-pointer accent-[#2A4B93]" />
+            Condición principal
+          </label>
+        </FormDialog>
+      )}
+    </div>
   )
 }

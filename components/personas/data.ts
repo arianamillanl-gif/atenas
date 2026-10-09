@@ -25,6 +25,30 @@ export type RoleRecord = {
   principal: boolean
 }
 
+export const ROLE_CONDITIONS = ['Titular', 'Encargado(a)', 'Interino(a)'] as const
+export type RoleCondition = (typeof ROLE_CONDITIONS)[number]
+
+export type OrgRoleRecord = {
+  id: string
+  role: string
+  condition: RoleCondition
+  start: string
+  end: string | null
+}
+
+export const ORG_ROLES = ['Gerente de área', 'Consultor(a) senior', 'Consultor(a)', 'Especialista tributario', 'Supervisor(a) de auditoría']
+
+export const initialOrgRoles: OrgRoleRecord[] = [
+  { id: 'o-3', role: 'Consultor(a) senior', condition: 'Titular', start: '2025-01-01', end: null },
+  { id: 'o-2', role: 'Supervisor(a) de auditoría', condition: 'Encargado(a)', start: '2024-04-15', end: '2024-12-31' },
+  { id: 'o-1', role: 'Consultor(a)', condition: 'Titular', start: '2023-02-01', end: '2024-12-31' },
+]
+
+export function rangesOverlap(a: { start: string; end: string | null }, b: { start: string; end: string | null }) {
+  const open = '9999-12-31'
+  return a.start <= (b.end ?? open) && b.start <= (a.end ?? open)
+}
+
 export const ADSCRIPTION_TYPES = ['Secundaria', 'Temporal'] as const
 export type AdscriptionType = (typeof ADSCRIPTION_TYPES)[number]
 

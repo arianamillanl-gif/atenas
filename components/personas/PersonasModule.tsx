@@ -21,6 +21,8 @@ import {
   type FormErrors,
   type PersonaForm,
   type RoleRecord,
+  type OrgRoleRecord,
+  initialOrgRoles,
 } from './data'
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
@@ -48,6 +50,7 @@ export default function PersonasModule() {
   const [errors, setErrors] = useState<FormErrors>({})
   const [adscriptions, setAdscriptions] = useState<AdscriptionRecord[]>(initialAdscriptions)
   const [roles, setRoles] = useState<RoleRecord[]>(initialRoles)
+  const [orgRoles, setOrgRoles] = useState<OrgRoleRecord[]>(initialOrgRoles)
   const [events, setEvents] = useState(initialEvents)
   const [bajaIntent, setBajaIntent] = useState(false)
   const [dialog, setDialog] = useState<'cancel' | 'status' | null>(null)
@@ -60,7 +63,7 @@ export default function PersonasModule() {
   const closeDialog = useCallback(() => setDialog(null), [])
 
   const statusChanged = form.status !== savedStatus
-  const hasActiveAssignments = roles.some((role) => !role.end)
+  const hasActiveAssignments = roles.some((role) => !role.end) || orgRoles.some((role) => !role.end)
   const showWarning = hasActiveAssignments && (bajaIntent || DRASTIC_STATUSES.includes(form.status))
 
   const flash = (message: string) => {
@@ -122,6 +125,7 @@ export default function PersonasModule() {
     const isBaja = form.status === 'Baja definitiva'
     if (isBaja) {
       setRoles((current) => current.map((role) => (role.end ? role : { ...role, end: TODAY })))
+      setOrgRoles((current) => current.map((role) => (role.end ? role : { ...role, end: TODAY })))
       setForm((current) => ({ ...current, validTo: current.validTo || TODAY }))
     }
     logEvent({ user: 'María González', role: 'Administradora', action: isBaja ? 'Registro de baja' : 'Cambio de estado laboral', detail: `Estado cambiado de "${savedStatus}" a "${form.status}". Motivo: ${form.reason.trim()}`, icon: UserMinus, tone: 'accent' })
@@ -146,6 +150,28 @@ export default function PersonasModule() {
     ])
     logEvent({ user: 'María González', role: 'Administradora', action: 'Asignación de rol', detail: `Rol "${role.role}" asignado en ${role.structure}${role.principal ? ' como condición principal' : ''}.`, icon: BadgeCheck, tone: 'primary' })
     flash(`Rol "${role.role}" asignado en ${role.structure}`)
+  }
+
+  const assignOrgRole = (role: Omit<OrgRoleRecord, 'id'>) => {
+    setOrgRoles((current) => [{ ...role, id: `o-${Date.now()}` }, ...current])
+    logEvent({ user: 'María González', role: 'Administradora', action: 'Asignación de rol organizacional', detail: `Rol "${role.role}" asignado con condición ${role.condition}.`, icon: BadgeCheck, tone: 'primary' })
+    flash(`Rol organizacional "${role.role}" asignado`)
+  }
+
+  const inactivateOrgRole = (id: string) => {
+    const target = orgRoles.find((item) => item.id === id)
+    if (!target) return
+    setOrgRoles((current) => current.map((item) => (item.id === id ? { ...item, end: TODAY } : item)))
+    logEvent({ user: 'María González', role: 'Administradora', action: 'Inactivación de rol organizacional', detail: `Rol "${target.role}" inactivado. Se conserva en el historial.`, icon: UserMinus, tone: 'accent' })
+    flash(`Rol "${target.role}" inactivado`)
+  }
+
+  const inactivateMembership = (id: string) => {
+    const target = roles.find((item) => item.id === id)
+    if (!target) return
+    setRoles((current) => current.map((item) => (item.id === id ? { ...item, end: TODAY } : item)))
+    logEvent({ user: 'María González', role: 'Administradora', action: 'Inactivación de pertenencia', detail: `Pertenencia a ${target.structure} inactivada. Se conserva en el historial.`, icon: UserMinus, tone: 'accent' })
+    flash(`Pertenencia a ${target.structure} inactivada`)
   }
 
   return (
@@ -257,7 +283,15 @@ export default function PersonasModule() {
           </div>
 
           <div className="flex flex-col rounded-3xl border border-slate-100 bg-white p-6 shadow-sm md:p-8">
-            <RolesCard roles={roles} onAssign={assignRole} />
+            <RolesCard
+              orgRoles={orgRoles}
+              memberships={roles}
+              onAssignOrgRole={assignOrgRole}
+              onAssignMembership={assignRole}
+              onInactivateOrgRole={inactivateOrgRole}
+              onInactivateMembership={inactivateMembership}
+              onHistory={() => setTraceOpen(true)}
+            />
           </div>
 
           <footer className="flex flex-col justify-between gap-1 text-[11px] text-slate-400 sm:flex-row">
