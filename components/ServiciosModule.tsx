@@ -75,7 +75,7 @@ export default function ServiciosModule() {
   }
 
   return (
-    <main onClick={(event) => { const button = (event.target as HTMLElement).closest('button'); if (button?.textContent?.includes('Ver')) setEvidence(filtered[0] ?? null) }} className="min-h-screen bg-slate-50 pb-28 font-sans text-slate-900">
+    <main onClick={(event) => { const button = (event.target as HTMLElement).closest('button'); if (button?.textContent?.trim() === 'Ver') setEvidence(filtered[0] ?? null) }} className="min-h-screen bg-slate-50 pb-28 font-poppins text-slate-900">
       <header className="border-b border-slate-200 bg-white"><div className="mx-auto flex max-w-[1500px] items-center justify-between px-5 py-4 lg:px-10"><div className="flex items-center gap-3"><div className="grid size-10 place-items-center rounded-xl bg-[#2A4B93] text-lg font-bold text-white">A</div><div><p className="text-sm font-bold tracking-[0.18em] text-slate-800">ATENAS</p><p className="text-[10px] uppercase tracking-widest text-slate-400">Grupo Consultor</p></div></div><div className="hidden items-center gap-3 text-xs text-slate-500 sm:flex"><span className="size-2 rounded-full bg-emerald-500" /> Sesión activa <span className="font-semibold text-slate-700">María González</span></div></div></header>
       <div className="mx-auto max-w-[1500px] px-5 py-6 lg:px-10">
         <nav className="mb-3 flex items-center text-sm" aria-label="Breadcrumb"><a href="#servicios" className="text-slate-400 transition-colors hover:text-slate-600">Servicios</a><span className="mx-2 text-xs text-slate-300">›</span><strong className="font-semibold text-slate-700">Ficha Canónica de Servicio</strong></nav>
