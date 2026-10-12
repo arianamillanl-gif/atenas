@@ -6,8 +6,8 @@ const poppins = Poppins({ subsets: ['latin'], weight: ['400', '500', '600', '700
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Personas | ATENAS',
-  description: 'Mantén identidad, contacto, estado laboral y relaciones organizacionales históricas de las personas en ATENAS.',
+  title: 'Catálogo de Servicios | ATENAS',
+  description: 'Ficha F03 para definir, clasificar y conservar la trazabilidad histórica del catálogo de servicios de ATENAS.',
   generator: 'v0.app',
   icons: {
     icon: [
@@ -29,11 +29,8 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  colorScheme: 'light dark',
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
-  ],
+  colorScheme: 'light',
+  themeColor: '#f8fafc',
 }
 
 export default function RootLayout({

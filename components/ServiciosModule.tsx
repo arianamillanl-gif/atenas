@@ -1,0 +1,101 @@
+'use client'
+
+import { useMemo, useState } from 'react'
+import {
+  AlertTriangle,
+  Check,
+  ChevronDown,
+  Clock3,
+  FileSearch,
+  History,
+  Info,
+  LockKeyhole,
+  Plus,
+  Box,
+  Save,
+  Search,
+  ShieldCheck,
+  Tag,
+  X,
+} from 'lucide-react'
+
+type Status = 'MAPEADO' | 'PENDIENTE' | 'INACTIVO'
+type Equivalence = { id: number; description: string; source: string; reference: string; method: string; validity: string; status: Status }
+
+const initialEquivalences: Equivalence[] = [
+  { id: 1, description: 'Consultoría ERP Fase 1', source: 'Clientify', reference: 'CL-ERP-001', method: 'ETL Automático', validity: '01/01/2025 — Vigente', status: 'MAPEADO' },
+  { id: 2, description: 'Implementación sistema ERP', source: 'Excel Legado', reference: 'EXC-7782', method: 'Manual', validity: '01/03/2025 — Vigente', status: 'PENDIENTE' },
+  { id: 3, description: 'Servicio consultoría integral', source: 'ERP Anterior', reference: 'ERP-2019-44', method: 'Regla Coincidencia', validity: '01/01/2020 — 31/12/2024', status: 'INACTIVO' },
+]
+
+const inputClass = 'h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-[#2A4B93] focus:ring-4 focus:ring-[#2A4B93]/10'
+const labelClass = 'mb-1.5 block text-[11px] font-bold uppercase tracking-[0.08em] text-slate-600'
+
+function RequiredLabel({ children, optional = false }: { children: React.ReactNode; optional?: boolean }) {
+  return <label className={labelClass}>{children}{!optional && <span className="ml-0.5 text-red-500">*</span>}</label>
+}
+
+function SelectField({ children, defaultValue }: { children: React.ReactNode; defaultValue?: string }) {
+  return <div className="relative"><select defaultValue={defaultValue} className={`${inputClass} appearance-none pr-9`}>{children}</select><ChevronDown className="pointer-events-none absolute right-3 top-3.5 text-slate-400" size={16} /></div>
+}
+
+function StatusBadge({ status }: { status: Status }) {
+  const styles = { MAPEADO: 'border-emerald-200 bg-emerald-50 text-emerald-700', PENDIENTE: 'border-amber-200 bg-amber-50 text-amber-700', INACTIVO: 'border-slate-200 bg-slate-100 text-slate-600' }
+  return <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-wide ${styles[status]}`}><span className="size-1.5 rounded-full bg-current" />{status}</span>
+}
+
+export default function ServiciosModule() {
+  const [equivalences, setEquivalences] = useState(initialEquivalences)
+  const [filter, setFilter] = useState<'TODOS' | Status>('TODOS')
+  const [showNew, setShowNew] = useState(false)
+  const [inactivate, setInactivate] = useState<Equivalence | null>(null)
+  const [traceability, setTraceability] = useState(false)
+  const [reason, setReason] = useState('')
+  const [saved, setSaved] = useState(false)
+
+  const filtered = useMemo(() => filter === 'TODOS' ? equivalences : equivalences.filter((item) => item.status === filter), [equivalences, filter])
+  const counts = { TODOS: equivalences.length, MAPEADO: equivalences.filter((x) => x.status === 'MAPEADO').length, PENDIENTE: equivalences.filter((x) => x.status === 'PENDIENTE').length, INACTIVO: equivalences.filter((x) => x.status === 'INACTIVO').length }
+
+  function confirmInactivation() {
+    if (!inactivate || reason.trim().length < 20) return
+    setEquivalences((current) => current.map((row) => row.id === inactivate.id ? { ...row, status: 'INACTIVO', validity: row.validity.replace('Vigente', '31/12/2026') } : row))
+    setInactivate(null)
+    setReason('')
+  }
+
+  function addEquivalence(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const form = new FormData(event.currentTarget)
+    setEquivalences((rows) => [...rows, { id: Date.now(), description: String(form.get('description')), source: String(form.get('source')), reference: String(form.get('reference')), method: String(form.get('method')), validity: `${String(form.get('since'))} — Vigente`, status: 'PENDIENTE' }])
+    setShowNew(false)
+    event.currentTarget.reset()
+  }
+
+  return (
+    <main className="min-h-screen bg-slate-50 pb-28 font-sans text-slate-900">
+      <header className="border-b border-slate-200 bg-white"><div className="mx-auto flex max-w-[1500px] items-center justify-between px-5 py-4 lg:px-10"><div className="flex items-center gap-3"><div className="grid size-10 place-items-center rounded-xl bg-[#2A4B93] text-lg font-bold text-white">A</div><div><p className="text-sm font-bold tracking-[0.18em] text-slate-800">ATENAS</p><p className="text-[10px] uppercase tracking-widest text-slate-400">Grupo Consultor</p></div></div><div className="hidden items-center gap-3 text-xs text-slate-500 sm:flex"><span className="size-2 rounded-full bg-emerald-500" /> Sesión activa <span className="font-semibold text-slate-700">Maria González</span></div></div></header>
+      <div className="mx-auto max-w-[1500px] px-5 py-6 lg:px-10">
+        <nav className="mb-3 flex items-center font-[family-name:var(--font-poppins)] text-sm" aria-label="Breadcrumb"><a href="#servicios" className="font-normal text-slate-400 transition-colors hover:text-slate-600">Servicios</a><span className="mx-2 text-xs text-slate-300">›</span><strong className="font-semibold text-slate-700">Ficha Canónica de Servicio</strong></nav>
+        <section className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center"><div><p className="mb-1.5 flex items-center gap-1.5 font-[family-name:var(--font-poppins)] text-xs font-bold uppercase tracking-wider text-[#2A4B93]"><ShieldCheck size={16} className="text-[#2A4B93]" /> GOBIERNO DE CATÁLOGO / SERVICIOS</p><h1 className="font-[family-name:var(--font-poppins)] text-3xl font-bold tracking-tight text-slate-900">Catálogo de Servicios</h1><p className="mt-1 font-[family-name:var(--font-poppins)] text-sm text-slate-500">Define, clasifica y conserva la trazabilidad de los servicios corporativos.</p></div><span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3.5 py-1 text-xs font-semibold text-emerald-700"><ShieldCheck size={15} /> Publicado / Activo</span></section>
+
+        <section className="mb-6 flex items-center justify-between gap-4 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm"><div className="flex min-w-0 items-center gap-4"><div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#2A4B93] text-white shadow-sm"><Box className="h-6 w-6" /></div><div className="min-w-0"><div className="flex flex-wrap items-center gap-3"><h2 className="font-[family-name:var(--font-poppins)] text-lg font-bold text-slate-900">Consultoría ERP - Fase I</h2><span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700"><span className="text-[10px]">•</span> Activo</span></div><div className="mt-1 flex flex-wrap items-center gap-2 font-[family-name:var(--font-poppins)] text-xs font-medium text-slate-500"><span>Línea Consultoría · Reg: 01/01/2025</span><span className="text-slate-300">|</span><span className="inline-flex items-center gap-1"><LockKeyhole className="h-3 w-3 text-slate-400" /> ID: SRV-2026-0412</span><span className="text-slate-300">|</span><span>Modificado: 09/10/2026 por María González</span></div></div></div><button onClick={() => setTraceability(true)} className="inline-flex h-10 shrink-0 items-center gap-2 rounded-full border border-slate-200 bg-white px-5 text-xs font-semibold text-slate-700 shadow-2xs transition-all hover:bg-slate-50"><FileSearch className="h-4 w-4 text-slate-600" /> Ver trazabilidad</button></section>
+
+        <div className="space-y-6">
+          <section className="space-y-8 rounded-3xl border border-slate-100 bg-white p-8 shadow-sm"><h2 className="font-[family-name:var(--font-poppins)] text-xl font-bold text-slate-900">Definición Canónica del Servicio</h2><p className="mb-6 mt-1 text-sm text-slate-500">Definición oficial, código maestro y vigencia del servicio dentro de la organización.</p><div className="grid grid-cols-1 gap-5 md:grid-cols-2"><div><RequiredLabel>SKU / CÓDIGO CANÓNICO</RequiredLabel><input className={inputClass} defaultValue="SRV-CONS-ERP" placeholder="Ej. SRV-CONS-ERP" /></div><div><RequiredLabel>NOMBRE CANÓNICO DEL SERVICIO</RequiredLabel><input className={inputClass} defaultValue="Consultoría ERP - Fase I" placeholder="Ej. Consultoría ERP - Fase I" /></div><div className="md:col-span-2"><RequiredLabel>DESCRIPCIÓN DETALLADA</RequiredLabel><textarea className={`${inputClass} min-h-24 resize-y py-3`} defaultValue="Acompañamiento especializado para el diseño, configuración y puesta en marcha de soluciones ERP." placeholder="Describe el alcance y propósito del servicio." /></div><div className="pt-4 md:col-span-2 border-t border-slate-100"><RequiredLabel>ESTADO Y VIGENCIA DEL SERVICIO</RequiredLabel><SelectField defaultValue="Activo"><option>Activo</option><option>Deprecado</option><option>En Revisión</option></SelectField></div><div className="pt-4"><RequiredLabel>FECHA INICIO VIGENCIA</RequiredLabel><input type="date" className={inputClass} defaultValue="2025-01-01" /></div><div><RequiredLabel optional>FECHA FIN VIGENCIA</RequiredLabel><input type="date" placeholder="dd/mm/aaaa (Abierta)" className={inputClass} /></div><div className="rounded-2xl border border-slate-100 bg-slate-50/70 p-5 md:col-span-1"><RequiredLabel optional>UNIDAD DE MEDIDA</RequiredLabel><SelectField defaultValue="Proyecto"><option>Proyecto</option><option>Hora</option><option>Mes</option><option>Entregable</option></SelectField></div><div className="rounded-2xl border border-slate-100 bg-slate-50/70 p-5 md:col-span-1"><RequiredLabel optional>MONEDA REFERENCIAL</RequiredLabel><SelectField defaultValue="USD"><option>USD</option><option>VED</option><option>EUR</option></SelectField></div></div><p className="mt-2 flex items-center gap-2 text-xs italic text-slate-500"><Info className="h-4 w-4 shrink-0 text-slate-400" />«Los valores de unidad de medida y moneda son referencias generales del catálogo y no sustituyen las condiciones particulares de una venta.»</p></section>
+
+          <section className="rounded-2xl border border-slate-100 bg-slate-50/60 p-6"><h2 className="text-xl font-bold text-slate-900">Clasificación Histórica del Servicio</h2><p className="mb-6 mt-1 text-sm text-slate-500">Categorización de negocio para reportes y consolidación financiera.</p><div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"><div><RequiredLabel>LÍNEA DE SERVICIO</RequiredLabel><SelectField defaultValue="Consultoría"><option>Consultoría</option><option>Desarrollo</option><option>Soporte</option><option>Licenciamiento</option></SelectField></div><div><RequiredLabel>TIPO DE SERVICIO</RequiredLabel><SelectField defaultValue="Especializado"><option>Especializado</option><option>Estándar</option><option>Mantenimiento</option></SelectField></div><div><RequiredLabel>MODALIDAD</RequiredLabel><SelectField defaultValue="Híbrido"><option>Presencial</option><option>Remoto</option><option>Híbrido</option></SelectField></div><div><RequiredLabel>FRECUENCIA</RequiredLabel><SelectField defaultValue="Única vez"><option>Única vez</option><option>Mensual</option><option>Trimestral</option><option>Anual</option></SelectField></div></div><p className="mt-4 text-xs text-slate-500">«La clasificación histórica permite agrupar servicios homólogos en reportes consolidados sin alterar contratos pasados.»</p></section>
+
+          <section className="rounded-3xl border border-slate-100 bg-white p-5 shadow-sm lg:p-6"><div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end"><div><h2 className="text-xl font-bold text-slate-900">Homologación y Equivalencias de Origen</h2><p className="mb-6 mt-1 text-sm text-slate-500">Mapeo de términos provenientes de sistemas legados (Clientify, ETL, DWH o archivos Excel).</p></div><button onClick={() => setShowNew(true)} className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-[#2A4B93] px-5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1E366B]"><Plus size={16} /> Registrar equivalencia legada</button></div><div className="mt-5 flex gap-1 overflow-x-auto border-b border-slate-100 pb-2">{(['TODOS', 'MAPEADO', 'PENDIENTE', 'INACTIVO'] as const).map((tab) => <button key={tab} onClick={() => setFilter(tab)} className={`whitespace-nowrap rounded-full px-4 py-1.5 text-xs font-medium transition ${filter === tab ? 'bg-[#2A4B93] text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>{tab} <span className="ml-1 rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px]">{counts[tab]}</span></button>)}</div><div className="mt-4 overflow-hidden rounded-2xl border border-slate-100"><table className="w-full table-fixed text-left text-xs"><thead className="bg-slate-50"><tr>{['DESCRIPCIÓN / CÓD. ANTERIOR','FUENTE / SISTEMA','REFERENCIA ORIGEN','MÉTODO HOMOLOGACIÓN','EVIDENCIA','VIGENCIA','ESTADO','ACCIÓN'].map((heading) => <th key={heading} className="px-2 py-3 text-[10px] font-bold tracking-wide text-slate-500">{heading}</th>)}</tr></thead><tbody>{filtered.map((row) => <tr key={row.id} className="border-t border-slate-100 transition hover:bg-slate-50/70"><td className="px-2 py-3 text-xs font-semibold text-slate-800">{row.description}</td><td className="px-4 py-4 text-sm text-slate-600">{row.source}</td><td className="px-2 py-3 font-mono text-[11px] text-slate-500">{row.reference}</td><td className="px-4 py-4 text-sm text-slate-600">{row.method}</td><td className="px-4 py-4"><button className="inline-flex items-center gap-1 text-xs font-bold text-[#2A4B93] hover:underline"><FileSearch size={14} /> Ver</button></td><td className="px-4 py-4 text-xs text-slate-500">{row.validity}</td><td className="px-4 py-4"><StatusBadge status={row.status} /></td><td className="px-4 py-4">{row.status === 'INACTIVO' ? <button className="inline-flex items-center gap-1 rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-100"><History size={13} /> Historial</button> : <button onClick={() => setInactivate(row)} className="rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:border-amber-300 hover:bg-amber-50 hover:text-amber-700">Inactivar</button>}</td></tr>)}</tbody></table></div><p className="mt-3 text-xs italic text-slate-500">«Sin opción de eliminación — las equivalencias de origen no se borran; se inactivan o cierran vigencia para conservar la trazabilidad histórica.»</p></section>
+        </div>
+      </div>
+
+      <footer className="fixed bottom-0 left-0 right-0 z-30 flex items-center justify-between border-t border-slate-200 bg-white/90 px-5 py-4 backdrop-blur-md lg:px-10"><button className="rounded-full border border-slate-200 px-6 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Cancelar</button><button onClick={() => { setSaved(true); setTimeout(() => setSaved(false), 2500) }} className="inline-flex items-center gap-2 rounded-full bg-[#2A4B93] px-8 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#1E366B]"><Save size={16} /> {saved ? 'Servicio guardado' : 'Guardar Servicio'}</button></footer>
+
+      {inactivate && <div className="fixed inset-0 z-50 grid place-items-center bg-slate-900/40 p-5 backdrop-blur-sm"><div role="dialog" aria-modal="true" className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl"><div className="mb-4 grid size-11 place-items-center rounded-full bg-amber-50 text-amber-600"><AlertTriangle size={21} /></div><h2 className="text-lg font-bold text-slate-900">¿Confirmar inactivación de equivalencia?</h2><p className="mt-2 text-sm leading-6 text-slate-500">Esta acción cerrará la vigencia actual de la equivalencia y la conservará en el historial inmutable de auditoría.</p><div className="mt-5"><RequiredLabel>MOTIVO DE LA INACTIVACIÓN</RequiredLabel><textarea value={reason} onChange={(event) => setReason(event.target.value)} className={`${inputClass} min-h-24 resize-none py-3`} placeholder="Escribe al menos 20 caracteres..." /><p className="mt-1 text-right text-[11px] text-slate-400">{reason.length}/20 mínimo</p></div><div className="mt-5 flex justify-end gap-2"><button onClick={() => { setInactivate(null); setReason('') }} className="rounded-full px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50">Cancelar</button><button disabled={reason.trim().length < 20} onClick={confirmInactivation} className="rounded-full bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40">Sí, inactivar registro</button></div></div></div>}
+
+      {showNew && <div className="fixed inset-0 z-50 grid place-items-center bg-slate-900/40 p-5 backdrop-blur-sm"><form onSubmit={addEquivalence} className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl"><div className="flex items-start justify-between"><div><h2 className="text-lg font-bold text-slate-900">Nueva equivalencia legada</h2><p className="mt-1 text-sm text-slate-500">Registra el término de origen sin perder su contexto histórico.</p></div><button type="button" onClick={() => setShowNew(false)} aria-label="Cerrar" className="rounded-full p-2 text-slate-400 hover:bg-slate-100"><X size={18} /></button></div><div className="mt-5 grid gap-4 sm:grid-cols-2"><div className="sm:col-span-2"><RequiredLabel>DESCRIPCIÓN / CÓDIGO ANTERIOR</RequiredLabel><input name="description" required className={inputClass} /></div><div><RequiredLabel>FUENTE / SISTEMA</RequiredLabel><SelectField><option>Clientify</option><option>Excel Legado</option><option>DWH</option></SelectField></div><div><RequiredLabel>REFERENCIA ORIGEN</RequiredLabel><input name="reference" required className={inputClass} /></div><div><RequiredLabel>MÉTODO</RequiredLabel><SelectField><option>Manual</option><option>ETL Automático</option><option>Regla Coincidencia</option></SelectField></div><div><RequiredLabel>VIGENCIA DESDE</RequiredLabel><input name="since" required type="date" className={inputClass} /></div></div><div className="mt-6 flex justify-end gap-2"><button type="button" onClick={() => setShowNew(false)} className="rounded-full px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50">Cancelar</button><button type="submit" className="rounded-full bg-[#2A4B93] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1E366B]">Asignar equivalencia</button></div></form></div>}
+
+      {traceability && <div className="fixed inset-0 z-50 bg-slate-900/30 backdrop-blur-sm"><aside className="ml-auto flex h-full w-full max-w-md flex-col bg-white p-6 shadow-2xl"><div className="flex items-start justify-between border-b border-slate-100 pb-5"><div><p className="text-[11px] font-bold uppercase tracking-widest text-[#2A4B93]">Auditoría inmutable</p><h2 className="mt-1 text-xl font-bold text-slate-900">Trazabilidad del servicio</h2></div><button onClick={() => setTraceability(false)} aria-label="Cerrar trazabilidad" className="rounded-full p-2 text-slate-400 hover:bg-slate-100"><X size={18} /></button></div><div className="relative mt-7 flex flex-col gap-8 pl-8 before:absolute before:bottom-2 before:left-3 before:top-2 before:w-px before:bg-slate-200">{[{ title: 'Creación de servicio', author: 'Maria González', date: '01/01/2025 · 09:42', code: 'AUD-2025-0001', icon: Tag }, { title: 'Homologación de código', author: 'Carlos Méndez', date: '12/03/2025 · 14:18', code: 'AUD-2025-0184', icon: Check }, { title: 'Cambio de clasificación', author: 'Maria González', date: '09/10/2026 · 11:06', code: 'AUD-2026-0412', icon: Clock3 }].map((event) => <div key={event.code} className="relative"><div className="absolute -left-8 grid size-7 place-items-center rounded-full border-4 border-white bg-[#2A4B93] text-white"><event.icon size={12} /></div><h3 className="font-bold text-slate-800">{event.title}</h3><p className="mt-1 text-sm text-slate-500">{event.author}</p><p className="mt-1 text-xs text-slate-400">{event.date}</p><span className="mt-2 inline-flex rounded bg-slate-100 px-2 py-1 font-mono text-[10px] text-slate-500">{event.code}</span></div>)}</div></aside></div>}
+    </main>
+  )
+}
