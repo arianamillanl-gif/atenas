@@ -1,5 +1,5 @@
-import ServiciosModule from '@/components/ServiciosModule'
+import MaestroCarteraModule from '@/components/MaestroCarteraModule'
 
 export default function Page() {
-  return <ServiciosModule />
+  return <MaestroCarteraModule />
 }
