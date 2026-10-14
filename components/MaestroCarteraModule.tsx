@@ -9,10 +9,12 @@ import {
   ChevronDown,
   CircleHelp,
   Clock3,
+  CornerDownRight,
   FileClock,
   FileSearch,
   HelpCircle,
   History,
+  Info,
   LayoutDashboard,
   LockKeyhole,
   Menu,
@@ -24,6 +26,7 @@ import {
   X,
   Save,
 } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 const inputClass = 'w-full rounded-xl border border-slate-200/90 bg-white px-3.5 py-2.5 text-xs text-slate-800 outline-none transition-all placeholder:text-slate-400 shadow-2xs focus:border-[#2A4B93] focus:ring-2 focus:ring-[#2A4B93]/10'
 const labelClass = 'mb-1.5 inline-block text-xs font-semibold text-slate-700'
@@ -52,9 +55,9 @@ function Sidebar() {
 }
 
 const auditRows = [
-  { date: "09/10/2026 · 14:30", user: "María González", field: "Nombre de la cartera", before: "Cartera West", after: "Cartera Corporativa West" },
-  { date: "14/06/2026 · 11:20", user: "María González", field: "Estado operativo", before: "En revisión", after: "Activa" },
-  { date: "15/01/2026 · 10:15", user: "Sistema", field: "Registro inicial", before: null, after: "Creación" },
+  { date: "09/10/2026 · 14:30", user: "María González", field: "Nombre de la cartera", before: "Cartera West", after: "Cartera Corporativa West", reason: "Ajuste de nomenclatura por estandarización del catálogo corporativo" },
+  { date: "14/06/2026 · 11:20", user: "María González", field: "Estado operativo", before: "En revisión", after: "Activa", reason: "Reactivación por reestructuración administrativa" },
+  { date: "15/01/2026 · 10:15", user: "Sistema", field: "Registro inicial", before: null, after: "Creación", reason: "Asignación inicial desde carga masiva" },
 ]
 
 
@@ -146,7 +149,17 @@ export default function MaestroCarteraModule() {
                 <tr key={row.date + row.field} className="border-b border-slate-100 text-xs transition-colors hover:bg-slate-50/40">
                   <td className="px-3 py-3 font-medium text-slate-800">{row.date}</td>
                   <td className="px-3 py-3 font-medium text-slate-700">{row.user}</td>
-                  <td className="px-3 py-3 font-semibold text-slate-900">{row.field}</td>
+                  <td className="px-3 py-3 font-semibold text-slate-900">
+                    <Tooltip>
+                      <TooltipTrigger className="inline-flex cursor-help items-center gap-1.5 rounded text-left font-semibold text-slate-900 outline-none focus-visible:ring-2 focus-visible:ring-[#2A4B93]/30" aria-label={`${row.field}. Motivo: ${row.reason}`}>
+                        {row.field}
+                        <Info size={13} className="text-slate-400" aria-hidden="true" />
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="max-w-64 text-[11px] leading-relaxed">
+                        <span className="font-semibold">Motivo:</span> {row.reason}
+                      </TooltipContent>
+                    </Tooltip>
+                  </td>
                   <td className="px-3 py-3">
                     {row.before ? <span className="inline-block rounded border border-slate-200 bg-slate-100 px-2 py-0.5 font-mono text-[11px] uppercase text-slate-600">{row.before}</span> : <span className="text-slate-400">—</span>}
                   </td>
@@ -154,20 +167,17 @@ export default function MaestroCarteraModule() {
                     <span className="inline-block rounded border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-mono text-[11px] font-semibold uppercase text-emerald-700">{row.after}</span>
                   </td>
                   <td className="px-3 py-3 text-right">
-                    <button type="button" onClick={() => setTraceability(true)} className="cursor-pointer rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold text-[#2A4B93] shadow-2xs transition-all hover:border-[#2A4B93] hover:bg-slate-50">Detalles</button>
+                    <button type="button" onClick={() => setTraceability(true)} className="rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold text-[#2A4B93] hover:bg-slate-50 transition-all cursor-pointer shadow-2xs">Detalles</button>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
-        <div className="my-3 space-y-1 border-t border-slate-100 pt-3 text-[11px] text-slate-400">
-          <p>↳ Historial inmutable — no editable · Nuevas entradas se registran únicamente por el servidor (Append-Only).</p>
-          <p>↳ Cada modificación registra usuario, timestamp y valores anterior/posterior — sin posibilidad de edición ni borrado.</p>
+        <div className="mt-4 space-y-1 border-t border-slate-100 pt-3 text-[11px] text-slate-400">
+          <p className="flex items-start gap-1.5"><CornerDownRight size={12} className="mt-0.5 shrink-0" aria-hidden="true" />Historial inmutable — no editable · Nuevas entradas se registran únicamente por el servidor (Append-Only).</p>
+          <p className="flex items-start gap-1.5"><CornerDownRight size={12} className="mt-0.5 shrink-0" aria-hidden="true" />Cada modificación registra usuario, timestamp y valores anterior/posterior — sin posibilidad de edición ni borrado.</p>
         </div>
-        <button type="button" onClick={() => setTraceability(true)} className="flex w-full cursor-pointer items-center gap-2 border-t border-slate-100 pt-3 text-xs font-semibold text-[#2A4B93] hover:underline">
-          <History size={14} aria-hidden="true" />Ver historial de estados / auditoría completa
-        </button>
       </section>
     </div></main>
     <footer className="fixed bottom-0 left-0 right-0 z-20 flex items-center justify-between border-t border-slate-200/80 bg-white/90 px-5 py-4 backdrop-blur-md lg:pl-[290px] lg:pr-10"><button onClick={() => setCancelOpen(true)} className="rounded-full border border-slate-200 bg-white px-6 py-2.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50">Cancelar</button><div className="flex gap-2"><button onClick={() => setStatusOpen(true)} className="inline-flex items-center gap-2 rounded-full border border-amber-300 bg-amber-50 px-5 py-2.5 text-xs font-semibold text-amber-800 shadow-sm transition hover:bg-amber-100">Cambiar estado</button><button onClick={save} className="inline-flex items-center gap-2 rounded-full bg-[#2A4B93] px-6 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-[#1E366B]"><Save size={14} />{saved ? 'Cartera guardada' : 'Guardar cartera'}</button></div></footer>
