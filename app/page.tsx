@@ -1,5 +1,5 @@
-import MaestroCarteraModule from '@/components/MaestroCarteraModule'
+import { redirect } from 'next/navigation'
 
 export default function Page() {
-  return <MaestroCarteraModule />
+  redirect('/servicios')
 }

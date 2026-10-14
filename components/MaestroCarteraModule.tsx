@@ -1,8 +1,10 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import {
   AlertTriangle,
+  Package,
   Bell,
   ChevronDown,
   CircleHelp,
@@ -36,7 +38,8 @@ function Sidebar() {
         <a href="#inicio"><LayoutDashboard size={17} />Inicio</a>
         <a href="#clientes"><Users size={17} />Clientes<span className="nav-count">24</span></a>
         <span className="nav-label second">ESTRUCTURA COMERCIAL</span>
-        <a className="active" href="#cartera"><FileSearch size={17} />Maestro de cartera</a>
+        <Link href="/servicios"><Package size={17} />Servicios</Link>
+        <Link className="active" href="/maestro-cartera" aria-current="page"><FileSearch size={17} />Maestro de cartera</Link>
         <a href="#segmentos"><Settings2 size={17} />Segmentos</a>
         <a href="#unidades"><ShieldCheck size={17} />Unidades de negocio</a>
         <span className="nav-label second">GOBIERNO Y CONTROL</span>
