@@ -55,6 +55,18 @@ export default function ServiciosModule() {
   const [evidence, setEvidence] = useState<Equivalence | null>(null)
   const [reason, setReason] = useState('')
   const [saved, setSaved] = useState(false)
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false)
+  const [formKey, setFormKey] = useState(0)
+
+  function discardChanges() {
+    setFormKey((key) => key + 1)
+    setEquivalences(initialEquivalences)
+    setFilter('TODOS')
+    setSaved(false)
+    setIsCancelModalOpen(false)
+    window.location.hash = 'servicios'
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
 
   const filtered = useMemo(() => filter === 'TODOS' ? equivalences : equivalences.filter((item) => item.status === filter), [equivalences, filter])
   const counts = { TODOS: equivalences.length, MAPEADO: equivalences.filter((x) => x.status === 'MAPEADO').length, PENDIENTE: equivalences.filter((x) => x.status === 'PENDIENTE').length, INACTIVO: equivalences.filter((x) => x.status === 'INACTIVO').length }
@@ -83,7 +95,7 @@ export default function ServiciosModule() {
 
         <section className="mb-6 flex flex-col items-start justify-between gap-4 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm lg:flex-row lg:items-center"><div className="flex min-w-0 items-center gap-4"><div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#2A4B93] text-white shadow-sm"><Package size={24} /></div><div className="min-w-0"><div className="flex flex-wrap items-center gap-3"><h2 className="text-lg font-bold text-slate-900">Consultoría ERP - Fase I</h2><span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">• Activo</span></div><div className="mt-1 flex flex-wrap items-center gap-2 text-xs font-medium text-slate-500"><span>Línea Consultoría · Reg: 01/01/2025</span><span className="text-slate-300">|</span><span className="inline-flex items-center gap-1"><LockKeyhole size={12} className="text-slate-400" /> ID: SRV-2026-0412</span><span className="text-slate-300">|</span><span>Modificado: 09/10/2026 por María González</span></div></div></div><button onClick={() => setTraceability(true)} className="inline-flex h-10 shrink-0 items-center gap-2 rounded-full border border-slate-200 bg-white px-5 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"><FileSearch size={15} /> Ver trazabilidad</button></section>
 
-        <div className="flex flex-col gap-6">
+        <div key={formKey} className="flex flex-col gap-6">
           <section className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm lg:p-8"><h2 className="text-xl font-bold text-slate-900">Definición Canónica del Servicio</h2><p className="mb-6 mt-1 text-sm text-slate-500">Definición oficial, código maestro y vigencia del servicio dentro de la organización.</p><div className="grid grid-cols-1 gap-5 md:grid-cols-2"><div><Label>SKU / CÓDIGO CANÓNICO</Label><input className={inputClass} defaultValue="SRV-CONS-ERP" /></div><div><Label>NOMBRE CANÓNICO DEL SERVICIO</Label><input className={inputClass} defaultValue="Consultoría ERP - Fase I" /></div><div className="md:col-span-2"><Label>DESCRIPCIÓN DETALLADA</Label><textarea className={`${inputClass} min-h-24 resize-y py-3`} defaultValue="Acompañamiento especializado para el diseño, configuración y puesta en marcha de soluciones ERP." /></div><div className="md:col-span-2"><Label>ESTADO Y VIGENCIA DEL SERVICIO</Label><SelectField defaultValue="Activo"><option>Activo</option><option>En revisión</option><option>Deprecado</option></SelectField></div><div><Label>FECHA INICIO VIGENCIA</Label><input type="date" className={inputClass} defaultValue="2025-01-01" /></div><div><Label optional>FECHA FIN VIGENCIA</Label><input type="date" className={inputClass} /></div><div className="rounded-2xl border border-slate-100 bg-slate-50/70 p-5"><Label optional>UNIDAD DE MEDIDA</Label><SelectField defaultValue="Proyecto"><option>Proyecto</option><option>Hora</option><option>Mes</option><option>Entregable</option></SelectField></div><div className="rounded-2xl border border-slate-100 bg-slate-50/70 p-5"><Label optional>MONEDA REFERENCIAL</Label><SelectField defaultValue="USD"><option>USD</option><option>EUR</option><option>MXN</option></SelectField></div><p className="flex items-center gap-2 text-xs italic text-slate-500 md:col-span-2"><Info size={15} /> Los valores de unidad de medida y moneda son referencias generales del catálogo y no sustituyen las condiciones particulares de una venta.</p></div></section>
 
           <section className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm lg:p-8"><h2 className="text-xl font-bold text-slate-900">Clasificación Histórica del Servicio</h2><p className="mb-6 mt-1 text-sm text-slate-500">Categorización de negocio para reportes y consolidación financiera.</p><div className="grid grid-cols-1 gap-6 md:grid-cols-2"><div><Label>LÍNEA DE SERVICIO</Label><SelectField defaultValue="Consultoría"><option>Consultoría</option><option>Desarrollo</option><option>Soporte</option><option>Licenciamiento</option></SelectField></div><div><Label>TIPO DE SERVICIO</Label><SelectField defaultValue="Especializado"><option>Especializado</option><option>Estándar</option><option>Mantenimiento</option></SelectField></div><div><Label>MODALIDAD</Label><SelectField defaultValue="Híbrido"><option>Presencial</option><option>Remoto</option><option>Híbrido</option></SelectField></div><div><Label>FRECUENCIA</Label><SelectField defaultValue="Única vez"><option>Única vez</option><option>Mensual</option><option>Trimestral</option><option>Anual</option></SelectField></div></div><p className="mt-6 flex items-center gap-2.5 border-t border-slate-100 pt-4 text-xs italic text-slate-500"><History size={15} /> La clasificación histórica permite agrupar servicios homólogos en reportes consolidados sin alterar contratos pasados.</p></section>
@@ -92,7 +104,34 @@ export default function ServiciosModule() {
         </div>
       </div>
 
-      <footer className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-between border-t border-slate-200 bg-white/90 px-5 py-4 backdrop-blur-md lg:px-10"><button className="rounded-full border border-slate-200 px-6 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50">Cancelar</button><button onClick={() => { setSaved(true); setTimeout(() => setSaved(false), 2500) }} className="inline-flex items-center gap-2 rounded-full bg-[#2A4B93] px-8 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1E366B]"><Save size={16} />{saved ? 'Servicio guardado' : 'Guardar Servicio'}</button></footer>
+      <footer className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-between border-t border-slate-200 bg-white/90 px-5 py-4 backdrop-blur-md lg:px-10"><button type="button" onClick={() => setIsCancelModalOpen(true)} className="rounded-full border border-slate-200 px-6 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50">Cancelar</button><button onClick={() => { setSaved(true); setTimeout(() => setSaved(false), 2500) }} className="inline-flex items-center gap-2 rounded-full bg-[#2A4B93] px-8 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1E366B]"><Save size={16} />{saved ? 'Servicio guardado' : 'Guardar Servicio'}</button></footer>
+
+      {isCancelModalOpen && (
+        <div
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4"
+          onClick={() => setIsCancelModalOpen(false)}
+          onKeyDown={(event) => { if (event.key === 'Escape') setIsCancelModalOpen(false) }}
+        >
+          <div
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="discard-title"
+            aria-describedby="discard-description"
+            onClick={(event) => event.stopPropagation()}
+            className="bg-white rounded-3xl max-w-md w-full p-6 shadow-xl border border-slate-100 font-poppins animate-in fade-in zoom-in-95 duration-150"
+          >
+            <div className="bg-amber-50 text-amber-600 rounded-full p-3 w-12 h-12 flex items-center justify-center mb-4 border border-amber-100">
+              <AlertTriangle size={22} aria-hidden="true" />
+            </div>
+            <h2 id="discard-title" className="text-lg font-bold text-slate-900">¿Descartar cambios no guardados?</h2>
+            <p id="discard-description" className="text-sm text-slate-500 mt-1 leading-relaxed">Si cancelas ahora, la información ingresada o modificada en el formulario del servicio se perderá de forma permanente.</p>
+            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <button type="button" autoFocus onClick={() => setIsCancelModalOpen(false)} className="rounded-full border border-slate-200/80 bg-white px-5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer shadow-2xs">Continuar editando</button>
+              <button type="button" onClick={discardChanges} className="rounded-full bg-rose-600 px-5 py-2.5 text-xs font-semibold text-white hover:bg-rose-700 transition-all cursor-pointer shadow-2xs">Sí, descartar</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {inactivate && <div className="fixed inset-0 z-50 grid place-items-center bg-slate-900/40 p-4 backdrop-blur-sm"><div role="dialog" aria-modal="true" className="w-full max-w-md rounded-3xl border border-slate-100 bg-white p-8 shadow-xl"><div className="mb-4 grid size-12 place-items-center rounded-2xl bg-amber-50 p-3 text-amber-600"><AlertTriangle size={22} /></div><h2 className="text-lg font-bold text-slate-900">¿Confirmar inactivación de equivalencia?</h2><p className="mt-2 text-sm leading-6 text-slate-500">La equivalencia se conservará en el historial de auditoría y cerrará su vigencia actual.</p><div className="mt-5"><Label>MOTIVO DE LA INACTIVACIÓN</Label><textarea autoFocus value={reason} onChange={(event) => setReason(event.target.value)} aria-invalid={reason.length > 0 && reason.trim().length < 20} className={`${inputClass} min-h-24 resize-none py-3`} placeholder="Escribe al menos 20 caracteres..." /><p className="mt-1 text-right text-[11px] text-slate-400">{reason.length}/20 mínimo</p></div><div className="mt-5 flex justify-end gap-2"><button onClick={() => { setInactivate(null); setReason('') }} className="rounded-full px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50">Cancelar</button><button disabled={reason.trim().length < 20} onClick={confirmInactivation} className="rounded-full bg-slate-900 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40">Sí, inactivar registro</button></div></div></div>}
 
