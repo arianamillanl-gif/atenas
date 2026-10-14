@@ -148,10 +148,10 @@ export default function MaestroCarteraModule() {
                   <td className="px-3 py-3 font-medium text-slate-700">{row.user}</td>
                   <td className="px-3 py-3 font-semibold text-slate-900">{row.field}</td>
                   <td className="px-3 py-3">
-                    {row.before ? <span className="inline-block rounded-md border border-slate-200/60 bg-slate-100 px-2.5 py-1 font-mono text-[11px] text-slate-600">{row.before}</span> : <span className="text-slate-400">—</span>}
+                    {row.before ? <span className="inline-block rounded border border-slate-200 bg-slate-100 px-2 py-0.5 font-mono text-[11px] uppercase text-slate-600">{row.before}</span> : <span className="text-slate-400">—</span>}
                   </td>
                   <td className="px-3 py-3">
-                    <span className="inline-block rounded-md border border-emerald-200/60 bg-emerald-50 px-2.5 py-1 font-mono text-[11px] font-semibold text-emerald-700">{row.after}</span>
+                    <span className="inline-block rounded border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-mono text-[11px] font-semibold uppercase text-emerald-700">{row.after}</span>
                   </td>
                   <td className="px-3 py-3 text-right">
                     <button type="button" onClick={() => setTraceability(true)} className="cursor-pointer rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold text-[#2A4B93] shadow-2xs transition-all hover:border-[#2A4B93] hover:bg-slate-50">Detalles</button>
@@ -161,7 +161,11 @@ export default function MaestroCarteraModule() {
             </tbody>
           </table>
         </div>
-        <button type="button" onClick={() => setTraceability(true)} className="mt-4 flex w-full cursor-pointer items-center gap-2 border-t border-slate-100 pt-3 text-xs font-semibold text-[#2A4B93] hover:underline">
+        <div className="my-3 space-y-1 border-t border-slate-100 pt-3 text-[11px] text-slate-400">
+          <p>↳ Historial inmutable — no editable · Nuevas entradas se registran únicamente por el servidor (Append-Only).</p>
+          <p>↳ Cada modificación registra usuario, timestamp y valores anterior/posterior — sin posibilidad de edición ni borrado.</p>
+        </div>
+        <button type="button" onClick={() => setTraceability(true)} className="flex w-full cursor-pointer items-center gap-2 border-t border-slate-100 pt-3 text-xs font-semibold text-[#2A4B93] hover:underline">
           <History size={14} aria-hidden="true" />Ver historial de estados / auditoría completa
         </button>
       </section>
