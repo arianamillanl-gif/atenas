@@ -15,6 +15,7 @@ import {
   LayoutDashboard,
   LockKeyhole,
   Menu,
+  PanelLeftClose,
   PencilLine,
   Search,
   Settings2,
@@ -30,7 +31,7 @@ const labelClass = 'text-[11px] font-bold uppercase tracking-[0.08em] text-slate
 function Sidebar() {
   return <aside className="sidebar hidden lg:flex">
     <div className="sidebar-content">
-      <div className="brand"><img src="/logo-atenas.png" alt="ATENAS" /></div>
+      <div className="brand"><img src="/logo-atenas.png" alt="ATENAS" /><button className="icon-button ml-auto" aria-label="Colapsar panel"><PanelLeftClose size={18} /></button></div>
       <div className="workspace-switch"><div className="workspace-avatar">LF</div><div><strong>Lo-Fi workspace</strong><span>Estructura comercial</span></div><ChevronDown size={15} /></div>
       <nav className="nav" aria-label="Navegación principal">
         <span className="nav-label">GENERAL</span>
