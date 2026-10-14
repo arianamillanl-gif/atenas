@@ -9,12 +9,10 @@ import {
   ChevronDown,
   CircleHelp,
   Clock3,
-  CornerDownRight,
   FileClock,
   FileSearch,
   HelpCircle,
   History,
-  Info,
   LayoutDashboard,
   LockKeyhole,
   Menu,
@@ -151,9 +149,8 @@ export default function MaestroCarteraModule() {
                   <td className="px-3 py-3 font-medium text-slate-700">{row.user}</td>
                   <td className="px-3 py-3 font-semibold text-slate-900">
                     <Tooltip>
-                      <TooltipTrigger className="inline-flex cursor-help items-center gap-1.5 rounded text-left font-semibold text-slate-900 outline-none focus-visible:ring-2 focus-visible:ring-[#2A4B93]/30" aria-label={`${row.field}. Motivo: ${row.reason}`}>
+                      <TooltipTrigger className="rounded text-left font-semibold text-slate-900 outline-none focus-visible:ring-2 focus-visible:ring-[#2A4B93]/30" aria-label={`${row.field}. Motivo: ${row.reason}`}>
                         {row.field}
-                        <Info size={13} className="text-slate-400" aria-hidden="true" />
                       </TooltipTrigger>
                       <TooltipContent side="top" className="max-w-64 text-[11px] leading-relaxed">
                         <span className="font-semibold">Motivo:</span> {row.reason}
@@ -173,10 +170,6 @@ export default function MaestroCarteraModule() {
               ))}
             </tbody>
           </table>
-        </div>
-        <div className="mt-4 space-y-1 border-t border-slate-100 pt-3 text-[11px] text-slate-400">
-          <p className="flex items-start gap-1.5"><CornerDownRight size={12} className="mt-0.5 shrink-0" aria-hidden="true" />Historial inmutable — no editable · Nuevas entradas se registran únicamente por el servidor (Append-Only).</p>
-          <p className="flex items-start gap-1.5"><CornerDownRight size={12} className="mt-0.5 shrink-0" aria-hidden="true" />Cada modificación registra usuario, timestamp y valores anterior/posterior — sin posibilidad de edición ni borrado.</p>
         </div>
       </section>
     </div></main>
