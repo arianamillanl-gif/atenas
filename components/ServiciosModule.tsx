@@ -1,120 +1,169 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   AlertTriangle,
-  CalendarDays,
+  Box,
   Check,
   ChevronDown,
   Clock3,
+  FileSearch,
   FileText,
-  HelpCircle,
+  Download,
   History,
-  LayoutDashboard,
+  Info,
   LockKeyhole,
-  Menu,
-  Search,
+  Package,
+  Plus,
+  Save,
   ShieldCheck,
-  UserRound,
+  Tag,
   X,
 } from 'lucide-react'
+import { Sidebar, Topbar } from './personas/Shell'
 
-type Status = 'Activa / Operativa' | 'Inactiva'
+type Status = 'MAPEADO' | 'PENDIENTE' | 'INACTIVO'
+type Equivalence = { id: number; description: string; source: string; reference: string; method: string; evidence: string; validity: string; status: Status }
 
-type HistoryRow = {
-  date: string
-  user: string
-  field: string
-  previous: string
-  next: string
-  action: string
-}
-
-const initialHistory: HistoryRow[] = [
-  { date: '09/10/2026 · 14:30', user: 'María González', field: 'Nombre de la cartera', previous: 'Cartera Corporativa', next: 'Cartera Corporativa Norte', action: 'Actualización' },
-  { date: '14/06/2026 · 11:20', user: 'María González', field: 'Estado operativo', previous: 'Inactiva', next: 'Activa / Operativa', action: 'Reactivación' },
-  { date: '15/01/2026 · 10:15', user: 'Sistema', field: 'Registro de cartera', previous: '—', next: 'CAR-2026-0041', action: 'Creación' },
+const initialEquivalences: Equivalence[] = [
+  { id: 1, description: 'Consultoría ERP Fase 1', source: 'Clientify', reference: 'CL-ERP-001', method: 'ETL Automático', evidence: 'EV-001', validity: '01/01/2025 — Vigente', status: 'MAPEADO' },
+  { id: 2, description: 'Implementación sistema ERP', source: 'Excel Legado', reference: 'EXC-7782', method: 'Manual', evidence: 'EV-002', validity: '01/03/2025 — Vigente', status: 'PENDIENTE' },
+  { id: 3, description: 'Servicio consultoría integral', source: 'ERP Anterior', reference: 'ERP-2019-44', method: 'Regla Coincidencia', evidence: 'EV-003', validity: '01/01/2020 — 31/12/2024', status: 'INACTIVO' },
 ]
+
+
+type TraceEvent = { title: string; author: string; role: string; date: string; description: string; code: string; icon: typeof Tag }
+
+const SERVICE_EVENTS: TraceEvent[] = [{ title: 'Creación de servicio', author: 'María González', role: 'Analista de Facturación', date: '01/01/2025 · 09:42', description: 'Se registró el servicio en el catálogo con su clasificación y tarifa inicial.', code: 'AUD-2025-0001', icon: Tag }, { title: 'Homologación de código', author: 'Carlos Méndez', role: 'Coordinador de Calidad', date: '12/03/2025 · 14:18', description: 'Se homologó el código interno con la nomenclatura CUPS vigente.', code: 'AUD-2025-0184', icon: Check }, { title: 'Cambio de clasificación', author: 'María González', role: 'Analista de Facturación', date: '09/10/2026 · 11:06', description: 'Se actualizó la categoría del servicio según la nueva parametrización.', code: 'AUD-2026-0412', icon: Clock3 }]
+
+function buildRecordEvents(record: Equivalence): TraceEvent[] {
+  const [startDate] = record.validity.split(" — ")
+  const endDate = record.validity.split(" — ")[1] ?? startDate
+  const events: TraceEvent[] = [
+    { title: "Creación de equivalencia", author: "María González", role: "Analista de Facturación", date: `${startDate} · 09:15`, description: `Se registró la referencia ${record.reference} proveniente de ${record.source} para "${record.description}".`, code: `AUD-${record.id}-0001`, icon: Tag },
+    { title: "Homologación", author: "Carlos Méndez", role: "Coordinador de Datos Maestros", date: `${startDate} · 14:32`, description: `Equivalencia mapeada al servicio canónico mediante ${record.method}. Evidencia ${record.evidence}.`, code: `AUD-${record.id}-0002`, icon: Check },
+  ]
+  if (record.status === "INACTIVO") events.push({ title: "Inactivación", author: "María González", role: "Analista de Facturación", date: `${endDate === "Vigente" ? "31/12/2026" : endDate} · 17:48`, description: "Se inactivó la equivalencia por cierre de vigencia. El registro se conserva como histórico inmutable.", code: `AUD-${record.id}-0003`, icon: X })
+  return events
+}
 
 const inputClass = 'h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-[#2A4B93] focus:ring-4 focus:ring-[#2A4B93]/10'
 const labelClass = 'mb-1.5 block text-[11px] font-bold uppercase tracking-[0.08em] text-slate-600'
 
-function FieldLabel({ children, required = false }: { children: React.ReactNode; required?: boolean }) {
-  return <label className={labelClass}>{children}{required && <span className="ml-0.5 text-red-500">*</span>}</label>
+function Label({ children, optional = false }: { children: React.ReactNode; optional?: boolean }) {
+  return <label className={labelClass}>{children}{!optional && <span className="ml-0.5 text-red-500">*</span>}</label>
 }
 
-function SelectField({ defaultValue, children, value, onChange }: { defaultValue?: string; children: React.ReactNode; value?: string; onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void }) {
-  return <div className="relative"><select value={value} defaultValue={defaultValue} onChange={onChange} className={`${inputClass} appearance-none pr-9`}>{children}</select><ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3 top-3.5 text-slate-400" size={16} /></div>
+function SelectField({ children, defaultValue }: { children: React.ReactNode; defaultValue?: string }) {
+  return <div className="relative"><select defaultValue={defaultValue} className={`${inputClass} appearance-none pr-9`}>{children}</select><ChevronDown aria-hidden="true" className="pointer-events-none absolute right-3 top-3.5 text-slate-400" size={16} /></div>
 }
 
-function ReadonlyField({ label, value, icon }: { label: string; value: string; icon: React.ReactNode }) {
-  return <div><FieldLabel>{label}</FieldLabel><div className="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm text-slate-600"><span className="text-slate-400">{icon}</span>{value}<LockKeyhole className="ml-auto text-slate-400" size={14} /></div></div>
+function StatusBadge({ status }: { status: Status }) {
+  const styles = { MAPEADO: 'border-emerald-200 bg-emerald-50 text-emerald-700', PENDIENTE: 'border-amber-200 bg-amber-50 text-amber-700', INACTIVO: 'border-slate-200 bg-slate-100 text-slate-600' }
+  return <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-wide ${styles[status]}`}><span className="size-1.5 rounded-full bg-current" />{status}</span>
 }
 
 export default function ServiciosModule() {
-  const [status, setStatus] = useState<Status>('Activa / Operativa')
-  const [history, setHistory] = useState(initialHistory)
+  const [equivalences, setEquivalences] = useState(initialEquivalences)
+  const [filter, setFilter] = useState<'TODOS' | Status>('TODOS')
+  const [showNew, setShowNew] = useState(false)
+  const [inactivate, setInactivate] = useState<Equivalence | null>(null)
   const [traceability, setTraceability] = useState(false)
-  const [cancelOpen, setCancelOpen] = useState(false)
-  const [statusOpen, setStatusOpen] = useState(false)
+  const [historyRecord, setHistoryRecord] = useState<Equivalence | null>(null)
+  const traceEvents = historyRecord ? buildRecordEvents(historyRecord) : SERVICE_EVENTS
+  const closeTrace = () => { setTraceability(false); setHistoryRecord(null) }
+  const [evidence, setEvidence] = useState<Equivalence | null>(null)
   const [reason, setReason] = useState('')
   const [saved, setSaved] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [isCancelModalOpen, setIsCancelModalOpen] = useState(false)
+  const [formKey, setFormKey] = useState(0)
+  const [collapsed, setCollapsed] = useState(false)
 
-  function savePortfolio() {
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2400)
+  function discardChanges() {
+    setFormKey((key) => key + 1)
+    setEquivalences(initialEquivalences)
+    setFilter('TODOS')
+    setSaved(false)
+    setIsCancelModalOpen(false)
+    window.location.hash = 'servicios'
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  function confirmStatus() {
-    if (reason.trim().length < 20) return
-    const nextStatus: Status = status === 'Inactiva' ? 'Activa / Operativa' : 'Inactiva'
-    setStatus(nextStatus)
-    setHistory((rows) => [{ date: '14/10/2026 · 09:12', user: 'María González', field: 'Estado operativo', previous: status, next: nextStatus, action: nextStatus === 'Inactiva' ? 'Inactivación' : 'Reactivación' }, ...rows])
-    setStatusOpen(false)
+  const filtered = useMemo(() => filter === 'TODOS' ? equivalences : equivalences.filter((item) => item.status === filter), [equivalences, filter])
+  const counts = { TODOS: equivalences.length, MAPEADO: equivalences.filter((x) => x.status === 'MAPEADO').length, PENDIENTE: equivalences.filter((x) => x.status === 'PENDIENTE').length, INACTIVO: equivalences.filter((x) => x.status === 'INACTIVO').length }
+
+  function confirmInactivation() {
+    if (!inactivate || reason.trim().length < 20) return
+    setEquivalences((rows) => rows.map((row) => row.id === inactivate.id ? { ...row, status: 'INACTIVO', validity: row.validity.replace('Vigente', '31/12/2026') } : row))
+    setInactivate(null)
     setReason('')
   }
 
+  function addEquivalence(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const form = new FormData(event.currentTarget)
+    setEquivalences((rows) => [...rows, { id: Date.now(), description: String(form.get('description')), source: String(form.get('source')), reference: String(form.get('reference')), method: String(form.get('method')), evidence: 'EV-NUEVO', validity: `${String(form.get('since'))} — Vigente`, status: 'PENDIENTE' }])
+    setShowNew(false)
+    event.currentTarget.reset()
+  }
+
   return (
-    <div className="app-shell font-poppins text-slate-900">
-      <aside className={`sidebar ${sidebarOpen ? 'is-open' : ''}`}>
-        <div>
-          <div className="brand"><div className="brand-mark">A</div><div><strong>ATENAS</strong><span>Grupo Consultor</span></div><button className="icon-button sidebar-close" onClick={() => setSidebarOpen(false)} aria-label="Cerrar menú"><X size={18} /></button></div>
-          <div className="workspace-switch"><div className="workspace-avatar">LF</div><div><strong>Lo-Fi workspace</strong><span>Estructura comercial</span></div><ChevronDown size={15} /></div>
-          <nav className="nav" aria-label="Navegación principal">
-            <span className="nav-label">GENERAL</span>
-            <a href="#inicio"><LayoutDashboard size={17} /> <span className="nav-label-text">Inicio</span></a>
-            <a href="#cartera" className="active"><FileText size={17} /> <span className="nav-label-text">Maestro de cartera</span><span className="nav-count">1</span></a>
-            <a href="#clientes"><UserRound size={17} /> <span className="nav-label-text">Clientes</span></a>
-            <span className="nav-label second">GOBIERNO</span>
-            <a href="#catalogos"><ShieldCheck size={17} /> <span className="nav-label-text">Catálogos maestros</span></a>
-            <a href="#auditoria"><History size={17} /> <span className="nav-label-text">Auditoría</span></a>
-          </nav>
+    <main className="app-shell">
+      <Sidebar collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} active="servicios" />
+      <section onClick={(event) => { const button = (event.target as HTMLElement).closest('button'); if (button?.textContent?.trim() === 'Ver') setEvidence(filtered[0] ?? null) }} className="content flex min-h-screen flex-col bg-slate-50 font-sans text-slate-900">
+      <Topbar section="Servicios" />
+      <div className="mx-auto w-full max-w-[1440px] flex-1 px-4 py-6 md:px-8 md:py-8">
+        <nav className="mb-3 flex items-center text-sm" aria-label="Breadcrumb"><a href="#servicios" className="text-slate-400 transition-colors hover:text-slate-600">Servicios</a><span className="mx-2 text-xs text-slate-300">›</span><strong className="font-semibold text-slate-700">Ficha Canónica de Servicio</strong></nav>
+        <section className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center"><div><p className="mb-1.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#2A4B93]"><ShieldCheck size={16} /> GOBIERNO DE CATÁLOGO / SERVICIOS</p><h1 className="m-0 font-sans text-3xl font-bold text-slate-900">Catálogo de Servicios</h1><p className="mt-1 text-sm text-slate-500">Define, clasifica y conserva la trazabilidad de los servicios corporativos.</p></div><span className="inline-flex w-fit items-center gap-1.5 self-start rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 sm:self-center"><span aria-hidden="true" className="size-1.5 rounded-full bg-emerald-500" />Publicado / Activo</span></section>
+
+        <section className="mb-6 flex flex-col items-start justify-between gap-4 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm lg:flex-row lg:items-center"><div className="flex min-w-0 items-center gap-4"><div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#2A4B93] text-white shadow-sm"><Package size={24} /></div><div className="min-w-0"><div className="flex flex-wrap items-center gap-3"><h2 className="text-lg font-bold text-slate-900">Consultoría ERP - Fase I</h2><span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">• Activo</span></div><div className="mt-1 flex flex-wrap items-center gap-2 text-xs font-medium text-slate-500"><span>Línea Consultoría · Reg: 01/01/2025</span><span className="text-slate-300">|</span><span className="inline-flex items-center gap-1"><LockKeyhole size={12} className="text-slate-400" /> ID: SRV-2026-0412</span><span className="text-slate-300">|</span><span>Modificado: 09/10/2026 por María González</span></div></div></div><button onClick={() => setTraceability(true)} className="inline-flex h-10 shrink-0 items-center gap-2 rounded-full border border-slate-200 bg-white px-5 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"><FileSearch size={15} /> Ver trazabilidad</button></section>
+
+        <div key={formKey} className="flex flex-col gap-6">
+          <section className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm lg:p-8"><h2 className="text-xl font-bold text-slate-900">Definición Canónica del Servicio</h2><p className="mb-6 mt-1 text-sm text-slate-500">Definición oficial, código maestro y vigencia del servicio dentro de la organización.</p><div className="grid grid-cols-1 gap-5 md:grid-cols-2"><div><Label>SKU / CÓDIGO CANÓNICO</Label><input className={inputClass} defaultValue="SRV-CONS-ERP" /></div><div><Label>NOMBRE CANÓNICO DEL SERVICIO</Label><input className={inputClass} defaultValue="Consultoría ERP - Fase I" /></div><div className="md:col-span-2"><Label>DESCRIPCIÓN DETALLADA</Label><textarea className={`${inputClass} min-h-24 resize-y py-3`} defaultValue="Acompañamiento especializado para el diseño, configuración y puesta en marcha de soluciones ERP." /></div><div className="md:col-span-2"><Label>ESTADO Y VIGENCIA DEL SERVICIO</Label><SelectField defaultValue="Activo"><option>Activo</option><option>En revisión</option><option>Deprecado</option></SelectField></div><div><Label>FECHA INICIO VIGENCIA</Label><input type="date" className={inputClass} defaultValue="2025-01-01" /></div><div><Label optional>FECHA FIN VIGENCIA</Label><input type="date" className={inputClass} /></div><div className="rounded-2xl border border-slate-100 bg-slate-50/70 p-5"><Label optional>UNIDAD DE MEDIDA</Label><SelectField defaultValue="Proyecto"><option>Proyecto</option><option>Hora</option><option>Mes</option><option>Entregable</option></SelectField></div><div className="rounded-2xl border border-slate-100 bg-slate-50/70 p-5"><Label optional>MONEDA REFERENCIAL</Label><SelectField defaultValue="USD"><option>USD</option><option>EUR</option><option>MXN</option></SelectField></div><p className="flex items-center gap-2 text-xs italic text-slate-500 md:col-span-2"><Info size={15} /> Los valores de unidad de medida y moneda son referencias generales del catálogo y no sustituyen las condiciones particulares de una venta.</p></div></section>
+
+          <section className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm lg:p-8"><h2 className="text-xl font-bold text-slate-900">Clasificación Histórica del Servicio</h2><p className="mb-6 mt-1 text-sm text-slate-500">Categorización de negocio para reportes y consolidación financiera.</p><div className="grid grid-cols-1 gap-6 md:grid-cols-2"><div><Label>LÍNEA DE SERVICIO</Label><SelectField defaultValue="Consultoría"><option>Consultoría</option><option>Desarrollo</option><option>Soporte</option><option>Licenciamiento</option></SelectField></div><div><Label>TIPO DE SERVICIO</Label><SelectField defaultValue="Especializado"><option>Especializado</option><option>Estándar</option><option>Mantenimiento</option></SelectField></div><div><Label>MODALIDAD</Label><SelectField defaultValue="Híbrido"><option>Presencial</option><option>Remoto</option><option>Híbrido</option></SelectField></div><div><Label>FRECUENCIA</Label><SelectField defaultValue="Única vez"><option>Única vez</option><option>Mensual</option><option>Trimestral</option><option>Anual</option></SelectField></div></div><p className="mt-6 flex items-center gap-2.5 border-t border-slate-100 pt-4 text-xs italic text-slate-500"><History size={15} /> La clasificación histórica permite agrupar servicios homólogos en reportes consolidados sin alterar contratos pasados.</p></section>
+
+          <section className="rounded-3xl border border-slate-100 bg-white p-6 shadow-sm lg:p-8"><div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end"><div><h2 className="text-xl font-bold text-slate-900">Homologación y Equivalencias de Origen</h2><p className="mb-1 mt-1 text-sm text-slate-500">Mapeo de términos provenientes de sistemas legados (Clientify, ETL, DWH o archivos Excel).</p></div><button onClick={() => setShowNew(true)} className="bg-white border border-slate-200 text-[#2A4B93] hover:bg-slate-50 rounded-full px-5 py-2 text-xs font-semibold shadow-2xs transition-all flex items-center gap-1.5"><Plus size={16} /> Registrar equivalencia legada</button></div><div className="mb-6 mt-5 flex items-center gap-2 overflow-x-auto pb-1">{([{ id: 'TODOS', label: 'Todos' }, { id: 'MAPEADO', label: 'Mapeado' }, { id: 'PENDIENTE', label: 'Pendiente' }, { id: 'INACTIVO', label: 'Inactivo' }] as const).map((tab) => { const isActive = filter === tab.id; return <button key={tab.id} onClick={() => setFilter(tab.id)} className={`group inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs transition-all ${isActive ? 'font-semibold bg-blue-50/70 text-[#2A4B93] shadow-2xs' : 'font-medium text-slate-500 hover:bg-slate-100/60 hover:text-slate-800'} cursor-pointer`}><span>{tab.label}</span><span className={`inline-flex min-w-[18px] items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] ${isActive ? 'bg-white font-bold text-[#2A4B93]' : 'bg-slate-100 font-semibold text-slate-500 group-hover:bg-slate-200'}`}>{counts[tab.id]}</span></button> })}</div><div className="w-full overflow-x-auto rounded-2xl border border-slate-100 bg-white shadow-2xs [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:rounded-full [&::-webkit-scrollbar-track]:bg-slate-100/60 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-slate-300"><table className="w-full min-w-[900px] table-auto border-collapse text-left font-poppins [&_td:last-child]:sticky [&_td:last-child]:right-0 [&_td:last-child]:z-10 [&_td:last-child]:min-w-[140px] [&_td:last-child]:border-l [&_td:last-child]:border-slate-100 [&_td:last-child]:bg-white [&_td:last-child]:shadow-[-6px_0_12px_-4px_rgba(0,0,0,0.04)] [&_th:last-child]:sticky [&_th:last-child]:right-0 [&_th:last-child]:z-10 [&_th:last-child]:min-w-[140px] [&_th:last-child]:border-l [&_th:last-child]:border-slate-100 [&_th:last-child]:bg-white [&_th:last-child]:shadow-[-6px_0_12px_-4px_rgba(0,0,0,0.04)]"><thead><tr className="border-b border-slate-100 bg-slate-50/50"><th className="px-2.5 py-3 text-xs font-bold uppercase tracking-wider text-slate-400">DESCRIPCIÓN / CÓD. ANTERIOR</th><th className="px-2.5 py-3 text-xs font-bold uppercase tracking-wider text-slate-400">FUENTE / SISTEMA</th><th className="px-2.5 py-3 text-xs font-bold uppercase tracking-wider text-slate-400">REFERENCIA ORIGEN</th><th className="px-2.5 py-3 text-xs font-bold uppercase tracking-wider text-slate-400">MÉTODO HOMOLOGACIÓN</th><th className="px-2.5 py-3 text-xs font-bold uppercase tracking-wider text-slate-400">EVIDENCIA</th><th className="px-2.5 py-3 text-xs font-bold uppercase tracking-wider text-slate-400">VIGENCIA</th><th className="px-2.5 py-3 text-xs font-bold uppercase tracking-wider text-slate-400">ESTADO</th><th className="px-2.5 py-3 text-right text-xs font-bold uppercase tracking-wider text-slate-400">ACCIÓN</th></tr></thead><tbody className="divide-y divide-slate-100">{filtered.map((row) => <tr key={row.id} className="transition-colors hover:bg-slate-50/50"><td className="px-4 py-4 text-sm font-bold text-slate-900">{row.description}</td><td className="px-4 py-4 text-sm text-slate-700">{row.source}</td><td className="px-4 py-4"><span className="rounded-md border border-slate-100 bg-slate-50 px-2 py-1 font-mono text-xs text-slate-600">{row.reference}</span></td><td className="px-4 py-4 text-sm text-slate-600">{row.method}</td><td className="px-4 py-4"><button onClick={() => setEvidence(row)} className="inline-flex cursor-pointer items-center gap-1 text-xs font-semibold text-[#2A4B93] hover:underline"><FileText size={14} /> Ver</button></td><td className="px-4 py-4 text-xs font-medium text-slate-600">{row.validity}</td><td className="px-4 py-4"><StatusBadge status={row.status} /></td><td className="px-4 py-4 text-right">{row.status === 'INACTIVO' ? <button type="button" onClick={() => setHistoryRecord(row)} aria-label={`Ver historial de ${row.reference}`} className="rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer shadow-2xs">Historial</button> : <button type="button" onClick={() => setInactivate(row)} aria-label={`Inactivar ${row.reference}`} className="rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer shadow-2xs">Inactivar</button>}</td></tr>)}</tbody></table></div><p className="mt-3 text-xs italic text-slate-500">Sin opción de eliminación — las equivalencias de origen no se borran; se inactivan o cierran vigencia para conservar la trazabilidad histórica.</p></section>
         </div>
-        <div className="sidebar-footer"><div className="support-card"><HelpCircle size={18} /><div><strong>¿Necesitas ayuda?</strong><span>Centro de soporte</span></div></div><div className="user-card"><div className="user-avatar">MG</div><div><strong>María González</strong><span>Administradora</span></div><ChevronDown size={15} /></div></div>
-      </aside>
-
-      <div className="content">
-        <header className="topbar"><button className="icon-button mobile-menu" onClick={() => setSidebarOpen(true)} aria-label="Abrir menú"><Menu size={20} /></button><div className="breadcrumb"><span>Estructura comercial</span><span>›</span><strong>Maestro de cartera</strong></div><div className="top-actions"><div className="search-box"><Search size={15} /><input aria-label="Búsqueda rápida" placeholder="Búsqueda rápida" /></div><button className="icon-button notification" aria-label="Notificaciones"><span>●</span><i /></button><div className="top-user"><div className="user-avatar">MG</div><span>María González</span></div></div></header>
-
-        <main className="detail-page"><div className="page-wrap">
-          <div className="page-heading"><div><div className="eyebrow"><ShieldCheck size={15} /> ESTRUCTURA COMERCIAL / GOBIERNO DE CARTERA</div><h1>Maestro de cartera</h1><p>Crear y mantener una cartera como entidad independiente de la asignación de clientes.</p></div><span className="status-pill green"><span className="status-dot">●</span>{status}</span></div>
-
-          <section className="source-card"><div className="source-grid"><div><span className="meta-label"><LockKeyhole size={13} /> ID CARTERA</span><strong>CAR-2026-0041</strong></div><div><span className="meta-label"><CalendarDays size={13} /> FECHA DE REGISTRO</span><strong>15/01/2026 · 10:15</strong></div><div><span className="meta-label"><UserRound size={13} /> ÚLTIMA MODIFICACIÓN</span><strong>09/10/2026 · 14:30 <small>por María González</small></strong></div></div><button className="outline-button" onClick={() => setTraceability(true)}><History size={15} /> Ver trazabilidad del registro</button></section>
-
-          <section className="detail-card"><div className="section-heading"><span className="step">1</span><div><h2>Definición independiente de la cartera</h2><p>Identifica el alcance y la unidad organizacional responsable.</p></div></div><div className="field-row two"><div><FieldLabel required>Código de cartera</FieldLabel><input className={inputClass} placeholder="Ej. CAR-CORP-WEST" defaultValue="CAR-CORP-NORTE" /><small className="helper">Código único interno para integración con DWH y sistemas legados.</small></div><div><FieldLabel required>Nombre de la cartera</FieldLabel><input className={inputClass} placeholder="Nombre descriptivo de la cartera" defaultValue="Cartera Corporativa Norte" /></div><div className="wide"><FieldLabel>Descripción de la cartera</FieldLabel><textarea className={`${inputClass} h-auto min-h-24 resize-y py-3`} rows={3} placeholder="Descripción del alcance, cobertura o segmento de la cartera." defaultValue="Cartera de clientes corporativos con cobertura comercial en la zona norte." /></div><div className="wide"><FieldLabel required>Unidad de negocio</FieldLabel><SelectField defaultValue="Unidad Comercial Norte"><option>Seleccionar Unidad de Negocio</option><option>Unidad Comercial Norte</option><option>Unidad Corporativa</option><option>Unidad de Servicios</option></SelectField><small className="helper">La asignación a la unidad de negocio gestiona la visibilidad jerárquica.</small></div></div></section>
-
-          <section className="detail-card"><div className="section-heading"><span className="step">2</span><div><h2>Estado operativo, motivo y trazabilidad</h2><p>Los datos de control se registran automáticamente para conservar la auditoría.</p></div></div><div className="field-row three"><div><FieldLabel>Estado de la cartera</FieldLabel><SelectField value={status} onChange={(event) => setStatus(event.target.value as Status)}><option>Activa / Operativa</option><option>Inactiva</option></SelectField></div><ReadonlyField label="Fecha de cambio de estado" value="14/06/2026 · 11:20" icon={<Clock3 size={15} />} /><ReadonlyField label="Usuario que registra cambio" value="María González" icon={<UserRound size={15} />} /><div className="wide"><FieldLabel>Motivo de inactivación</FieldLabel><textarea disabled={status !== 'Inactiva'} value={status === 'Inactiva' ? reason : ''} onChange={(event) => setReason(event.target.value)} className={`${inputClass} h-auto min-h-20 resize-y py-3 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400`} placeholder="Motivo de ajuste administrativo o de reestructuración por el cual se inactiva la cartera." /></div></div></section>
-
-          <section className="detail-card"><div className="section-heading"><span className="step">3</span><div><h2>Historial de modificaciones y acciones auditables</h2><p>Registro inmutable de los cambios realizados sobre la cartera.</p></div></div><div className="table-scroll"><table><thead><tr><th>FECHA / HORA</th><th>USUARIO</th><th>CAMPO MODIFICADO</th><th>VALOR ANTERIOR</th><th>VALOR NUEVO</th><th className="right">ACCIÓN</th></tr></thead><tbody>{history.map((row, index) => <tr key={`${row.date}-${index}`}><td><strong>{row.date}</strong></td><td>{row.user}</td><td>{row.field}</td><td><code>{row.previous}</code></td><td><code>{row.next}</code></td><td className="right"><button className="link-button" onClick={() => setTraceability(true)}>Detalles</button></td></tr>)}</tbody></table></div><button className="history-link" onClick={() => setTraceability(true)}><History size={15} /> Ver historial de estados / auditoría completa</button></section>
-        </div></main>
-
-        <footer className="detail-actions"><button className="outline-button" onClick={() => setCancelOpen(true)}>Cancelar</button><div className="action-group"><button className="change-status" onClick={() => setStatusOpen(true)}><AlertTriangle size={15} /> Cambiar estado</button><button className="primary-button" onClick={savePortfolio}><Check size={16} /> {saved ? 'Cartera guardada' : 'Guardar cartera'}</button></div></footer>
       </div>
 
-      {cancelOpen && <div className="confirmation-backdrop" onClick={() => setCancelOpen(false)}><div className="confirmation-modal" role="dialog" aria-modal="true" aria-labelledby="cancel-title" onClick={(event) => event.stopPropagation()}><div className="modal-icon"><AlertTriangle size={22} /></div><h2 id="cancel-title">¿Descartar cambios en la cartera?</h2><p>Si cancelas ahora, la información modificada no se guardará en el catálogo maestro.</p><div className="confirmation-actions"><button className="modal-cancel" onClick={() => setCancelOpen(false)}>Continuar editando</button><button className="modal-danger" onClick={() => setCancelOpen(false)}>Sí, descartar</button></div></div></div>}
-      {statusOpen && <div className="confirmation-backdrop" onClick={() => setStatusOpen(false)}><div className="confirmation-modal" role="dialog" aria-modal="true" aria-labelledby="status-title" onClick={(event) => event.stopPropagation()}><div className="modal-icon amber"><AlertTriangle size={22} /></div><h2 id="status-title">{status === 'Inactiva' ? 'Reactivar cartera' : 'Inactivar cartera'}</h2><p>Ingresa el motivo para que el cambio quede registrado en la auditoría.</p><FieldLabel required>Motivo del cambio</FieldLabel><textarea autoFocus value={reason} onChange={(event) => setReason(event.target.value)} className={`${inputClass} h-auto min-h-24 py-3`} placeholder="Escribe al menos 20 caracteres..." /><div className="confirmation-actions"><button className="modal-cancel" onClick={() => setStatusOpen(false)}>Cancelar</button><button className="modal-confirm" disabled={reason.trim().length < 20} onClick={confirmStatus}>Confirmar cambio</button></div></div></div>}
-      {traceability && <div className="drawer-backdrop" onClick={() => setTraceability(false)}><aside className="drawer" role="dialog" aria-modal="true" aria-labelledby="trace-title" onClick={(event) => event.stopPropagation()}><div className="drawer-header"><div><span className="eyebrow"><History size={14} /> AUDITORÍA INMUTABLE</span><h2 id="trace-title">Trazabilidad del registro</h2><p>CAR-2026-0041</p></div><button className="icon-button" onClick={() => setTraceability(false)} aria-label="Cerrar trazabilidad"><X size={18} /></button></div><div className="drawer-body"><div className="drawer-summary"><span>3 eventos registrados</span><strong><ShieldCheck size={14} /> Cadena íntegra</strong></div>{history.map((row, index) => <div className="timeline-item" key={`${row.date}-trace-${index}`}><div className="timeline-dot"><Check size={13} /></div><div><span>{row.date}</span><strong>{row.action}: {row.field}</strong><p>{row.previous} → {row.next}</p><small>Realizado por {row.user}</small></div></div>)}</div><div className="drawer-footer"><button className="outline-button" onClick={() => setTraceability(false)}>Cerrar</button><button className="primary-button"><FileText size={15} /> Exportar auditoría</button></div></aside></div>}
-    </div>
+      <footer className="sticky bottom-0 z-40 flex items-center justify-between border-t border-slate-200 bg-white/90 px-4 py-4 backdrop-blur-md md:px-8"><button type="button" onClick={() => setIsCancelModalOpen(true)} className="rounded-full border border-slate-200 px-6 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50">Cancelar</button><button onClick={() => { setSaved(true); setTimeout(() => setSaved(false), 2500) }} className="inline-flex items-center gap-2 rounded-full bg-[#2A4B93] px-8 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1E366B]"><Save size={16} />{saved ? 'Servicio guardado' : 'Guardar Servicio'}</button></footer>
+      </section>
+
+      {isCancelModalOpen && (
+        <div
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4"
+          onClick={() => setIsCancelModalOpen(false)}
+          onKeyDown={(event) => { if (event.key === 'Escape') setIsCancelModalOpen(false) }}
+        >
+          <div
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="discard-title"
+            aria-describedby="discard-description"
+            onClick={(event) => event.stopPropagation()}
+            className="bg-white rounded-3xl max-w-md w-full p-6 shadow-xl border border-slate-100 font-poppins animate-in fade-in zoom-in-95 duration-150"
+          >
+            <div className="bg-amber-50 text-amber-600 rounded-full p-3 w-12 h-12 flex items-center justify-center mb-4 border border-amber-100">
+              <AlertTriangle size={22} aria-hidden="true" />
+            </div>
+            <h2 id="discard-title" className="text-lg font-bold text-slate-900">¿Descartar cambios no guardados?</h2>
+            <p id="discard-description" className="text-sm text-slate-500 mt-1 leading-relaxed">Si cancelas ahora, la información ingresada o modificada en el formulario del servicio se perderá de forma permanente.</p>
+            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <button type="button" autoFocus onClick={() => setIsCancelModalOpen(false)} className="rounded-full border border-slate-200/80 bg-white px-5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer shadow-2xs">Continuar editando</button>
+              <button type="button" onClick={discardChanges} className="rounded-full bg-rose-600 px-5 py-2.5 text-xs font-semibold text-white hover:bg-rose-700 transition-all cursor-pointer shadow-2xs">Sí, descartar</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {inactivate && <div className="fixed inset-0 z-50 grid place-items-center bg-slate-900/40 p-4 backdrop-blur-sm"><div role="dialog" aria-modal="true" className="w-full max-w-md rounded-3xl border border-slate-100 bg-white p-8 shadow-xl"><div className="mb-4 grid size-12 place-items-center rounded-2xl bg-amber-50 p-3 text-amber-600"><AlertTriangle size={22} /></div><h2 className="text-lg font-bold text-slate-900">¿Confirmar inactivación de equivalencia?</h2><p className="mt-2 text-sm leading-6 text-slate-500">La equivalencia se conservará en el historial de auditoría y cerrará su vigencia actual.</p><div className="mt-5"><Label>MOTIVO DE LA INACTIVACIÓN</Label><textarea autoFocus value={reason} onChange={(event) => setReason(event.target.value)} aria-invalid={reason.length > 0 && reason.trim().length < 20} className={`${inputClass} min-h-24 resize-none py-3`} placeholder="Escribe al menos 20 caracteres..." /><p className="mt-1 text-right text-[11px] text-slate-400">{reason.length}/20 mínimo</p></div><div className="mt-5 flex justify-end gap-2"><button onClick={() => { setInactivate(null); setReason('') }} className="rounded-full px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50">Cancelar</button><button disabled={reason.trim().length < 20} onClick={confirmInactivation} className="rounded-full bg-slate-900 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-40">Sí, inactivar registro</button></div></div></div>}
+
+      {showNew && <div className="fixed inset-0 z-50 grid place-items-center bg-slate-900/40 p-4 backdrop-blur-sm"><form onSubmit={addEquivalence} className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-xl"><div className="flex items-start justify-between"><div><h2 className="text-lg font-bold text-slate-900">Nueva equivalencia legada</h2><p className="mt-1 text-sm text-slate-500">Registra el término de origen sin perder su contexto histórico.</p></div><button type="button" onClick={() => setShowNew(false)} aria-label="Cerrar" className="rounded-full p-2 text-slate-400 hover:bg-slate-100"><X size={18} /></button></div><div className="mt-5 grid gap-4 sm:grid-cols-2"><div className="sm:col-span-2"><Label>DESCRIPCIÓN / CÓDIGO ANTERIOR</Label><input name="description" required className={inputClass} /></div><div><Label>FUENTE / SISTEMA</Label><select name="source" className={inputClass}><option>Clientify</option><option>Excel Legado</option><option>DWH</option></select></div><div><Label>REFERENCIA ORIGEN</Label><input name="reference" required className={inputClass} /></div><div><Label>MÉTODO</Label><select name="method" className={inputClass}><option>Manual</option><option>ETL Automático</option><option>Regla Coincidencia</option></select></div><div><Label>VIGENCIA DESDE</Label><input name="since" required type="date" className={inputClass} /></div></div><div className="mt-6 flex justify-end gap-2"><button type="button" onClick={() => setShowNew(false)} className="rounded-full px-5 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-50">Cancelar</button><button type="submit" className="rounded-full bg-[#2A4B93] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#1E366B]">Asignar equivalencia</button></div></form></div>}
+
+      {evidence && <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm" onClick={() => setEvidence(null)}><aside role="dialog" aria-modal="true" aria-labelledby="evidence-title" onClick={(event) => event.stopPropagation()} className="ml-auto flex h-full w-full max-w-lg flex-col justify-between bg-white p-6 shadow-2xl"><div className="flex-1 overflow-y-auto space-y-6 pr-1"><div className="flex items-start justify-between"><div className="min-w-0"><p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Validación documental</p><h3 id="evidence-title" className="truncate text-base font-bold text-slate-900">Evidencia_Consultoria_ERP.pdf</h3><p className="text-xs text-slate-500">{evidence.description}</p></div><button onClick={() => setEvidence(null)} aria-label="Cerrar visor" className="rounded-full border border-slate-200 bg-slate-50 p-2.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all cursor-pointer shadow-2xs"><X aria-hidden="true" /></button></div><div className="my-6 flex flex-col items-center justify-center rounded-2xl border border-slate-100 bg-slate-50/70 p-6 text-center"><div className="mb-3 inline-flex items-center justify-center rounded-2xl bg-white p-4 text-[#2A4B93] shadow-2xs"><FileText size={48} /></div><p className="text-sm font-bold text-slate-800">Documento PDF</p><p className="text-xs text-slate-500">Vista previa disponible para auditoría</p><span className="mt-3 inline-flex items-center gap-1.5 rounded-full border border-emerald-200/80 bg-emerald-50/80 px-3 py-1 text-xs font-semibold text-emerald-700"><ShieldCheck size={14} /> Integridad verificada</span></div><section><h4 className="mb-3 text-xs font-bold uppercase tracking-wider text-slate-400">Metadatos del archivo</h4><dl className="divide-y divide-slate-100 overflow-hidden rounded-2xl border border-slate-100 text-xs">{[['Nombre del archivo','Evidencia_Consultoria_ERP.pdf'],['Peso','2.4 MB'],['Fecha de carga','02 sep 2026 - 16:08'],['Usuario responsable','María González'],['Método de homologación',evidence.method]].map(([label, value]) => <div key={label} className="flex justify-between gap-4 px-4 py-3"><dt className="text-slate-400">{label}</dt><dd className="text-right font-medium">{value}</dd></div>)}</dl></section></div><div className="px-6 py-4 border-t border-slate-100 bg-white mt-auto"><button className="inline-flex items-center gap-2 rounded-full border border-slate-200/80 bg-white px-5 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all cursor-pointer shadow-2xs"><Download /> Descargar documento</button><button onClick={() => setEvidence(null)} className="inline-flex items-center justify-center rounded-full bg-[#2A4B93] px-6 py-2.5 text-xs font-semibold text-white hover:bg-[#1E366B] transition-all cursor-pointer shadow-2xs">Cerrar visor</button></div></aside></div>}
+
+      {(traceability || historyRecord) && <div className="fixed inset-0 z-50 bg-slate-900/30 backdrop-blur-sm"><aside className="ml-auto flex h-full w-full max-w-md flex-col bg-white shadow-2xl"><div className="flex-1 overflow-y-auto p-6"><div className="flex items-center justify-between gap-4 border-b border-slate-100 pb-5"><div className="flex min-w-0 items-center gap-3"><div className="grid size-11 shrink-0 place-items-center rounded-full bg-[#2A4B93]/10 text-[#2A4B93]"><Clock3 size={20} /></div><div className="flex min-w-0 flex-col"><p className="text-[11px] font-bold uppercase leading-none tracking-widest text-slate-400">Historial de auditoría</p><h2 className="mt-1.5 text-xl font-bold leading-tight text-slate-900">{historyRecord ? "Trazabilidad de la equivalencia" : "Trazabilidad del servicio"}</h2></div></div><div className="flex shrink-0 items-center gap-2"><span className="rounded-full bg-slate-100 px-2.5 py-1 font-mono text-[11px] font-medium text-slate-500">{historyRecord ? `ID: ${historyRecord.reference}` : "ID: 11-2016"}</span><button onClick={closeTrace} aria-label="Cerrar trazabilidad" className="rounded-full border border-slate-200 bg-slate-50 p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all cursor-pointer shadow-2xs"><X size={16} /></button></div></div><div className="mt-4 mb-4 flex items-center justify-between px-6 py-2"><span className="text-slate-400 text-xs font-normal">{traceEvents.length} eventos registrados</span><span className="text-emerald-600 text-xs font-medium flex items-center gap-1"><ShieldCheck size={13} aria-hidden="true" />Cadena íntegra</span></div><div className="relative pl-4 space-y-6"><div aria-hidden="true" className="absolute left-[31px] top-4 bottom-4 w-[2px] bg-slate-200" />{traceEvents.map((event) => <div key={event.code} className="relative flex items-start gap-4"><div className="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 shrink-0 z-10 shadow-2xs"><event.icon className="w-4 h-4 text-slate-500" aria-hidden="true" /></div><div className="flex-1 bg-white rounded-2xl border border-slate-200/70 p-4 shadow-2xs space-y-2"><div className="flex items-center justify-between gap-3"><h4 className="text-sm font-bold text-slate-900">{event.title}</h4><span className="shrink-0 text-xs text-slate-400 font-normal">{event.date}</span></div><p className="text-xs text-slate-700 font-semibold">{event.author} <span className="font-normal text-slate-400">· {event.role}</span></p><p className="text-xs text-slate-500 leading-relaxed">{event.description}</p><div className="pt-1"><span className="inline-flex items-center rounded-md bg-slate-50 border border-slate-200/60 px-2.5 py-1 text-[10px] font-mono text-slate-500">{event.code}</span></div></div></div>)}</div></div><div className="mt-auto flex justify-end border-t border-slate-100 bg-white px-6 py-4"><button onClick={closeTrace} className="rounded-full bg-[#2A4B93] px-6 py-2.5 text-xs font-semibold text-white shadow-2xs transition-all hover:bg-[#1E366B] cursor-pointer">Cerrar panel</button></div></aside></div>}
+    </main>
   )
 }
