@@ -20,6 +20,7 @@ import {
   Tag,
   X,
 } from 'lucide-react'
+import { Sidebar, Topbar } from './personas/Shell'
 
 type Status = 'MAPEADO' | 'PENDIENTE' | 'INACTIVO'
 type Equivalence = { id: number; description: string; source: string; reference: string; method: string; evidence: string; validity: string; status: Status }
@@ -57,6 +58,7 @@ export default function ServiciosModule() {
   const [saved, setSaved] = useState(false)
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false)
   const [formKey, setFormKey] = useState(0)
+  const [collapsed, setCollapsed] = useState(false)
 
   function discardChanges() {
     setFormKey((key) => key + 1)
@@ -87,11 +89,13 @@ export default function ServiciosModule() {
   }
 
   return (
-    <main onClick={(event) => { const button = (event.target as HTMLElement).closest('button'); if (button?.textContent?.trim() === 'Ver') setEvidence(filtered[0] ?? null) }} className="min-h-screen bg-slate-50 pb-28 font-poppins text-slate-900">
-      <header className="border-b border-slate-200 bg-white"><div className="mx-auto flex max-w-[1500px] items-center justify-between px-5 py-4 lg:px-10"><div className="flex items-center gap-3"><div className="grid size-10 place-items-center rounded-xl bg-[#2A4B93] text-lg font-bold text-white">A</div><div><p className="text-sm font-bold tracking-[0.18em] text-slate-800">ATENAS</p><p className="text-[10px] uppercase tracking-widest text-slate-400">Grupo Consultor</p></div></div><div className="hidden items-center gap-3 text-xs text-slate-500 sm:flex"><span className="size-2 rounded-full bg-emerald-500" /> Sesión activa <span className="font-semibold text-slate-700">María González</span></div></div></header>
-      <div className="mx-auto max-w-[1500px] px-5 py-6 lg:px-10">
+    <main className="app-shell">
+      <Sidebar collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} active="servicios" />
+      <section onClick={(event) => { const button = (event.target as HTMLElement).closest('button'); if (button?.textContent?.trim() === 'Ver') setEvidence(filtered[0] ?? null) }} className="content flex min-h-screen flex-col bg-slate-50 font-sans text-slate-900">
+      <Topbar section="Servicios" />
+      <div className="mx-auto w-full max-w-[1440px] flex-1 px-4 py-6 md:px-8 md:py-8">
         <nav className="mb-3 flex items-center text-sm" aria-label="Breadcrumb"><a href="#servicios" className="text-slate-400 transition-colors hover:text-slate-600">Servicios</a><span className="mx-2 text-xs text-slate-300">›</span><strong className="font-semibold text-slate-700">Ficha Canónica de Servicio</strong></nav>
-        <section className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center"><div><p className="mb-1.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#2A4B93]"><ShieldCheck size={16} /> GOBIERNO DE CATÁLOGO / SERVICIOS</p><h1 className="text-3xl font-bold tracking-tight text-slate-900">Catálogo de Servicios</h1><p className="mt-1 text-sm text-slate-500">Define, clasifica y conserva la trazabilidad de los servicios corporativos.</p></div><span className="inline-flex w-fit items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-1.5 text-xs font-semibold text-emerald-700"><ShieldCheck size={15} /> Publicado / Activo</span></section>
+        <section className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center"><div><p className="mb-1.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#2A4B93]"><ShieldCheck size={16} /> GOBIERNO DE CATÁLOGO / SERVICIOS</p><h1 className="m-0 font-sans text-3xl font-bold text-slate-900">Catálogo de Servicios</h1><p className="mt-1 text-sm text-slate-500">Define, clasifica y conserva la trazabilidad de los servicios corporativos.</p></div><span className="inline-flex w-fit items-center gap-1.5 self-start rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 sm:self-center"><span aria-hidden="true" className="size-1.5 rounded-full bg-emerald-500" />Publicado / Activo</span></section>
 
         <section className="mb-6 flex flex-col items-start justify-between gap-4 rounded-3xl border border-slate-100 bg-white p-6 shadow-sm lg:flex-row lg:items-center"><div className="flex min-w-0 items-center gap-4"><div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#2A4B93] text-white shadow-sm"><Package size={24} /></div><div className="min-w-0"><div className="flex flex-wrap items-center gap-3"><h2 className="text-lg font-bold text-slate-900">Consultoría ERP - Fase I</h2><span className="inline-flex items-center gap-1 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">• Activo</span></div><div className="mt-1 flex flex-wrap items-center gap-2 text-xs font-medium text-slate-500"><span>Línea Consultoría · Reg: 01/01/2025</span><span className="text-slate-300">|</span><span className="inline-flex items-center gap-1"><LockKeyhole size={12} className="text-slate-400" /> ID: SRV-2026-0412</span><span className="text-slate-300">|</span><span>Modificado: 09/10/2026 por María González</span></div></div></div><button onClick={() => setTraceability(true)} className="inline-flex h-10 shrink-0 items-center gap-2 rounded-full border border-slate-200 bg-white px-5 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"><FileSearch size={15} /> Ver trazabilidad</button></section>
 
@@ -104,7 +108,8 @@ export default function ServiciosModule() {
         </div>
       </div>
 
-      <footer className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-between border-t border-slate-200 bg-white/90 px-5 py-4 backdrop-blur-md lg:px-10"><button type="button" onClick={() => setIsCancelModalOpen(true)} className="rounded-full border border-slate-200 px-6 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50">Cancelar</button><button onClick={() => { setSaved(true); setTimeout(() => setSaved(false), 2500) }} className="inline-flex items-center gap-2 rounded-full bg-[#2A4B93] px-8 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1E366B]"><Save size={16} />{saved ? 'Servicio guardado' : 'Guardar Servicio'}</button></footer>
+      <footer className="sticky bottom-0 z-40 flex items-center justify-between border-t border-slate-200 bg-white/90 px-4 py-4 backdrop-blur-md md:px-8"><button type="button" onClick={() => setIsCancelModalOpen(true)} className="rounded-full border border-slate-200 px-6 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50">Cancelar</button><button onClick={() => { setSaved(true); setTimeout(() => setSaved(false), 2500) }} className="inline-flex items-center gap-2 rounded-full bg-[#2A4B93] px-8 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1E366B]"><Save size={16} />{saved ? 'Servicio guardado' : 'Guardar Servicio'}</button></footer>
+      </section>
 
       {isCancelModalOpen && (
         <div

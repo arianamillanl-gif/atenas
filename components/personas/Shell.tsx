@@ -8,6 +8,7 @@ import {
   Menu,
   MoreHorizontal,
   Network,
+  Package,
   PanelLeftClose,
   PanelLeftOpen,
   Search,
@@ -16,7 +17,18 @@ import {
   Users,
 } from 'lucide-react'
 
-export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
+type NavKey = 'resumen' | 'personas' | 'servicios' | 'unidades' | 'estructuras' | 'gobernanza' | 'ajustes'
+
+function NavLink({ id, active, children }: { id: NavKey; active: NavKey; children: React.ReactNode }) {
+  const isActive = id === active
+  return (
+    <a href={`#${id}`} className={isActive ? 'active' : undefined} aria-current={isActive ? 'page' : undefined}>
+      {children}
+    </a>
+  )
+}
+
+export function Sidebar({ collapsed, onToggle, active = 'personas' }: { collapsed: boolean; onToggle: () => void; active?: NavKey }) {
   return (
     <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
       <header className="brand">
@@ -36,14 +48,15 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
         </div>
         <nav className="nav" aria-label="Menú principal">
           <span className="nav-label">MENÚ PRINCIPAL</span>
-          <a href="#resumen"><LayoutDashboard size={16} />Resumen</a>
-          <span className="nav-label second">GESTIÓN DE TALENTO</span>
-          <a href="#personas" className="active" aria-current="page"><Users size={16} />Personas</a>
-          <a href="#unidades"><Building2 size={16} />Unidades</a>
-          <a href="#estructuras"><Network size={16} />Estructuras</a>
+          <NavLink id="resumen" active={active}><LayoutDashboard size={16} />Resumen</NavLink>
+          <span className="nav-label second">GESTIÓN</span>
+          <NavLink id="personas" active={active}><Users size={16} />Personas</NavLink>
+          <NavLink id="servicios" active={active}><Package size={16} />Servicios</NavLink>
+          <NavLink id="unidades" active={active}><Building2 size={16} />Unidades</NavLink>
+          <NavLink id="estructuras" active={active}><Network size={16} />Estructuras</NavLink>
           <span className="nav-label second">CONFIGURACIÓN</span>
-          <a href="#gobernanza"><ShieldCheck size={16} />Gobernanza</a>
-          <a href="#ajustes"><Settings2 size={16} />Ajustes</a>
+          <NavLink id="gobernanza" active={active}><ShieldCheck size={16} />Gobernanza</NavLink>
+          <NavLink id="ajustes" active={active}><Settings2 size={16} />Ajustes</NavLink>
         </nav>
       </div>
       <footer className="sidebar-footer">
@@ -68,12 +81,12 @@ export function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle:
   )
 }
 
-export function Topbar() {
+export function Topbar({ section = 'Gestión de talento' }: { section?: string }) {
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-slate-200/80 bg-white px-6">
       <div className="flex items-center gap-3">
         <button className="mobile-menu icon-button" aria-label="Abrir menú"><Menu size={19} /></button>
-        <span className="workspace-top-pill"><span />Lo-Fi workspace · Gestión de talento</span>
+        <span className="workspace-top-pill"><span />Lo-Fi workspace · {section}</span>
       </div>
       <div className="top-actions">
         <label className="quick-search">
@@ -81,7 +94,7 @@ export function Topbar() {
           <span className="sr-only">Búsqueda rápida</span>
           <input aria-label="Búsqueda rápida" placeholder="Búsqueda rápida" />
         </label>
-        <button className="icon-button" aria-label="Notificaciones"><Bell size={18} /></button>
+        <button className="icon-button notification" aria-label="Notificaciones, hay elementos nuevos"><Bell size={18} /><i aria-hidden="true" /></button>
         <span className="top-user"><span className="user-avatar">MG</span>María González<ChevronDown size={14} /></span>
       </div>
     </header>
