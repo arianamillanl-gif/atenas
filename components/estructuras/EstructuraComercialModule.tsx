@@ -86,14 +86,14 @@ export default function EstructuraComercialModule() {
                 <button type="button" onClick={assignMember} className="rounded-full bg-[#2A4B93] px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-[#1E366B] lg:col-span-2 lg:w-fit">Asignar miembro a estructura</button>
               </div>
               <div className="w-full overflow-x-auto rounded-2xl border border-slate-200/80 bg-white shadow-2xs mt-4">
-                <table className="w-full min-w-[1100px] border-collapse text-left text-xs text-slate-700">
+                <table className="w-full min-w-[1150px] border-collapse text-left text-xs text-slate-700">
                   <thead>
                     <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 font-semibold uppercase tracking-wider text-[11px]">
                       <th className="px-5 py-3.5 whitespace-nowrap">Persona</th>
                       <th className="px-4 py-3.5 whitespace-nowrap">Rol</th>
                       <th className="px-4 py-3.5 whitespace-nowrap">Unidad / Nodo</th>
                       <th className="px-4 py-3.5 whitespace-nowrap">Condición</th>
-                      <th className="px-4 py-3.5 whitespace-nowrap">Vigencia</th>
+                      <th className="min-w-[180px] px-4 py-3.5 whitespace-nowrap">Vigencia</th>
                       <th className="px-4 py-3.5 whitespace-nowrap">Motivo</th>
                       <th className="sticky right-0 z-20 bg-slate-50 px-5 py-3.5 text-right shadow-[-8px_0_12px_-4px_rgba(0,0,0,0.08)] whitespace-nowrap">Acción</th>
                     </tr>
@@ -105,7 +105,7 @@ export default function EstructuraComercialModule() {
                         <td className="px-4 py-4 whitespace-nowrap text-slate-700">{item.role}</td>
                         <td className="px-4 py-4 whitespace-nowrap text-slate-700">{item.node}</td>
                         <td className="px-4 py-4 whitespace-nowrap"><span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">{item.condition}</span></td>
-                        <td className="px-4 py-4 whitespace-nowrap font-mono text-slate-600">{item.from} — {item.to}</td>
+                        <td className="min-w-[180px] px-4 py-4 whitespace-nowrap font-mono text-slate-600">{item.from} — {item.to}</td>
                         <td className="px-4 py-4 whitespace-nowrap text-slate-600">{item.reason}</td>
                         <td className="sticky right-0 z-10 bg-white px-5 py-4 text-right shadow-[-8px_0_12px_-4px_rgba(0,0,0,0.08)] whitespace-nowrap"><div className="flex items-center justify-end gap-2"><button type="button" className="px-3.5 py-1.5 text-[11px] font-semibold text-[#2A4B93] bg-white hover:bg-slate-50 border border-slate-200 rounded-full shadow-2xs cursor-pointer">Reasignar nodo</button><button type="button" className="px-3.5 py-1.5 text-[11px] font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-full shadow-2xs cursor-pointer">Cerrar vigencia</button></div></td>
                       </tr>
