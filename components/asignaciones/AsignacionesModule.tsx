@@ -47,7 +47,7 @@ export default function AsignacionesModule({ contextClientId }: { contextClientI
   const [filter, setFilter] = useState<HistoryFilter>('todos')
   const [closeTargetId, setCloseTargetId] = useState<string | null>(null)
   const [reassignOpen, setReassignOpen] = useState(false)
-  const [discardOpen, setDiscardOpen] = useState(false)
+  const [showCancelModal, setShowCancelModal] = useState(false)
   const [trace, setTrace] = useState<{ assignmentId?: string } | null>(null)
   const [notice, setNotice] = useState('')
   const noticeTimer = useRef<number | undefined>(undefined)
@@ -169,25 +169,20 @@ export default function AsignacionesModule({ contextClientId }: { contextClientI
     else router.push('/maestro-cartera')
   }
 
-  const cancel = () => {
-    if (isDirty) {
-      setDiscardOpen(true)
+  const confirmDiscard = () => {
+    setShowCancelModal(false)
+    resetForm()
+    if (isContextual) {
+      goBack()
       return
     }
-    if (isContextual) goBack()
-    else resetForm()
-  }
-
-  const confirmDiscard = () => {
-    resetForm()
-    setDiscardOpen(false)
-    flash('Cambios descartados')
+    if (isDirty) flash('Cambios descartados')
   }
 
   const closeTrace = useCallback(() => setTrace(null), [])
   const cancelClose = useCallback(() => setCloseTargetId(null), [])
   const cancelReassign = useCallback(() => setReassignOpen(false), [])
-  const keepEditing = useCallback(() => setDiscardOpen(false), [])
+  const keepEditing = useCallback(() => setShowCancelModal(false), [])
 
   const traceEvents = trace
     ? events.filter((event) => (trace.assignmentId ? event.assignmentId === trace.assignmentId : event.clientId === selectedClient?.id))
@@ -266,7 +261,7 @@ export default function AsignacionesModule({ contextClientId }: { contextClientI
         >
           <button
             type="button"
-            onClick={cancel}
+            onClick={() => setShowCancelModal(true)}
             className="inline-flex items-center justify-center px-6 py-2.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-full transition-all active:scale-95 shadow-2xs cursor-pointer"
           >
             Cancelar
@@ -322,7 +317,7 @@ export default function AsignacionesModule({ contextClientId }: { contextClientI
         />
       )}
 
-      {discardOpen && <DiscardChangesModal onConfirm={confirmDiscard} onCancel={keepEditing} />}
+      {showCancelModal && <DiscardChangesModal onConfirm={confirmDiscard} onCancel={keepEditing} />}
 
       {notice && (
         <div role="status" className="client-toast">
