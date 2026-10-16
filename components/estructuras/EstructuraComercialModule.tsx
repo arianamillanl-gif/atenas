@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { AlertTriangle, ChevronDown, ChevronRight, GitBranch, History, Search, X } from 'lucide-react'
+import { AlertTriangle, ChevronDown, ChevronRight, GitBranch, History, Lock, Search, X } from 'lucide-react'
 import { Sidebar, Topbar } from '../personas/Shell'
 import DiscardChangesModal from '../asignaciones/DiscardChangesModal'
 
@@ -73,7 +73,7 @@ export default function EstructuraComercialModule() {
                 </div>
                 <div className="flex flex-col gap-4 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
-                    <span>Equipo</span><span aria-hidden="true">|</span><span>Reg: <code className="font-mono">01/01/2026</code></span><span aria-hidden="true">|</span><span>🔒 ID: <code className="font-mono">EST-2026-0008</code></span><span aria-hidden="true">|</span><span>Modificado: <code className="font-mono">16/10/2026</code></span>
+                    <span>Equipo</span><span aria-hidden="true">|</span><span>Reg: <code className="font-mono">01/01/2026</code></span><span aria-hidden="true">|</span><span className="inline-flex items-center"><Lock aria-hidden="true" className="mr-1 inline-block size-3.5 text-slate-400" />ID: <code className="font-mono">EST-2026-0008</code></span><span aria-hidden="true">|</span><span>Modificado: <code className="font-mono">16/10/2026</code></span>
                   </div>
                   <button type="button" className="flex w-fit cursor-pointer items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50"><History aria-hidden="true" data-icon="inline-start" />Ver modificaciones de jerarquía</button>
                 </div>
