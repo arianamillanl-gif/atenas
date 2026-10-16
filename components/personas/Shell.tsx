@@ -27,6 +27,7 @@ const NAV_ROUTES: Partial<Record<NavKey, string>> = {
   servicios: '/servicios',
   cartera: '/maestro-cartera',
   asignaciones: '/asignaciones',
+  estructuras: '/estructuras',
 }
 
 function NavLink({ id, active, children }: { id: NavKey; active: NavKey; children: React.ReactNode }) {

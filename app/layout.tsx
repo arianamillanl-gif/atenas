@@ -6,8 +6,8 @@ const poppins = Poppins({ subsets: ['latin'], weight: ['400', '500', '600', '700
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Catálogo de Servicios | ATENAS',
-  description: 'Ficha F03 para definir, clasificar y conservar la trazabilidad histórica del catálogo de servicios de ATENAS.',
+  title: 'Estructura comercial | ATENAS',
+  description: 'Ficha F04C para mantener la jerarquía comercial y la adscripción histórica de personas en ATENAS.',
   generator: 'v0.app',
   icons: {
     icon: [
