@@ -177,7 +177,7 @@ export default function AsignacionesModule({ contextClientId }: { contextClientI
       <section className="content flex min-h-screen flex-col">
         <Topbar section="Estructura comercial" />
 
-        <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 pt-6 pb-24 md:px-8 md:pt-8">
+        <div className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 pt-6 pb-8 md:px-8 md:pt-8">
           <header className="flex flex-col gap-2">
             {isContextual && (
               <button
@@ -235,40 +235,40 @@ export default function AsignacionesModule({ contextClientId }: { contextClientI
             onClose={setCloseTargetId}
             onDetails={(assignmentId) => setTrace({ assignmentId })}
           />
+        </div>
 
-          <div
-            role="toolbar"
-            aria-label="Acciones de la asignación"
-            className="sticky bottom-0 z-30 mt-8 flex w-full flex-wrap items-center justify-between gap-4 rounded-b-3xl border-t border-slate-200/80 bg-white/95 px-6 py-4 shadow-[0_-4px_16px_-2px_rgba(0,0,0,0.04)] backdrop-blur-md"
+        <div
+          role="toolbar"
+          aria-label="Acciones de la asignación"
+          className="sticky bottom-0 z-30 w-full bg-white/95 backdrop-blur-md border-t border-slate-200 px-8 py-4 flex items-center justify-between gap-4 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] rounded-b-3xl"
+        >
+          <button
+            type="button"
+            onClick={cancel}
+            className="px-6 py-2.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-full transition-all active:scale-95 shadow-2xs"
           >
+            Cancelar
+          </button>
+          <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={cancel}
-              className="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-2.5 text-xs font-semibold text-slate-700 shadow-2xs transition-all hover:bg-slate-50 hover:text-slate-900 active:scale-95"
+              onClick={() => activeRecord && setCloseTargetId(activeRecord.id)}
+              disabled={!activeRecord}
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-300/80 rounded-full transition-all active:scale-95 shadow-2xs disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-amber-50 disabled:active:scale-100"
             >
-              Cancelar
+              <CalendarX2 size={16} aria-hidden="true" />
+              Cerrar vigencia actual
             </button>
-            <div className="flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                onClick={() => activeRecord && setCloseTargetId(activeRecord.id)}
-                disabled={!activeRecord}
-                className="inline-flex items-center justify-center gap-2 rounded-full border border-amber-300/80 bg-amber-50 px-5 py-2.5 text-xs font-semibold text-amber-800 shadow-2xs transition-all hover:bg-amber-100 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-amber-50 disabled:active:scale-100"
-              >
-                <CalendarX2 size={16} aria-hidden="true" />
-                Cerrar vigencia actual
-              </button>
-              <button
-                type="button"
-                onClick={register}
-                disabled={reasonBlocking}
-                aria-describedby={reasonBlocking ? 'draft-reason-hint' : undefined}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#2A4B93] px-6 py-2.5 text-xs font-semibold text-white shadow-sm shadow-[#2A4B93]/20 transition-all hover:bg-[#1E366B] active:scale-95 active:bg-[#162850] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[#2A4B93] disabled:active:scale-100"
-              >
-                <Check size={16} className="text-white" aria-hidden="true" />
-                Registrar asignación / Reasignar
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={register}
+              disabled={reasonBlocking}
+              aria-describedby={reasonBlocking ? 'draft-reason-hint' : undefined}
+              className="inline-flex items-center gap-2 px-6 py-2.5 text-xs font-semibold text-white bg-[#2A4B93] hover:bg-[#1E366B] active:bg-[#162850] rounded-full transition-all active:scale-95 shadow-sm disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[#2A4B93] disabled:active:scale-100"
+            >
+              <Check size={16} className="text-white" aria-hidden="true" />
+              Registrar asignación / Reasignar
+            </button>
           </div>
         </div>
       </section>
