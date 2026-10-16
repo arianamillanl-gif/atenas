@@ -262,12 +262,12 @@ export default function AsignacionesModule({ contextClientId }: { contextClientI
         <div
           role="toolbar"
           aria-label="Acciones de la asignación"
-          className="sticky bottom-0 z-30 w-full bg-white/95 backdrop-blur-md border-t border-slate-200 px-8 py-4 flex items-center justify-between gap-4 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] rounded-b-3xl"
+          className="w-full bg-white border-t border-slate-200/80 px-8 py-4 rounded-b-3xl flex items-center justify-between gap-4 mt-8 shadow-sm"
         >
           <button
             type="button"
             onClick={cancel}
-            className="px-6 py-2.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-full transition-all active:scale-95 shadow-2xs"
+            className="inline-flex items-center justify-center px-6 py-2.5 text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-full transition-all active:scale-95 shadow-2xs cursor-pointer"
           >
             Cancelar
           </button>
@@ -276,7 +276,7 @@ export default function AsignacionesModule({ contextClientId }: { contextClientI
               type="button"
               onClick={() => activeRecord && setCloseTargetId(activeRecord.id)}
               disabled={!activeRecord}
-              className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-300/80 rounded-full transition-all active:scale-95 shadow-2xs disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-amber-50 disabled:active:scale-100"
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-300/80 rounded-full transition-all active:scale-95 shadow-2xs cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-amber-50 disabled:active:scale-100"
             >
               <CalendarX2 size={16} aria-hidden="true" />
               Cerrar vigencia actual
@@ -286,7 +286,7 @@ export default function AsignacionesModule({ contextClientId }: { contextClientI
               onClick={register}
               disabled={reasonBlocking}
               aria-describedby={reasonBlocking ? 'draft-reason-hint' : undefined}
-              className="inline-flex items-center gap-2 px-6 py-2.5 text-xs font-semibold text-white bg-[#2A4B93] hover:bg-[#1E366B] active:bg-[#162850] rounded-full transition-all active:scale-95 shadow-sm disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[#2A4B93] disabled:active:scale-100"
+              className="inline-flex items-center gap-2 px-6 py-2.5 text-xs font-semibold text-white bg-[#2A4B93] hover:bg-[#1E366B] active:bg-[#162850] rounded-full transition-all active:scale-95 shadow-sm shadow-[#2A4B93]/20 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[#2A4B93] disabled:active:scale-100"
             >
               <Check size={16} className="text-white" aria-hidden="true" />
               Registrar asignación / Reasignar
