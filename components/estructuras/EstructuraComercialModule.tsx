@@ -64,7 +64,11 @@ export default function EstructuraComercialModule() {
           <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm">
             <section className="p-6 md:p-8">
               <div className="mb-6 flex items-center gap-3"><span className="grid size-8 place-items-center rounded-xl bg-blue-50 text-xs font-bold text-[#2A4B93]">01</span><div><h2 className="m-0 text-base font-semibold text-slate-900">Definición del nodo de estructura</h2><p className="m-0 text-xs text-slate-500">Configura la identidad y ubicación jerárquica del nodo.</p></div></div>
-              <div className="mb-4 inline-flex items-center gap-2 rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700">Ruta actual: Dirección Comercial Central › Gerencia de Ventas Corporativas › {form.name || 'Nodo actual'}</div>
+              <div className="inline-flex items-center gap-2 rounded-xl border border-slate-200/60 bg-slate-100/80 px-3.5 py-1.5 text-xs font-medium text-slate-700 shadow-2xs mb-5">
+                <span className="font-semibold text-[#2A4B93]">Ubicación jerárquica:</span>
+                <span className="text-slate-500">Dirección Comercial Central › Gerencia de Ventas Corporativas ›</span>
+                <span className="font-semibold text-slate-900">[Equipo Estratégico - Nodo Actual]</span>
+              </div>
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {([['code', 'Código del nodo *', 'text'], ['name', 'Nombre del nodo *', 'text']] as const).map(([key, label, type]) => <label key={key} className="flex flex-col gap-2 text-xs font-semibold text-slate-700">{label}<input type={type} value={form[key]} onChange={(event) => update(key, event.target.value)} className="h-10 rounded-xl border border-slate-200 px-3 text-xs font-normal outline-none focus:border-[#59A5E2] focus:ring-4 focus:ring-blue-50" /></label>)}
                 <label className="flex flex-col gap-2 text-xs font-semibold text-slate-700">Tipo de nodo *<select value={form.type} onChange={(event) => update('type', event.target.value)} className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-normal outline-none focus:border-[#59A5E2]"><option>Equipo</option><option>Gerencia</option><option>Dirección</option><option>Unidad</option></select></label>
