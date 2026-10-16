@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import {
+  ArrowLeftRight,
   Bell,
   FileSearch,
   Building2,
@@ -19,12 +20,13 @@ import {
   Users,
 } from 'lucide-react'
 
-type NavKey = 'resumen' | 'personas' | 'servicios' | 'cartera' | 'unidades' | 'estructuras' | 'gobernanza' | 'ajustes'
+type NavKey = 'resumen' | 'personas' | 'servicios' | 'cartera' | 'asignaciones' | 'unidades' | 'estructuras' | 'gobernanza' | 'ajustes'
 
 const NAV_ROUTES: Partial<Record<NavKey, string>> = {
   personas: '/personas',
   servicios: '/servicios',
   cartera: '/maestro-cartera',
+  asignaciones: '/asignaciones',
 }
 
 function NavLink({ id, active, children }: { id: NavKey; active: NavKey; children: React.ReactNode }) {
@@ -61,6 +63,7 @@ export function Sidebar({ collapsed, onToggle, active = 'personas' }: { collapse
           <NavLink id="personas" active={active}><Users size={16} />Personas</NavLink>
           <NavLink id="servicios" active={active}><Package size={16} />Servicios</NavLink>
           <NavLink id="cartera" active={active}><FileSearch size={16} />Maestro de cartera</NavLink>
+          <NavLink id="asignaciones" active={active}><ArrowLeftRight size={16} />Asignaciones de cartera</NavLink>
           <NavLink id="unidades" active={active}><Building2 size={16} />Unidades</NavLink>
           <NavLink id="estructuras" active={active}><Network size={16} />Estructuras</NavLink>
           <span className="nav-label second">CONFIGURACIÓN</span>
