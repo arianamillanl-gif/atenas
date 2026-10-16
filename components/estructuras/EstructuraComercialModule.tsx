@@ -29,7 +29,7 @@ function flatten(items: Node[]): Node[] { return items.flatMap((item) => [item, 
 export default function EstructuraComercialModule() {
   const [collapsed, setCollapsed] = useState(false)
   const [form, setForm] = useState({ code: 'EQU-003', type: 'Equipo', parent: 'COM-001', name: 'Equipo Estratégico', unit: 'Desarrollo de negocio', status: 'Activo', validFrom: '2026-01-01', validTo: '' })
-  const [member, setMember] = useState({ person: '', role: '', condition: 'Principal', from: '', to: '' })
+  const [member, setMember] = useState({ person: '', role: '', condition: 'Principal', from: '', to: '', reason: '' })
   const [members, setMembers] = useState(initialMembers)
   const [treeOpen, setTreeOpen] = useState(false)
   const [treeSearch, setTreeSearch] = useState('')
@@ -44,9 +44,9 @@ export default function EstructuraComercialModule() {
 
   const update = (key: keyof typeof form, value: string) => { setForm((current) => ({ ...current, [key]: value })); setSaved(false) }
   const assignMember = () => {
-    if (!member.person || !member.role || !member.from) return
-    setMembers((current) => [{ id: `ADS-${String(current.length + 43).padStart(4, '0')}`, person: member.person, role: member.role, node: form.name, condition: member.condition, from: member.from, to: member.to || '—', reason: 'Adscripción rápida registrada por el usuario actual.' }, ...current])
-    setMember({ person: '', role: '', condition: 'Principal', from: '', to: '' })
+    if (!member.person || !member.role || !member.from || !member.reason) return
+    setMembers((current) => [{ id: `ADS-${String(current.length + 43).padStart(4, '0')}`, person: member.person, role: member.role, node: form.name, condition: member.condition, from: member.from, to: member.to || '—', reason: member.reason }, ...current])
+    setMember({ person: '', role: '', condition: 'Principal', from: '', to: '', reason: '' })
   }
 
   return (
@@ -99,34 +99,38 @@ export default function EstructuraComercialModule() {
 
             <section className="mb-6 rounded-3xl border border-slate-200/80 bg-white p-7 shadow-2xs">
               <div className="mb-6 flex flex-col gap-1"><h2 className="m-0 text-base font-bold text-slate-900">Asignación de miembros adscritos</h2><p className="m-0 text-xs text-slate-500">Registra responsables, roles y vigencias históricas.</p></div>
-              <div className="grid gap-3 rounded-2xl bg-slate-50 p-4 md:grid-cols-2 lg:grid-cols-5">
-                {([['person', 'Persona', 'text'], ['role', 'Rol', 'text'], ['from', 'Vigencia desde', 'date'], ['to', 'Vigencia hasta', 'date']] as const).map(([key, label, type]) => <label key={key} className="flex flex-col gap-2 text-xs font-semibold text-slate-700">{label}<input type={type} value={member[key]} onChange={(event) => setMember((current) => ({ ...current, [key]: event.target.value }))} className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-normal outline-none focus:border-[#59A5E2]" /></label>)}
-                <label className="flex flex-col gap-2 text-xs font-semibold text-slate-700">Condición principal<select value={member.condition} onChange={(event) => setMember((current) => ({ ...current, condition: event.target.value }))} className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-normal"><option>Principal</option><option>Secundaria</option><option>Temporal</option></select></label>
-                <button type="button" onClick={assignMember} className="rounded-full bg-[#2A4B93] px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-[#1E366B] lg:col-span-2 lg:w-fit">Asignar miembro a estructura</button>
+              <div className="grid gap-4 rounded-2xl bg-slate-50 p-4 md:grid-cols-2 lg:grid-cols-3">
+                <label className="flex flex-col gap-2 text-xs font-semibold text-slate-700">Persona<input type="text" value={member.person} onChange={(event) => setMember((current) => ({ ...current, person: event.target.value }))} placeholder="Buscar persona" className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-normal outline-none focus:border-[#59A5E2]" /></label>
+                <label className="flex flex-col gap-2 text-xs font-semibold text-slate-700">Rol<select value={member.role} onChange={(event) => setMember((current) => ({ ...current, role: event.target.value }))} className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-normal"><option value="">Seleccionar rol</option><option>Líder comercial</option><option>Consultor senior</option><option>Analista comercial</option></select></label>
+                <label className="flex flex-col gap-2 text-xs font-semibold text-slate-700">Condición principal<select value={member.condition} onChange={(event) => setMember((current) => ({ ...current, condition: event.target.value }))} className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-normal"><option>Principal</option><option>Secundaria</option></select></label>
+                <label className="flex flex-col gap-2 text-xs font-semibold text-slate-700">Vigencia desde<input type="date" value={member.from} onChange={(event) => setMember((current) => ({ ...current, from: event.target.value }))} className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-normal outline-none focus:border-[#59A5E2]" /></label>
+                <label className="flex flex-col gap-2 text-xs font-semibold text-slate-700">Vigencia hasta<input type="date" value={member.to} onChange={(event) => setMember((current) => ({ ...current, to: event.target.value }))} className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-normal outline-none focus:border-[#59A5E2]" /></label>
+                <label className="flex flex-col gap-2 text-xs font-semibold text-slate-700">Motivo de reasignación / ingreso *<input type="text" required value={member.reason} onChange={(event) => setMember((current) => ({ ...current, reason: event.target.value }))} placeholder="Indica el motivo" className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-normal outline-none focus:border-[#59A5E2]" /></label>
+                <div className="flex justify-end lg:col-span-3"><button type="button" onClick={assignMember} className="cursor-pointer rounded-full bg-[#2A4B93] px-5 py-2.5 text-xs font-semibold text-white shadow-2xs transition-all hover:bg-[#1E366B]">Asignar miembro a estructura</button></div>
               </div>
               <div className="w-full overflow-x-auto rounded-2xl border border-slate-200/80 bg-white shadow-2xs mt-4">
-                <table className="w-full min-w-[1150px] border-collapse text-left text-xs text-slate-700">
+                <table className="w-full min-w-[1200px] border-collapse text-left text-xs text-slate-700">
                   <thead>
                     <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 font-semibold uppercase tracking-wider text-[11px]">
-                      <th className="px-5 py-3.5 whitespace-nowrap">Persona</th>
-                      <th className="px-4 py-3.5 whitespace-nowrap">Rol</th>
-                      <th className="px-4 py-3.5 whitespace-nowrap">Unidad / Nodo</th>
-                      <th className="px-4 py-3.5 whitespace-nowrap">Condición</th>
-                      <th className="min-w-[180px] px-4 py-3.5 whitespace-nowrap">Vigencia</th>
-                      <th className="px-4 py-3.5 whitespace-nowrap">Motivo</th>
-                      <th className="sticky right-0 z-20 bg-slate-50 px-5 py-3.5 text-right shadow-[-8px_0_12px_-4px_rgba(0,0,0,0.08)] whitespace-nowrap">Acción</th>
+                      <th className="min-w-[200px] px-5 py-3.5 whitespace-nowrap">Persona</th>
+                      <th className="min-w-[160px] px-4 py-3.5 whitespace-nowrap">Rol organizacional</th>
+                      <th className="min-w-[180px] px-4 py-3.5 whitespace-nowrap">Unidad / Nodo</th>
+                      <th className="min-w-[120px] px-4 py-3.5 whitespace-nowrap">Condición</th>
+                      <th className="min-w-[190px] px-4 py-3.5 whitespace-nowrap">Vigencia</th>
+                      <th className="min-w-[200px] px-4 py-3.5 whitespace-nowrap">Motivo</th>
+                      <th className="sticky right-0 z-20 min-w-[230px] bg-slate-50 px-5 py-3.5 text-right shadow-[-8px_0_12px_-4px_rgba(0,0,0,0.08)] whitespace-nowrap">Acción</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100">
                     {members.map((item) => (
                       <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
-                        <td className="px-5 py-4 whitespace-nowrap"><span className="font-semibold text-slate-800 block">{item.person}</span><span className="text-[11px] font-mono text-slate-400 block">{item.id}</span></td>
-                        <td className="px-4 py-4 whitespace-nowrap text-slate-700">{item.role}</td>
-                        <td className="px-4 py-4 whitespace-nowrap text-slate-700">{item.node}</td>
-                        <td className="px-4 py-4 whitespace-nowrap"><span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">{item.condition}</span></td>
-                        <td className="min-w-[180px] px-4 py-4 whitespace-nowrap font-mono text-slate-600">{item.from} — {item.to}</td>
-                        <td className="px-4 py-4 whitespace-nowrap text-slate-600">{item.reason}</td>
-                        <td className="sticky right-0 z-10 bg-white px-5 py-4 text-right shadow-[-8px_0_12px_-4px_rgba(0,0,0,0.08)] whitespace-nowrap"><div className="flex items-center justify-end gap-2"><button type="button" className="px-3.5 py-1.5 text-[11px] font-semibold text-[#2A4B93] bg-white hover:bg-slate-50 border border-slate-200 rounded-full shadow-2xs cursor-pointer">Reasignar nodo</button><button type="button" className="px-3.5 py-1.5 text-[11px] font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-full shadow-2xs cursor-pointer">Cerrar vigencia</button></div></td>
+                        <td className="min-w-[200px] px-5 py-3.5 whitespace-nowrap"><span className="block font-semibold text-slate-800">{item.person}</span><span className="block font-mono text-[11px] text-slate-400">{item.id}</span></td>
+                        <td className="min-w-[160px] px-4 py-3.5 whitespace-nowrap text-slate-700">{item.role}</td>
+                        <td className="min-w-[180px] px-4 py-3.5 whitespace-nowrap text-slate-700">{item.node}</td>
+                        <td className="min-w-[120px] px-4 py-3.5 whitespace-nowrap"><span className="inline-flex items-center rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-700">{item.condition}</span></td>
+                        <td className="min-w-[190px] px-4 py-3.5 whitespace-nowrap font-mono text-slate-600">{item.from} — {item.to === '—' ? 'Vigente' : item.to}</td>
+                        <td className="min-w-[200px] px-4 py-3.5 text-slate-600">{item.reason}</td>
+                        <td className="sticky right-0 z-10 min-w-[230px] bg-white px-5 py-3.5 text-right shadow-[-8px_0_12px_-4px_rgba(0,0,0,0.08)] whitespace-nowrap"><div className="flex items-center justify-end gap-2"><button type="button" className="cursor-pointer whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-semibold text-[#2A4B93] hover:bg-slate-50">Reasignar</button><button type="button" className="cursor-pointer whitespace-nowrap rounded-full border border-amber-300/80 bg-amber-50 px-3 py-1.5 text-[11px] font-semibold text-amber-800 hover:bg-amber-100">Cerrar vigencia</button></div></td>
                       </tr>
                     ))}
                   </tbody>
