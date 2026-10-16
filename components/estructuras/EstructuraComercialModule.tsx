@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { AlertTriangle, ChevronDown, ChevronRight, GitBranch, Search, X } from 'lucide-react'
+import { AlertTriangle, ChevronDown, ChevronRight, GitBranch, LockKeyhole, Search, X } from 'lucide-react'
 import { Sidebar, Topbar } from '../personas/Shell'
 import DiscardChangesModal from '../asignaciones/DiscardChangesModal'
 
@@ -28,7 +28,7 @@ function flatten(items: Node[]): Node[] { return items.flatMap((item) => [item, 
 
 export default function EstructuraComercialModule() {
   const [collapsed, setCollapsed] = useState(false)
-  const [form, setForm] = useState({ code: 'EQU-003', type: 'Equipo', parent: 'COM-001', name: 'Equipo Estratégico', unit: 'Desarrollo de negocio' })
+  const [form, setForm] = useState({ code: 'EQU-003', type: 'Equipo', parent: 'COM-001', name: 'Equipo Estratégico', unit: 'Desarrollo de negocio', status: 'Activo', validFrom: '2026-01-01', validTo: '' })
   const [member, setMember] = useState({ person: '', role: '', condition: 'Principal', from: '', to: '' })
   const [members, setMembers] = useState(initialMembers)
   const [treeOpen, setTreeOpen] = useState(false)
@@ -62,6 +62,19 @@ export default function EstructuraComercialModule() {
           </header>
 
           <div className="flex flex-col gap-6">
+            <section className="rounded-3xl border border-slate-200/80 bg-slate-900 p-7 text-white shadow-2xs">
+              <div className="flex flex-col gap-5">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div><p className="m-0 text-[11px] font-bold tracking-[0.18em] text-slate-300">ESTRUCTURA COMERCIAL</p><h2 className="mt-2 text-xl font-bold text-white">Equipo Estratégico</h2></div>
+                  <span className="inline-flex w-fit items-center rounded-full border border-emerald-300/30 bg-emerald-400/15 px-3 py-1.5 text-[11px] font-bold tracking-wide text-emerald-200">VIGENTE / ACTIVO</span>
+                </div>
+                <div className="grid gap-4 md:grid-cols-3">
+                  {[['ID Nodo', 'EST-2026-0008'], ['Fecha de Registro', '01/01/2026'], ['Última Modificación', '16/10/2026']].map(([label, value]) => <label key={label} className="flex flex-col gap-2 text-xs font-semibold text-slate-300">{label}<span className="flex h-10 items-center gap-2 rounded-xl border border-slate-200/80 bg-slate-50 px-3"><LockKeyhole aria-hidden="true" data-icon="inline-start" /><input readOnly disabled value={value} aria-label={label} className="min-w-0 flex-1 bg-transparent text-xs font-normal text-slate-600 outline-none" /></span></label>)}
+                </div>
+                <button type="button" className="w-fit text-xs font-semibold text-sky-200 underline decoration-sky-300/50 underline-offset-4 hover:text-white">Ver modificaciones de jerarquía</button>
+              </div>
+            </section>
+
             <section className="mb-6 rounded-3xl border border-slate-200/80 bg-white p-7 shadow-2xs">
               <div className="mb-6 flex flex-col gap-1"><h2 className="m-0 text-base font-bold text-slate-900">Definición del nodo de estructura</h2><p className="m-0 text-xs text-slate-500">Configura la identidad y ubicación jerárquica del nodo.</p></div>
               <div className="inline-flex items-center gap-2 rounded-xl border border-slate-200/60 bg-slate-100/80 px-3.5 py-1.5 text-xs font-medium text-slate-700 shadow-2xs mb-5">
@@ -75,7 +88,8 @@ export default function EstructuraComercialModule() {
                 <label className="flex flex-col gap-2 text-xs font-semibold text-slate-700 lg:col-span-2">Nodo padre (Jerarquía) *<div className="flex gap-2"><select value={form.parent} onChange={(event) => update('parent', event.target.value)} className="h-10 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-xs font-normal outline-none focus:border-[#59A5E2]"><option value="COM-001">Gerencia Comercial · COM-001</option><option value="EQU-002">Equipo Desarrollo · EQU-002</option><option value="DIR-001">Dirección General · DIR-001</option></select><button type="button" onClick={() => setTreeOpen(true)} className="whitespace-nowrap rounded-full border border-slate-200 px-3 text-[11px] font-semibold text-[#2A4B93] hover:bg-blue-50">Ver inspección de jerarquía</button></div></label>
                 <label className="flex flex-col gap-2 text-xs font-semibold text-slate-700">Unidad organizacional *<select value={form.unit} onChange={(event) => update('unit', event.target.value)} className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-normal outline-none focus:border-[#59A5E2]"><option>Desarrollo de negocio</option><option>Comercial</option><option>Operaciones</option><option>Corporativo</option></select></label>
               </div>
-              {invalidParent && <div className="mt-3 flex items-start gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs text-rose-800 shadow-2xs"><span className="text-base" aria-hidden="true">⚠️</span><div><p className="font-bold">ASIGNACIÓN NO PERMITIDA:</p><p className="mt-0.5 text-rose-700">No puedes seleccionar este equipo como jefe/padre porque actualmente depende del nodo en edición. Por favor, elige un nivel superior en la organización.</p></div></div>}
+              {invalidParent && <div className="mt-3 flex items-start gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs text-rose-800 shadow-2xs"><AlertTriangle className="mt-0.5 shrink-0" aria-hidden="true" /><div><p className="font-bold">ASIGNACIÓN NO PERMITIDA:</p><p className="mt-0.5 text-rose-700">No puedes seleccionar este equipo como jefe/padre porque actualmente depende del nodo en edición. Por favor, elige un nivel superior en la organización.</p></div></div>}
+              <div className="mt-6 border-t border-slate-100 pt-6"><h3 className="mb-4 text-sm font-bold text-slate-900">Estado y vigencia del nodo *</h3><div className="grid gap-4 md:grid-cols-3"><label className="flex flex-col gap-2 text-xs font-semibold text-slate-700">Estado *<select value={form.status} onChange={(event) => update('status', event.target.value)} className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-normal outline-none focus:border-[#59A5E2]"><option>Activo</option><option>Inactivo</option><option>Programado</option></select></label><label className="flex flex-col gap-2 text-xs font-semibold text-slate-700">Desde *<input type="date" value={form.validFrom} onChange={(event) => update('validFrom', event.target.value)} className="h-10 rounded-xl border border-slate-200 px-3 text-xs font-normal outline-none focus:border-[#59A5E2]" /></label><label className="flex flex-col gap-2 text-xs font-semibold text-slate-700">Hasta<input type="date" value={form.validTo} onChange={(event) => update('validTo', event.target.value)} className="h-10 rounded-xl border border-slate-200 px-3 text-xs font-normal outline-none focus:border-[#59A5E2]" /></label></div></div>
             </section>
 
             <section className="mb-6 rounded-3xl border border-slate-200/80 bg-white p-7 shadow-2xs">
