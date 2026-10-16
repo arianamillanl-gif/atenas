@@ -13,6 +13,7 @@ import AssignmentHero from './AssignmentHero'
 import HistoryTable, { type HistoryFilter } from './HistoryTable'
 import {
   CURRENT_USER,
+  MIN_REASON,
   TODAY,
   buildEvent,
   clients,
@@ -27,8 +28,6 @@ import {
   type AssignmentEvent,
   type DraftErrors,
 } from './data'
-
-const MIN_REASON = 20
 
 const emptyDraft = (clientId = ''): AssignmentDraft => ({ clientId, portfolioId: '', type: 'Principal', from: TODAY, to: '', reason: '' })
 
@@ -60,6 +59,7 @@ export default function AsignacionesModule({ contextClientId }: { contextClientI
   const activeRecord = selectedClient ? clientRecords.find(isActive) : undefined
   const heroRecord = activeRecord ?? (selectedClient ? clientRecords[0] : undefined)
   const closeTarget = records.find((record) => record.id === closeTargetId)
+  const reasonBlocking = Boolean(activeRecord) && draft.reason.trim().length < MIN_REASON
 
   const flash = (message: string) => {
     window.clearTimeout(noticeTimer.current)
@@ -87,7 +87,7 @@ export default function AsignacionesModule({ contextClientId }: { contextClientI
     if (!draft.from) next.from = 'Indique la fecha de inicio de vigencia.'
     else if (activeRecord && draft.from <= activeRecord.from)
       next.from = `Debe ser posterior al inicio vigente (${formatDate(activeRecord.from)}).`
-    if (draft.to && draft.from && draft.to < draft.from) next.to = 'No puede ser anterior a “Vigente desde”.'
+    if (draft.to && draft.from && draft.to <= draft.from) next.to = 'Debe ser posterior a “Vigente desde”.'
     if (activeRecord && draft.reason.trim().length < MIN_REASON) next.reason = `Justifique la reasignación (mínimo ${MIN_REASON} caracteres).`
     setErrors(next)
     const first = Object.keys(next)[0]
@@ -257,7 +257,9 @@ export default function AsignacionesModule({ contextClientId }: { contextClientI
               <button
                 type="button"
                 onClick={register}
-                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#2A4B93] px-6 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-[#1E366B]"
+                disabled={reasonBlocking}
+                aria-describedby={reasonBlocking ? 'draft-reason-hint' : undefined}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#2A4B93] px-6 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-[#1E366B] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-[#2A4B93]"
               >
                 <Check size={14} aria-hidden="true" />
                 Registrar asignación / Reasignar

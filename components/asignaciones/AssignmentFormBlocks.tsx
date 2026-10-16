@@ -1,10 +1,12 @@
-import { AlertTriangle } from 'lucide-react'
+import { ShieldAlert } from 'lucide-react'
 
 import ClientCombobox from './ClientCombobox'
 import {
   ASSIGNMENT_TYPES,
+  MIN_REASON,
   formatDate,
   portfolios,
+  shiftDays,
   type Assignment,
   type AssignmentDraft,
   type CanonicalClient,
@@ -114,6 +116,9 @@ export function ValidityControl({
   reasonRequired: boolean
   onChange: UpdateDraft
 }) {
+  const reasonLength = draft.reason.trim().length
+  const reasonValid = reasonLength >= MIN_REASON
+  const toError = errors.to ?? (draft.to && draft.from && draft.to <= draft.from ? 'Debe ser posterior a “Vigente desde”.' : undefined)
   return (
     <section aria-labelledby="block-validity-title" className={sectionClass}>
       <div className="flex flex-col gap-1">
@@ -122,55 +127,87 @@ export function ValidityControl({
         </h2>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Field id="draft-from" label="Vigente desde" required error={errors.from}>
+        <Field id="draft-from" label="Vigente desde" required error={errors.from} hint="Por defecto: fecha actual">
           <input
             id="draft-from"
             type="date"
             value={draft.from}
             onChange={(event) => onChange('from', event.target.value)}
             aria-invalid={Boolean(errors.from)}
-            aria-describedby={errors.from ? 'draft-from-error' : undefined}
+            aria-describedby={errors.from ? 'draft-from-error' : 'draft-from-hint'}
             className={controlClass}
           />
         </Field>
-        <Field id="draft-to" label="Vigente hasta" error={errors.to} hint="Opcional · vacío equivale a vigencia abierta">
+        <Field
+          id="draft-to"
+          label="Vigente hasta"
+          error={toError}
+          hint="Opcional · Dejar vacío para mantener la vigencia abierta/activa."
+        >
           <input
             id="draft-to"
             type="date"
             value={draft.to}
-            min={draft.from || undefined}
+            min={draft.from ? shiftDays(draft.from, 1) : undefined}
             onChange={(event) => onChange('to', event.target.value)}
-            aria-invalid={Boolean(errors.to)}
-            aria-describedby={errors.to ? 'draft-to-error' : 'draft-to-hint'}
+            aria-invalid={Boolean(toError)}
+            aria-describedby={toError ? 'draft-to-error' : 'draft-to-hint'}
             className={controlClass}
           />
         </Field>
       </div>
-      <Field
-        id="draft-reason"
-        label="Motivo de reasignación / cambio"
-        required={reasonRequired}
-        error={errors.reason}
-        hint={reasonRequired ? `Obligatorio al reasignar · ${draft.reason.trim().length}/20 caracteres mínimos` : 'Opcional en la primera asignación del cliente'}
-      >
+      <div className="flex min-w-0 flex-col gap-1.5">
+        <label
+          htmlFor="draft-reason"
+          className={`inline-flex items-center gap-1 text-xs font-semibold ${reasonRequired ? 'text-slate-700' : 'text-slate-500'}`}
+        >
+          {reasonRequired ? (
+            <>
+              Motivo de reasignación / cambio
+              <span className="font-bold text-rose-500" aria-hidden="true">*</span>
+              <span className="sr-only">(obligatorio)</span>
+            </>
+          ) : (
+            'Motivo de reasignación / cambio (Opcional)'
+          )}
+        </label>
         <textarea
           id="draft-reason"
           rows={3}
           value={draft.reason}
+          required={reasonRequired}
           onChange={(event) => onChange('reason', event.target.value)}
           aria-invalid={Boolean(errors.reason)}
-          aria-describedby={errors.reason ? 'draft-reason-error' : 'draft-reason-hint'}
+          aria-describedby={errors.reason ? 'draft-reason-error draft-reason-hint' : 'draft-reason-hint'}
           placeholder="Explique la justificación comercial o administrativa del cambio de cartera..."
           className={`${controlClass} h-auto resize-y py-2.5 leading-relaxed`}
         />
-      </Field>
-      <div role="note" className="flex gap-3 rounded-2xl border border-amber-200/80 bg-amber-50/70 p-4 text-amber-900">
-        <AlertTriangle size={18} aria-hidden="true" className="mt-0.5 shrink-0 text-amber-600" />
-        <p className="m-0 text-xs leading-relaxed">
-          <strong className="font-semibold">MECANISMO DE REASIGNACIÓN (APPEND-ONLY):</strong> Al registrar una nueva asignación, el sistema
-          cierra automáticamente la vigencia anterior (Vigente Hasta = Fecha Nueva - 1 día) y preserva el historial de reasignaciones sin
-          sobrescribirlo ni eliminarlo.
+        {errors.reason && (
+          <p id="draft-reason-error" role="alert" className="m-0 text-[11px] font-medium text-red-600">{errors.reason}</p>
+        )}
+        <p
+          id="draft-reason-hint"
+          aria-live="polite"
+          className={`m-0 text-[11px] ${
+            !reasonRequired ? 'text-slate-400' : reasonValid ? 'font-semibold text-emerald-600' : 'font-medium text-amber-600'
+          }`}
+        >
+          {!reasonRequired
+            ? 'Opcional para primer registro de asignación.'
+            : reasonValid
+              ? `✓ Justificación válida · ${reasonLength}/${MIN_REASON} caracteres`
+              : `Requerido para auditoría · ${reasonLength}/${MIN_REASON} caracteres mínimos`}
         </p>
+      </div>
+      <div role="note" className="flex items-start gap-3 rounded-2xl border border-amber-200/80 bg-amber-50/80 p-4 text-amber-900 shadow-2xs">
+        <ShieldAlert aria-hidden="true" className="size-5 shrink-0 text-amber-600" />
+        <div className="flex flex-col gap-1">
+          <p className="m-0 text-xs font-bold tracking-wide text-amber-950">REGLA DE GOBERNANZA (APPEND-ONLY):</p>
+          <p className="m-0 text-xs leading-relaxed text-amber-900/90">
+            Al reasignar, el sistema cierra automáticamente la vigencia previa (Vigente Hasta = Nueva Fecha - 1 día) y conserva el registro
+            en el historial inmutable sin sobrescribir datos.
+          </p>
+        </div>
       </div>
     </section>
   )

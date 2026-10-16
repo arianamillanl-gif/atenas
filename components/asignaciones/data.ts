@@ -3,6 +3,7 @@ import { CalendarX2, FilePlus2, type LucideIcon } from 'lucide-react'
 import type { AuditEvent } from '../TraceabilityDrawer'
 
 export const TODAY = '2026-10-16'
+export const MIN_REASON = 20
 export const CURRENT_USER = { name: 'María González', role: 'Administradora' }
 
 export const ASSIGNMENT_TYPES = ['Principal', 'Secundaria', 'Especial'] as const
