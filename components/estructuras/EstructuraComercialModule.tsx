@@ -64,14 +64,19 @@ export default function EstructuraComercialModule() {
           <div className="flex flex-col gap-6">
             <section className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm mb-6 flex flex-col justify-between">
               <div className="flex flex-col gap-5">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div><p className="m-0 text-[11px] font-bold tracking-[0.18em] text-slate-500">ESTRUCTURA COMERCIAL</p><h2 className="mt-2 text-xl font-bold text-slate-900">Equipo Estratégico</h2></div>
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-[#2A4B93] text-sm font-bold text-white" aria-label="Iniciales del nodo Equipo Estratégico">EE</div>
+                    <div><p className="m-0 text-[11px] font-bold tracking-[0.18em] text-slate-500">ESTRUCTURA COMERCIAL</p><h2 className="mt-2 text-xl font-bold text-slate-900">Equipo Estratégico</h2></div>
+                  </div>
                   <span className="inline-flex w-fit items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[11px] font-bold tracking-wide text-emerald-700">• Activa</span>
                 </div>
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-slate-100 pt-4 text-xs text-slate-500">
-                  <span><span className="font-semibold text-slate-600">ID Nodo:</span> <code className="font-mono">EST-2026-0008</code></span><span aria-hidden="true">·</span><span><span className="font-semibold text-slate-600">Fecha de Registro:</span> <code className="font-mono">01/01/2026</code></span><span aria-hidden="true">·</span><span><span className="font-semibold text-slate-600">Última Modificación:</span> <code className="font-mono">16/10/2026</code></span>
+                <div className="flex flex-col gap-4 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+                    <span>Equipo</span><span aria-hidden="true">|</span><span>Reg: <code className="font-mono">01/01/2026</code></span><span aria-hidden="true">|</span><span>🔒 ID: <code className="font-mono">EST-2026-0008</code></span><span aria-hidden="true">|</span><span>Modificado: <code className="font-mono">16/10/2026</code></span>
+                  </div>
+                  <button type="button" className="flex w-fit cursor-pointer items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50">🕒 Ver modificaciones de jerarquía</button>
                 </div>
-                <button type="button" className="w-fit text-xs font-semibold text-[#2A4B93] underline decoration-[#2A4B93]/30 underline-offset-4 hover:text-[#1E366B]">Ver modificaciones de jerarquía</button>
               </div>
             </section>
 
