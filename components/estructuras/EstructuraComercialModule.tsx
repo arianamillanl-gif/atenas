@@ -85,8 +85,33 @@ export default function EstructuraComercialModule() {
                 <label className="flex flex-col gap-2 text-xs font-semibold text-slate-700">Condición principal<select value={member.condition} onChange={(event) => setMember((current) => ({ ...current, condition: event.target.value }))} className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-normal"><option>Principal</option><option>Secundaria</option><option>Temporal</option></select></label>
                 <button type="button" onClick={assignMember} className="rounded-full bg-[#2A4B93] px-4 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-[#1E366B] lg:col-span-2 lg:w-fit">Asignar miembro a estructura</button>
               </div>
-              <div className="mt-6 w-full overflow-x-auto rounded-2xl border border-slate-200/80 bg-white shadow-2xs scrollbar-thin scrollbar-thumb-slate-200">
-                <table className="w-full min-w-[1200px] table-fixed border-collapse text-left text-xs text-slate-700"><thead className="bg-slate-50 text-[10px] uppercase tracking-[.08em] text-slate-400"><tr>{[['PERSONA','min-w-[220px]'],['ROL','min-w-[160px]'],['UNIDAD / NODO','min-w-[180px]'],['CONDICIÓN','min-w-[130px]'],['VIGENCIA DESDE/HASTA','min-w-[180px]'],['MOTIVO','min-w-[240px]']].map(([label, width]) => <th key={label} className={`h-11 px-4 text-left font-semibold ${width}`}>{label}</th>)}<th className="sticky right-0 z-20 w-[220px] min-w-[220px] bg-slate-50 px-5 text-right font-semibold shadow-[-6px_0_12px_-4px_rgba(0,0,0,0.06)]">ACCIÓN</th></tr></thead><tbody>{members.map((item) => <tr key={item.id} className="group border-t border-slate-100 hover:bg-slate-50/70"><td className="px-4 py-4 font-semibold text-slate-900">{item.person}<span className="mt-1 block text-[10px] font-normal text-slate-400">{item.id}</span></td><td className="w-[180px] truncate px-4 py-4">{item.role}</td><td className="w-[200px] truncate px-4 py-4">{item.node}</td><td className="px-4 py-4"><span className="rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-semibold text-[#2A4B93]">{item.condition}</span></td><td className="whitespace-nowrap px-4 py-4">{item.from} — {item.to}</td><td className="w-[240px] truncate px-4 py-4 text-slate-600">{item.reason}</td><td className="sticky right-0 z-10 w-[220px] min-w-[220px] bg-white px-5 py-4 shadow-[-6px_0_12px_-4px_rgba(0,0,0,0.06)] group-hover:bg-slate-50"><div className="flex items-center justify-end gap-2"><button type="button" className="rounded-full border border-slate-200 px-3 py-1.5 text-[10px] font-semibold text-[#2A4B93] hover:bg-blue-50">Reasignar nodo</button><button type="button" className="rounded-full bg-amber-50 px-3 py-1.5 text-[10px] font-semibold text-amber-800 hover:bg-amber-100">Cerrar vigencia</button></div></td></tr>)}</tbody></table>
+              <div className="w-full overflow-x-auto rounded-2xl border border-slate-200/80 bg-white shadow-2xs mt-4">
+                <table className="w-full min-w-[1100px] border-collapse text-left text-xs text-slate-700">
+                  <thead>
+                    <tr className="border-b border-slate-200 bg-slate-50 text-slate-500 font-semibold uppercase tracking-wider text-[11px]">
+                      <th className="px-5 py-3.5 whitespace-nowrap">Persona</th>
+                      <th className="px-4 py-3.5 whitespace-nowrap">Rol</th>
+                      <th className="px-4 py-3.5 whitespace-nowrap">Unidad / Nodo</th>
+                      <th className="px-4 py-3.5 whitespace-nowrap">Condición</th>
+                      <th className="px-4 py-3.5 whitespace-nowrap">Vigencia</th>
+                      <th className="px-4 py-3.5 whitespace-nowrap">Motivo</th>
+                      <th className="sticky right-0 z-20 bg-slate-50 px-5 py-3.5 text-right shadow-[-8px_0_12px_-4px_rgba(0,0,0,0.08)] whitespace-nowrap">Acción</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {members.map((item) => (
+                      <tr key={item.id} className="hover:bg-slate-50/60 transition-colors">
+                        <td className="px-5 py-4 whitespace-nowrap"><span className="font-semibold text-slate-800 block">{item.person}</span><span className="text-[11px] font-mono text-slate-400 block">{item.id}</span></td>
+                        <td className="px-4 py-4 whitespace-nowrap text-slate-700">{item.role}</td>
+                        <td className="px-4 py-4 whitespace-nowrap text-slate-700">{item.node}</td>
+                        <td className="px-4 py-4 whitespace-nowrap"><span className="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">{item.condition}</span></td>
+                        <td className="px-4 py-4 whitespace-nowrap font-mono text-slate-600">{item.from} — {item.to}</td>
+                        <td className="px-4 py-4 whitespace-nowrap text-slate-600">{item.reason}</td>
+                        <td className="sticky right-0 z-10 bg-white px-5 py-4 text-right shadow-[-8px_0_12px_-4px_rgba(0,0,0,0.08)] whitespace-nowrap"><div className="flex items-center justify-end gap-2"><button type="button" className="px-3.5 py-1.5 text-[11px] font-semibold text-[#2A4B93] bg-white hover:bg-slate-50 border border-slate-200 rounded-full shadow-2xs cursor-pointer">Reasignar nodo</button><button type="button" className="px-3.5 py-1.5 text-[11px] font-semibold text-amber-800 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-full shadow-2xs cursor-pointer">Cerrar vigencia</button></div></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </section>
 
