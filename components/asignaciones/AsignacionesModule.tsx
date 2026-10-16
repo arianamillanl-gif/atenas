@@ -10,6 +10,7 @@ import { Sidebar, Topbar } from '../personas/Shell'
 import { CloseValidityDialog, ReassignDialog } from './AssignmentDialogs'
 import { GovernedAssignment, SystemMetadata, ValidityControl } from './AssignmentFormBlocks'
 import AssignmentHero from './AssignmentHero'
+import DiscardChangesModal from './DiscardChangesModal'
 import HistoryTable, { type HistoryFilter } from './HistoryTable'
 import {
   CURRENT_USER,
@@ -46,6 +47,7 @@ export default function AsignacionesModule({ contextClientId }: { contextClientI
   const [filter, setFilter] = useState<HistoryFilter>('todos')
   const [closeTargetId, setCloseTargetId] = useState<string | null>(null)
   const [reassignOpen, setReassignOpen] = useState(false)
+  const [discardOpen, setDiscardOpen] = useState(false)
   const [trace, setTrace] = useState<{ assignmentId?: string } | null>(null)
   const [notice, setNotice] = useState('')
   const noticeTimer = useRef<number | undefined>(undefined)
@@ -152,10 +154,14 @@ export default function AsignacionesModule({ contextClientId }: { contextClientI
     flash(`Vigencia de ${closed.id} cerrada al ${formatDate(endDate)}`)
   }
 
-  const cancel = () => {
-    setDraft(emptyDraft(isContextual ? draft.clientId : selectedClient?.id))
+  const pristine = emptyDraft(draft.clientId)
+  const isDirty = (Object.keys(pristine) as (keyof AssignmentDraft)[]).some(
+    (key) => key !== 'clientId' && String(draft[key]).trim() !== String(pristine[key]),
+  )
+
+  const resetForm = () => {
+    setDraft(emptyDraft(draft.clientId))
     setErrors({})
-    flash('Cambios descartados')
   }
 
   const goBack = () => {
@@ -163,9 +169,25 @@ export default function AsignacionesModule({ contextClientId }: { contextClientI
     else router.push('/maestro-cartera')
   }
 
+  const cancel = () => {
+    if (isDirty) {
+      setDiscardOpen(true)
+      return
+    }
+    if (isContextual) goBack()
+    else resetForm()
+  }
+
+  const confirmDiscard = () => {
+    resetForm()
+    setDiscardOpen(false)
+    flash('Cambios descartados')
+  }
+
   const closeTrace = useCallback(() => setTrace(null), [])
   const cancelClose = useCallback(() => setCloseTargetId(null), [])
   const cancelReassign = useCallback(() => setReassignOpen(false), [])
+  const keepEditing = useCallback(() => setDiscardOpen(false), [])
 
   const traceEvents = trace
     ? events.filter((event) => (trace.assignmentId ? event.assignmentId === trace.assignmentId : event.clientId === selectedClient?.id))
@@ -299,6 +321,8 @@ export default function AsignacionesModule({ contextClientId }: { contextClientI
           onCancel={cancelReassign}
         />
       )}
+
+      {discardOpen && <DiscardChangesModal onConfirm={confirmDiscard} onCancel={keepEditing} />}
 
       {notice && (
         <div role="status" className="client-toast">
