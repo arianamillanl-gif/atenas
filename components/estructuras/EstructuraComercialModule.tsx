@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { AlertTriangle, ChevronDown, ChevronRight, GitBranch, LockKeyhole, Search, X } from 'lucide-react'
+import { AlertTriangle, ChevronDown, ChevronRight, GitBranch, Search, X } from 'lucide-react'
 import { Sidebar, Topbar } from '../personas/Shell'
 import DiscardChangesModal from '../asignaciones/DiscardChangesModal'
 
@@ -62,16 +62,16 @@ export default function EstructuraComercialModule() {
           </header>
 
           <div className="flex flex-col gap-6">
-            <section className="rounded-3xl border border-slate-200/80 bg-slate-900 p-7 text-white shadow-2xs">
+            <section className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm mb-6 flex flex-col justify-between">
               <div className="flex flex-col gap-5">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div><p className="m-0 text-[11px] font-bold tracking-[0.18em] text-slate-300">ESTRUCTURA COMERCIAL</p><h2 className="mt-2 text-xl font-bold text-white">Equipo Estratégico</h2></div>
-                  <span className="inline-flex w-fit items-center rounded-full border border-emerald-300/30 bg-emerald-400/15 px-3 py-1.5 text-[11px] font-bold tracking-wide text-emerald-200">VIGENTE / ACTIVO</span>
+                  <div><p className="m-0 text-[11px] font-bold tracking-[0.18em] text-slate-500">ESTRUCTURA COMERCIAL</p><h2 className="mt-2 text-xl font-bold text-slate-900">Equipo Estratégico</h2></div>
+                  <span className="inline-flex w-fit items-center rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[11px] font-bold tracking-wide text-emerald-700">• Activa</span>
                 </div>
-                <div className="grid gap-4 md:grid-cols-3">
-                  {[['ID Nodo', 'EST-2026-0008'], ['Fecha de Registro', '01/01/2026'], ['Última Modificación', '16/10/2026']].map(([label, value]) => <label key={label} className="flex flex-col gap-2 text-xs font-semibold text-slate-300">{label}<span className="flex h-10 items-center gap-2 rounded-xl border border-slate-200/80 bg-slate-50 px-3"><LockKeyhole aria-hidden="true" data-icon="inline-start" /><input readOnly disabled value={value} aria-label={label} className="min-w-0 flex-1 bg-transparent text-xs font-normal text-slate-600 outline-none" /></span></label>)}
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-slate-100 pt-4 text-xs text-slate-500">
+                  <span><span className="font-semibold text-slate-600">ID Nodo:</span> <code className="font-mono">EST-2026-0008</code></span><span aria-hidden="true">·</span><span><span className="font-semibold text-slate-600">Fecha de Registro:</span> <code className="font-mono">01/01/2026</code></span><span aria-hidden="true">·</span><span><span className="font-semibold text-slate-600">Última Modificación:</span> <code className="font-mono">16/10/2026</code></span>
                 </div>
-                <button type="button" className="w-fit text-xs font-semibold text-sky-200 underline decoration-sky-300/50 underline-offset-4 hover:text-white">Ver modificaciones de jerarquía</button>
+                <button type="button" className="w-fit text-xs font-semibold text-[#2A4B93] underline decoration-[#2A4B93]/30 underline-offset-4 hover:text-[#1E366B]">Ver modificaciones de jerarquía</button>
               </div>
             </section>
 
