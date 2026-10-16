@@ -214,8 +214,6 @@ export default function AsignacionesModule({ contextClientId }: { contextClientI
 
           <AssignmentHero client={selectedClient} assignment={heroRecord} onTrace={() => setTrace({})} />
 
-          <SystemMetadata assignment={heroRecord} />
-
           <GovernedAssignment
             draft={draft}
             errors={errors}
@@ -224,6 +222,8 @@ export default function AsignacionesModule({ contextClientId }: { contextClientI
             onChange={update}
             onClientChange={changeClient}
           />
+
+          <SystemMetadata assignment={heroRecord} />
 
           <ValidityControl draft={draft} errors={errors} reasonRequired={Boolean(activeRecord)} onChange={update} />
 

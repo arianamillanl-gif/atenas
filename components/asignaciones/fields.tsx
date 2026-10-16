@@ -58,6 +58,8 @@ export function SelectControl({
   error,
   placeholder,
   options,
+  disabled,
+  describedBy,
 }: {
   id: string
   value: string
@@ -65,16 +67,23 @@ export function SelectControl({
   error?: string
   placeholder?: string
   options: { value: string; label: string }[]
+  disabled?: boolean
+  describedBy?: string
 }) {
   return (
     <div className="relative">
       <select
         id={id}
         value={value}
+        disabled={disabled}
         onChange={(event) => onChange(event.target.value)}
         aria-invalid={Boolean(error)}
-        aria-describedby={error ? `${id}-error` : undefined}
-        className={`${controlClass} cursor-pointer appearance-none pr-9 ${value ? '' : 'text-slate-400'}`}
+        aria-describedby={error ? `${id}-error` : describedBy}
+        className={`${controlClass} appearance-none pr-9 ${
+          disabled
+            ? 'cursor-not-allowed border-slate-200 bg-slate-100/80 text-slate-400 shadow-none'
+            : `cursor-pointer ${value ? '' : 'text-slate-400'}`
+        }`}
       >
         {placeholder && <option value="" disabled>{placeholder}</option>}
         {options.map((option) => (
@@ -86,11 +95,12 @@ export function SelectControl({
   )
 }
 
-export function ReadOnlyValue({ id, value, mono }: { id: string; value: string; mono?: boolean }) {
+export function ReadOnlyValue({ id, value, muted }: { id: string; value: string; muted?: boolean }) {
   return (
     <output
       id={id}
-      className={`flex min-h-9 items-center truncate rounded-xl bg-slate-100/80 px-3.5 py-2 text-xs text-slate-600 ${mono ? 'font-mono' : ''}`}
+      aria-readonly="true"
+      className={`flex min-h-9 items-center truncate rounded-xl border border-slate-200/70 bg-slate-50/80 px-3.5 py-2 font-mono text-xs text-slate-500 ${muted ? 'italic text-slate-400' : ''}`}
       title={value}
     >
       {value}

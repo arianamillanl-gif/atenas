@@ -13,16 +13,13 @@ export default function AssignmentHero({
 }) {
   if (!client) {
     return (
-      <div className="flex items-center gap-4 rounded-2xl border border-dashed border-slate-300 bg-white p-5 shadow-2xs">
-        <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-400">
-          <Info size={20} aria-hidden="true" />
+      <div role="status" className="flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50 p-4 text-xs text-slate-500">
+        <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-slate-200/80 bg-white text-[#2A4B93] shadow-2xs">
+          <Info size={15} aria-hidden="true" />
         </span>
-        <div className="flex flex-col gap-0.5">
-          <p className="m-0 text-sm font-semibold text-slate-700">Sin cliente seleccionado</p>
-          <p className="m-0 text-xs leading-relaxed text-slate-500">
-            Seleccione un cliente para consultar o gestionar su asignación de cartera.
-          </p>
-        </div>
+        <p className="m-0 leading-relaxed text-pretty">
+          Seleccione o busque un cliente canónico para consultar su historial o registrar una nueva asignación de cartera.
+        </p>
       </div>
     )
   }
@@ -37,11 +34,11 @@ export default function AssignmentHero({
         </span>
         <div className="flex min-w-0 flex-col gap-1.5">
           <div className="flex flex-wrap items-center gap-2.5">
-            <h2 className="m-0 truncate text-lg font-semibold text-slate-900">{client.name}</h2>
+            <h2 className="m-0 truncate text-lg font-bold text-slate-900">{client.name}</h2>
             {assignment && active ? (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-700">
                 <span aria-hidden="true" className="size-1.5 rounded-full bg-emerald-500" />
-                Vigente / {assignment.type}
+                Activa · {assignment.type}
               </span>
             ) : (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-[11px] font-semibold text-slate-500">
@@ -52,6 +49,8 @@ export default function AssignmentHero({
           </div>
           {assignment ? (
             <p className="m-0 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-slate-500">
+              <span className="font-mono">{client.rif}</span>
+              <span aria-hidden="true" className="text-slate-300">|</span>
               <span className="font-medium text-slate-700">{portfolioName(assignment.portfolioId)}</span>
               <span aria-hidden="true" className="text-slate-300">|</span>
               <span>ID Asignación: <span className="font-mono">{assignment.id}</span></span>

@@ -16,9 +16,9 @@ type UpdateDraft = <K extends keyof AssignmentDraft>(key: K, value: AssignmentDr
 
 export function SystemMetadata({ assignment }: { assignment?: Assignment }) {
   return (
-    <div className="grid grid-cols-1 gap-4 rounded-2xl border border-slate-200/70 bg-slate-50/50 p-4 sm:grid-cols-3">
+    <div aria-label="Metadatos de sistema" role="group" className="grid grid-cols-1 gap-4 rounded-2xl border border-slate-200/70 bg-white p-4 sm:grid-cols-3">
       <Field id="meta-id" label="ID Asignación" locked>
-        <ReadOnlyValue id="meta-id" mono value={assignment?.id ?? 'Se generará al registrar'} />
+        <ReadOnlyValue id="meta-id" muted={!assignment} value={assignment?.id ?? 'Se generará al registrar'} />
       </Field>
       <Field id="meta-author" label="Creado por" locked>
         <ReadOnlyValue id="meta-author" value={assignment?.author ?? '—'} />
@@ -45,6 +45,7 @@ export function GovernedAssignment({
   onChange: UpdateDraft
   onClientChange: (clientId: string) => void
 }) {
+  const clientMissing = !draft.clientId
   return (
     <section aria-labelledby="block-assignment" className={sectionClass}>
       <SectionHeading
@@ -63,19 +64,35 @@ export function GovernedAssignment({
             onChange={onClientChange}
           />
         </Field>
-        <Field id="draft-portfolioId" label="Cartera de destino" required error={errors.portfolioId}>
+        <Field
+          id="draft-portfolioId"
+          label="Cartera de destino"
+          required
+          error={errors.portfolioId}
+          hint={clientMissing ? 'Disponible al seleccionar un cliente' : undefined}
+        >
           <SelectControl
             id="draft-portfolioId"
             value={draft.portfolioId}
+            disabled={clientMissing}
+            describedBy={clientMissing ? 'draft-portfolioId-hint' : undefined}
             onChange={(value) => onChange('portfolioId', value)}
             error={errors.portfolioId}
-            placeholder="Seleccione una cartera"
+            placeholder={clientMissing ? 'Requiere cliente canónico' : 'Seleccione una cartera'}
             options={portfolios.map((item) => ({ value: item.id, label: `${item.name} · ${item.owner}` }))}
           />
         </Field>
-        <Field id="draft-type" label="Tipo de asignación" required error={errors.type}>
+        <Field
+          id="draft-type"
+          label="Tipo de asignación"
+          required
+          error={errors.type}
+          hint={clientMissing ? 'Disponible al seleccionar un cliente' : undefined}
+        >
           <SelectControl
             id="draft-type"
+            disabled={clientMissing}
+            describedBy={clientMissing ? 'draft-type-hint' : undefined}
             value={draft.type}
             onChange={(value) => onChange('type', value as AssignmentDraft['type'])}
             options={ASSIGNMENT_TYPES.map((type) => ({ value: type, label: type }))}
