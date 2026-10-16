@@ -4,13 +4,16 @@ import { SectionHeading, sectionClass } from './fields'
 export type HistoryFilter = 'todos' | 'vigentes' | 'cerrados'
 
 const typeTone: Record<Assignment['type'], string> = {
-  Principal: 'bg-[#2A4B93]/[0.08] text-[#2A4B93]',
-  Secundaria: 'bg-slate-100 text-slate-600',
+  Principal: 'bg-slate-100 text-slate-700',
+  Secundaria: 'bg-[#2A4B93]/[0.08] text-[#2A4B93]',
   Especial: 'bg-amber-50 text-amber-700',
 }
 
-const thClass = 'px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-500'
-const tdClass = 'px-3 py-3.5 align-middle text-xs text-slate-600'
+const thClass = 'px-4 py-3 text-left align-middle text-[10px] font-semibold uppercase tracking-[0.08em] text-slate-500'
+const tdClass = 'px-4 py-3.5 align-middle text-xs text-slate-700'
+const stickyActionClass = 'sticky right-0 z-10 shadow-[-4px_0_8px_-4px_rgba(0,0,0,0.05)]'
+const actionButtonBase =
+  'inline-flex items-center justify-center whitespace-nowrap rounded-full border bg-white px-3.5 py-1 text-[11px] font-semibold shadow-2xs transition-all'
 
 export default function HistoryTable({
   records,
@@ -66,8 +69,8 @@ export default function HistoryTable({
         })}
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-slate-200/80">
-        <table className="w-full min-w-[980px] table-fixed border-collapse">
+      <div className="scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent overflow-x-auto rounded-2xl border border-slate-200/80 pb-2 [scrollbar-color:#e2e8f0_transparent] [scrollbar-width:thin]">
+        <table className="w-full min-w-[950px] table-fixed border-collapse">
           <colgroup>
             <col className="w-[20%]" />
             <col className="w-[20%]" />
@@ -87,7 +90,7 @@ export default function HistoryTable({
               <th scope="col" className={thClass}>Hasta</th>
               <th scope="col" className={thClass}>Autor/Usuario</th>
               <th scope="col" className={thClass}>Motivo de reasignación</th>
-              <th scope="col" className={`${thClass} sticky right-0 bg-slate-50 text-right shadow-[-8px_0_12px_-10px_rgba(15,23,42,0.25)]`}>Acción</th>
+              <th scope="col" className={`${thClass} ${stickyActionClass} bg-white text-right`}>Acción</th>
             </tr>
           </thead>
           <tbody>
@@ -130,12 +133,12 @@ export default function HistoryTable({
                     <td className={tdClass}>
                       <span className="line-clamp-2 leading-relaxed" title={record.reason}>{record.reason}</span>
                     </td>
-                    <td className={`${tdClass} sticky right-0 bg-white text-right shadow-[-8px_0_12px_-10px_rgba(15,23,42,0.25)]`}>
+                    <td className={`${tdClass} ${stickyActionClass} bg-white text-right`}>
                       {active ? (
                         <button
                           type="button"
                           onClick={() => onClose(record.id)}
-                          className="whitespace-nowrap rounded-full border border-amber-300 bg-amber-50 px-3 py-1 text-[11px] font-semibold text-amber-700 transition-all hover:bg-amber-100"
+                          className={`${actionButtonBase} border-amber-300 text-amber-800 hover:bg-amber-50`}
                         >
                           Cerrar vigencia
                         </button>
@@ -144,7 +147,7 @@ export default function HistoryTable({
                           type="button"
                           onClick={() => onDetails(record.id)}
                           aria-haspopup="dialog"
-                          className="whitespace-nowrap rounded-full border border-slate-200 bg-white px-3 py-1 text-[11px] font-semibold text-[#2A4B93] transition-all hover:bg-slate-50"
+                          className={`${actionButtonBase} border-slate-200 text-[#2A4B93] hover:bg-slate-50`}
                         >
                           Detalles
                         </button>
