@@ -54,16 +54,16 @@ export default function EstructuraComercialModule() {
       <Sidebar collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} active="estructuras" />
       <section className="content flex min-h-screen flex-col">
         <Topbar section="Estructura comercial" />
-        <div className="mx-auto flex w-full max-w-[1500px] flex-1 flex-col gap-6 px-4 pb-8 pt-6 md:px-8 md:pt-8">
+        <div className="mx-auto flex w-full max-w-[1500px] flex-1 flex-col gap-6 px-4 pb-28 pt-6 md:px-8 md:pt-8">
           <header className="flex flex-col gap-2">
             <nav className="flex flex-wrap items-center gap-2 text-xs text-slate-500" aria-label="Ruta de navegación"><span>Catálogos maestros</span><span>›</span><span>Estructura comercial</span><span>›</span><span className="font-semibold text-slate-700">Estructura comercial</span></nav>
             <h1 className="m-0 text-xl font-bold text-slate-900">Estructura comercial</h1>
             <p className="m-0 text-sm text-slate-500">Mantener la jerarquía comercial y la adscripción de personas con roles y vigencias.</p>
           </header>
 
-          <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm">
-            <section className="p-6 md:p-8">
-              <div className="mb-6 flex items-center gap-3"><span className="grid size-8 place-items-center rounded-xl bg-blue-50 text-xs font-bold text-[#2A4B93]">01</span><div><h2 className="m-0 text-base font-semibold text-slate-900">Definición del nodo de estructura</h2><p className="m-0 text-xs text-slate-500">Configura la identidad y ubicación jerárquica del nodo.</p></div></div>
+          <div className="flex flex-col gap-6">
+            <section className="mb-6 rounded-3xl border border-slate-200/80 bg-white p-7 shadow-2xs">
+              <div className="mb-6 flex flex-col gap-1"><h2 className="m-0 text-base font-bold text-slate-900">Definición del nodo de estructura</h2><p className="m-0 text-xs text-slate-500">Configura la identidad y ubicación jerárquica del nodo.</p></div>
               <div className="inline-flex items-center gap-2 rounded-xl border border-slate-200/60 bg-slate-100/80 px-3.5 py-1.5 text-xs font-medium text-slate-700 shadow-2xs mb-5">
                 <span className="font-semibold text-[#2A4B93]">Ubicación jerárquica:</span>
                 <span className="text-slate-500">Dirección Comercial Central › Gerencia de Ventas Corporativas ›</span>
@@ -78,8 +78,8 @@ export default function EstructuraComercialModule() {
               {invalidParent && <div className="mt-3 flex items-start gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-xs text-rose-800 shadow-2xs"><span className="text-base" aria-hidden="true">⚠️</span><div><p className="font-bold">ASIGNACIÓN NO PERMITIDA:</p><p className="mt-0.5 text-rose-700">No puedes seleccionar este equipo como jefe/padre porque actualmente depende del nodo en edición. Por favor, elige un nivel superior en la organización.</p></div></div>}
             </section>
 
-            <section className="border-t border-slate-100 p-6 md:p-8">
-              <div className="mb-6 flex items-center gap-3"><span className="grid size-8 place-items-center rounded-xl bg-blue-50 text-xs font-bold text-[#2A4B93]">02</span><div><h2 className="m-0 text-base font-semibold text-slate-900">Asignación de miembros adscritos</h2><p className="m-0 text-xs text-slate-500">Registra responsables, roles y vigencias históricas.</p></div></div>
+            <section className="mb-6 rounded-3xl border border-slate-200/80 bg-white p-7 shadow-2xs">
+              <div className="mb-6 flex flex-col gap-1"><h2 className="m-0 text-base font-bold text-slate-900">Asignación de miembros adscritos</h2><p className="m-0 text-xs text-slate-500">Registra responsables, roles y vigencias históricas.</p></div>
               <div className="grid gap-3 rounded-2xl bg-slate-50 p-4 md:grid-cols-2 lg:grid-cols-5">
                 {([['person', 'Persona', 'text'], ['role', 'Rol', 'text'], ['from', 'Vigencia desde', 'date'], ['to', 'Vigencia hasta', 'date']] as const).map(([key, label, type]) => <label key={key} className="flex flex-col gap-2 text-xs font-semibold text-slate-700">{label}<input type={type} value={member[key]} onChange={(event) => setMember((current) => ({ ...current, [key]: event.target.value }))} className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-normal outline-none focus:border-[#59A5E2]" /></label>)}
                 <label className="flex flex-col gap-2 text-xs font-semibold text-slate-700">Condición principal<select value={member.condition} onChange={(event) => setMember((current) => ({ ...current, condition: event.target.value }))} className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-xs font-normal"><option>Principal</option><option>Secundaria</option><option>Temporal</option></select></label>
@@ -115,7 +115,7 @@ export default function EstructuraComercialModule() {
               </div>
             </section>
 
-            <div className="flex w-full items-center justify-between gap-4 rounded-b-3xl border-t border-slate-200/80 bg-white px-6 py-4 shadow-[0_-8px_20px_-16px_rgba(15,23,42,0.35)] md:px-8"><button type="button" onClick={() => isDirty ? setDiscardOpen(true) : undefined} className="rounded-full border border-slate-200 bg-white px-6 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">Cancelar</button><button type="button" disabled={invalidParent} onClick={() => setSaved(true)} className="rounded-full bg-[#2A4B93] px-6 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-[#1E366B] disabled:cursor-not-allowed disabled:opacity-50">{saved ? 'Estructura guardada' : 'Guardar estructura comercial'}</button></div>
+            <div className="fixed inset-x-0 bottom-0 z-30 flex w-full items-center justify-between gap-4 border-t border-slate-200/80 bg-white px-8 py-4"><button type="button" onClick={() => isDirty ? setDiscardOpen(true) : undefined} className="rounded-full border border-slate-200 bg-white px-6 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">Cancelar</button><button type="button" disabled={invalidParent} onClick={() => setSaved(true)} className="rounded-full bg-[#2A4B93] px-6 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-[#1E366B] disabled:cursor-not-allowed disabled:opacity-50">{saved ? 'Estructura guardada' : 'Guardar estructura comercial'}</button></div>
           </div>
         </div>
       </section>
