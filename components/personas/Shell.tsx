@@ -55,7 +55,7 @@ export function Sidebar({ collapsed, onToggle, active = 'personas' }: { collapse
           <span className="workspace-avatar">LO</span>
           <div>
             <strong>Lo-Fi workspace</strong>
-            <span>Gestión de talento</span>
+            <span>Tesorería</span>
           </div>
           <ChevronDown size={15} />
         </div>
