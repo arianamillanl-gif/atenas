@@ -21,7 +21,8 @@ const inputClass =
 const labelClass = "mb-1.5 block text-xs font-semibold text-slate-700";
 const statusStyles: Record<string, string> = {
   Registrado: "border-sky-200 bg-sky-50 text-sky-700",
-  Disponible: "border-emerald-200 bg-emerald-50 text-emerald-700",
+  Disponible: "border-emerald-200/80 bg-emerald-50 text-emerald-700",
+  Pendiente: "border-amber-200/80 bg-amber-50 text-amber-700",
   Aplicado: "border-violet-200 bg-violet-50 text-violet-700",
   Reversado: "border-rose-200 bg-rose-50 text-rose-700",
 };
@@ -96,13 +97,19 @@ function SelectField({
 }
 
 function StatusBadge({ status }: { status: string }) {
+  const dotStyles: Record<string, string> = {
+    Registrado: "bg-sky-500",
+    Disponible: "bg-emerald-500",
+    Aplicado: "bg-violet-500",
+    Pendiente: "bg-amber-500",
+    Reversado: "bg-rose-500",
+  };
+
   return (
     <span
-      className={`inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold ${statusStyles[status] ?? "border-slate-200 bg-slate-50 text-slate-600"}`}
+      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${statusStyles[status] ?? "border-slate-200 bg-slate-50 text-slate-600"}`}
     >
-      <span aria-hidden="true" className="mr-1">
-        •
-      </span>
+      <span className={`size-1.5 rounded-full ${dotStyles[status] ?? "bg-slate-400"}`} />
       {status}
     </span>
   );
@@ -613,15 +620,15 @@ export default function CobroIngresoModule() {
                   <input aria-label="Buscar en el histórico" value={historySearch} onChange={(event) => setHistorySearch(event.target.value)} placeholder="Buscar por ID, referencia o cliente" className="h-9 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 pl-9 text-xs outline-none transition-colors placeholder:text-slate-400 focus:border-[#2A4B93] focus:bg-white" />
                 </div>
               </div>
-              <div className="mb-5 flex w-fit items-center gap-1 overflow-x-auto rounded-xl bg-slate-100/80 p-1 text-xs font-medium">
-                {["Todos", "Registrados", "Disponibles", "Aplicados", "Reversados"].map((item) => (
-                  <button type="button" key={item} onClick={() => setTab(item)} className={`whitespace-nowrap rounded-lg px-3 py-1.5 transition-colors ${tab === item ? "bg-white font-semibold text-[#2A4B93] shadow-2xs" : "text-slate-500 hover:text-slate-800"}`}>
+              <div className="mb-5 inline-flex items-center gap-1 overflow-x-auto rounded-xl border border-slate-200/60 bg-slate-100/80 p-1">
+                {(["Todos", "Registrados", "Disponibles", "Aplicados", "Reversados"] as const).map((item) => (
+                  <button type="button" key={item} onClick={() => setTab(item)} className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-xs transition-all ${tab === item ? "bg-white font-semibold text-[#2A4B93] shadow-2xs" : "font-medium text-slate-500 hover:text-slate-800"}`}>
                     {item}
                   </button>
                 ))}
               </div>
-              <div className="overflow-x-auto">
-                <table className="w-full table-auto border-collapse text-left text-xs">
+              <div className="w-full overflow-x-auto rounded-2xl border border-slate-200/80">
+                <table className="w-full min-w-[850px] border-collapse text-left text-xs">
                   <thead>
                     <tr className="border-y border-slate-100 bg-slate-50/80 text-[10px] font-bold uppercase tracking-wider text-slate-400">
                       <th className="whitespace-nowrap px-4 py-3">ID / Fecha</th>
@@ -629,7 +636,7 @@ export default function CobroIngresoModule() {
                       <th className="px-4 py-3">Cliente</th>
                       <th className="px-4 py-3 text-right">Importe</th>
                       <th className="whitespace-nowrap px-4 py-3">Estado ingreso / Aplicación</th>
-                      <th className="px-4 py-3 text-right">Acciones</th>
+                      <th className="sticky right-0 z-10 border-l border-slate-200/60 bg-slate-50 py-3 px-4 text-right shadow-[-4px_0_8px_rgba(0,0,0,0.02)]">Acciones</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -639,8 +646,8 @@ export default function CobroIngresoModule() {
                         <td className="whitespace-nowrap px-4 py-3"><div className="font-semibold text-slate-800">{record.reference}</div><div className="text-[11px] text-slate-400">{record.method ?? "Transferencia"}</div></td>
                         <td className="px-4 py-3"><div className={`font-medium ${record.client === "Pendiente de identificación" ? "inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-500" : "text-slate-800"}`}>{record.client}</div></td>
                         <td className="whitespace-nowrap px-4 py-3 text-right font-mono font-bold text-slate-900">{record.amount}</td>
-                        <td className="px-4 py-3"><div className="flex flex-wrap gap-1.5"><StatusBadge status={record.status} /><StatusBadge status={record.application} /></div></td>
-                        <td className="px-4 py-3"><div className="flex justify-end gap-1"><button type="button" className="h-8 rounded-lg bg-indigo-50 px-3 text-xs font-semibold text-[#2A4B93] transition-colors hover:bg-indigo-100">Consultar</button><button type="button" aria-label={`Más acciones para ${record.id}`} className="flex size-8 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"><MoreVertical size={16} /></button></div></td>
+                        <td className="px-4 py-3"><div className="flex items-center gap-2 whitespace-nowrap"><StatusBadge status={record.status} /><StatusBadge status={record.application} /></div></td>
+                        <td className="sticky right-0 z-10 border-l border-slate-200/60 bg-white px-4 py-3 text-right shadow-[-4px_0_8px_rgba(0,0,0,0.02)] group-hover:bg-slate-50"><div className="flex items-center justify-end gap-2"><button type="button" className="h-8 shrink-0 rounded-lg bg-indigo-50 px-3.5 text-xs font-semibold text-[#2A4B93] transition-colors hover:bg-indigo-100">Consultar</button><button type="button" aria-label={`Más acciones para ${record.id}`} className="flex size-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"><MoreVertical size={16} /></button></div></td>
                       </tr>
                     ))}
                   </tbody>
