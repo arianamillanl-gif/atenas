@@ -240,12 +240,12 @@ export default function CobroIngresoModule() {
                         Aplicación: Pendiente
                       </span>
                     </div>
-                    <button
-                      onClick={() => setIsHistoryDrawerOpen(true)}
-                      className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-slate-100 px-3.5 text-xs font-semibold text-[#2A4B93] transition-all hover:bg-slate-200/80"
-                    >
-                      <History size={14} className="text-[#2A4B93]" />
-                      <span>Trazabilidad</span>
+<button
+  onClick={() => setIsHistoryDrawerOpen(true)}
+  className="h-9 px-4 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 hover:text-[#2A4B93] rounded-full text-xs font-medium flex items-center gap-2 transition-all cursor-pointer shadow-2xs shrink-0"
+>
+  <History className="w-3.5 h-3.5 text-slate-500" />
+  <span>Ver trazabilidad</span>
                     </button>
                   </div>
                   <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
