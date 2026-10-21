@@ -505,7 +505,7 @@ export default function CobroIngresoModule() {
                     </label>
                     <label
                       htmlFor="receipt"
-                      className="flex min-h-[140px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/50 p-4 text-center transition-all hover:border-[#2A4B93]/60 hover:bg-slate-50"
+                      className="flex min-h-[110px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/50 p-4 text-center transition-all hover:border-[#2A4B93]/60 hover:bg-slate-50"
                     >
                       <span className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50 text-[#2A4B93]">
                         <FileUp size={19} aria-hidden="true" />
@@ -529,7 +529,8 @@ export default function CobroIngresoModule() {
                         </div>
                       </div>
                       <div className="flex shrink-0 items-center gap-2">
-                        <span className="rounded border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+                        <span className="flex items-center gap-1 rounded-full border border-emerald-200/80 bg-emerald-50 px-2.5 py-1 text-[10px] font-semibold text-emerald-700">
+                          <Lock className="h-3 w-3 text-emerald-600" aria-hidden="true" />
                           Carga segura
                         </span>
                         <button type="button" aria-label="Eliminar comprobante" className="rounded-md p-1 text-slate-400 transition-colors hover:bg-white hover:text-rose-600">
@@ -548,7 +549,7 @@ export default function CobroIngresoModule() {
                       maxLength={500}
                       value={notes}
                       onChange={(event) => setNotes(event.target.value)}
-                      className="min-h-[140px] w-full resize-none rounded-xl border border-slate-200 bg-white p-3 text-xs text-slate-800 outline-none transition-colors placeholder:text-slate-400 focus:border-[#2A4B93] focus:ring-1 focus:ring-[#2A4B93]"
+                      className="min-h-[110px] w-full resize-none rounded-xl border border-slate-200 bg-white p-3 text-xs text-slate-800 outline-none transition-colors placeholder:text-slate-400 focus:border-[#2A4B93] focus:ring-1 focus:ring-[#2A4B93]"
                       placeholder="Añade información relevante sobre este ingreso..."
                     />
                     <div className="mt-1.5 flex items-center justify-between text-[11px] text-slate-400">
