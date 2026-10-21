@@ -7,6 +7,7 @@ import {
   ChevronDown,
   ChevronRight,
   CircleHelp,
+  CreditCard,
   LayoutDashboard,
   Menu,
   MoreHorizontal,
@@ -20,7 +21,7 @@ import {
   Users,
 } from 'lucide-react'
 
-type NavKey = 'resumen' | 'personas' | 'servicios' | 'cartera' | 'asignaciones' | 'unidades' | 'estructuras' | 'gobernanza' | 'ajustes'
+type NavKey = 'resumen' | 'personas' | 'servicios' | 'cartera' | 'asignaciones' | 'unidades' | 'estructuras' | 'cobro-ingreso' | 'gobernanza' | 'ajustes'
 
 const NAV_ROUTES: Partial<Record<NavKey, string>> = {
   personas: '/personas',
@@ -28,6 +29,7 @@ const NAV_ROUTES: Partial<Record<NavKey, string>> = {
   cartera: '/maestro-cartera',
   asignaciones: '/asignaciones',
   estructuras: '/estructuras',
+  'cobro-ingreso': '/cobro-ingreso',
 }
 
 function NavLink({ id, active, children }: { id: NavKey; active: NavKey; children: React.ReactNode }) {
@@ -53,7 +55,7 @@ export function Sidebar({ collapsed, onToggle, active = 'personas' }: { collapse
           <span className="workspace-avatar">LO</span>
           <div>
             <strong>Lo-Fi workspace</strong>
-            <span>Gestión de talento</span>
+            <span>Tesorería</span>
           </div>
           <ChevronDown size={15} />
         </div>
@@ -67,6 +69,7 @@ export function Sidebar({ collapsed, onToggle, active = 'personas' }: { collapse
           <NavLink id="asignaciones" active={active}><ArrowLeftRight size={16} />Asignaciones de cartera</NavLink>
           <NavLink id="unidades" active={active}><Building2 size={16} />Unidades</NavLink>
           <NavLink id="estructuras" active={active}><Network size={16} />Estructuras</NavLink>
+          <NavLink id="cobro-ingreso" active={active}><CreditCard size={16} />Cobro / Ingreso</NavLink>
           <span className="nav-label second">CONFIGURACIÓN</span>
           <NavLink id="gobernanza" active={active}><ShieldCheck size={16} />Gobernanza</NavLink>
           <NavLink id="ajustes" active={active}><Settings2 size={16} />Ajustes</NavLink>
