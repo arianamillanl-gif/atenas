@@ -389,59 +389,100 @@ export default function CobroIngresoModule() {
                   </div>
                 </div>
               </section>
-              <section className="mb-6 rounded-3xl border border-slate-200/80 bg-white p-6 shadow-2xs">
-                <div className="mb-6 border-b border-slate-100 pb-4">
-                  <h2 className="text-base font-bold text-slate-900">
+              <section className="mb-6 rounded-3xl border border-slate-200/90 bg-white p-6 shadow-2xs">
+                <div className="mb-5">
+                  <h2 className="mb-1 text-sm font-bold text-slate-900">
                     Valores Financieros y Monedas Multivariable
                   </h2>
-                  <p className="mt-1 text-xs text-slate-500">
-                    Registra el importe recibido y conserva la trazabilidad de
-                    su conversión.
+                  <p className="text-xs text-slate-500">
+                    Registra el importe recibido y conserva la trazabilidad de su conversión.
                   </p>
                 </div>
-                <div className="mb-5 grid grid-cols-1 gap-5 md:grid-cols-2">
-                  <SelectField label="Moneda Original *">
-                    <option>USD</option>
-                    <option>VES</option>
-                    <option>EUR</option>
-                    <option>BRL</option>
-                  </SelectField>
+                <div className="mb-5 grid grid-cols-1 gap-5 sm:grid-cols-2">
+                  <div>
+                    <label htmlFor="original-currency" className={labelClass}>
+                      Moneda Original *
+                    </label>
+                    <div className="relative">
+                      <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-700">
+                        USD
+                      </span>
+                      <select
+                        id="original-currency"
+                        defaultValue="USD"
+                        className={`${inputClass} cursor-pointer appearance-none pl-12 pr-9 font-semibold`}
+                      >
+                        <option>USD</option>
+                        <option>VES</option>
+                        <option>EUR</option>
+                        <option>BRL</option>
+                      </select>
+                      <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" size={15} />
+                    </div>
+                  </div>
                   <div>
                     <label htmlFor="amount" className={labelClass}>
                       Importe Original *
                     </label>
-                    <input
-                      id="amount"
-                      type="number"
-                      value={amount}
-                      onChange={(event) => setAmount(event.target.value)}
-                      className={`${inputClass} font-semibold text-slate-900`}
-                    />
+                    <div className="relative">
+                      <span className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-semibold text-slate-500">
+                        $
+                      </span>
+                      <input
+                        id="amount"
+                        type="number"
+                        value={amount}
+                        onChange={(event) => setAmount(event.target.value)}
+                        className={`${inputClass} h-10 pl-8 text-right font-semibold text-slate-900`}
+                      />
+                    </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-1 gap-5 rounded-2xl border border-slate-200/60 bg-slate-50/60 p-4 md:grid-cols-3">
-                  <SelectField label="Moneda de Referencia">
-                    <option>VES</option>
-                  </SelectField>
-                  <div>
-                    <label htmlFor="rate" className={labelClass}>
-                      Tasa de Cambio
-                    </label>
-                    <input
-                      id="rate"
-                      type="number"
-                      step="0.01"
-                      value={rate}
-                      onChange={(event) => setRate(event.target.value)}
-                      className={inputClass}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="calculated" className={labelClass}>
-                      Importe de Referencia (Calculado)
-                    </label>
-                    <div className="flex items-center rounded-xl border border-slate-200 bg-slate-100 px-3.5 py-2.5 font-mono text-xs font-bold text-slate-800">
-                      {referenceAmount} VES
+                <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 md:p-5">
+                  <span className="mb-3 block text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                    CÁLCULO Y REFERENCIA DINÁMICA DE CONVERSIÓN
+                  </span>
+                  <div className="grid grid-cols-1 items-center gap-4 md:grid-cols-3">
+                    <div>
+                      <label htmlFor="reference-currency" className={labelClass}>
+                        Moneda de Referencia
+                      </label>
+                      <select
+                        id="reference-currency"
+                        defaultValue="VES"
+                        className={`${inputClass} h-11 cursor-pointer appearance-none font-semibold`}
+                      >
+                        <option>VES</option>
+                        <option>USD</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label htmlFor="rate" className={labelClass}>
+                        Tasa de Cambio
+                      </label>
+                      <input
+                        id="rate"
+                        type="number"
+                        step="0.01"
+                        value={rate}
+                        onChange={(event) => setRate(event.target.value)}
+                        className={`${inputClass} h-11`}
+                      />
+                      <p className="mt-1 text-[10px] text-slate-400">
+                        Tasa oficial aplicable según fecha valor
+                      </p>
+                    </div>
+                    <div>
+                      <span className={labelClass}>Importe de Referencia - Calculado</span>
+                      <div className="flex h-11 items-center justify-between rounded-xl border border-slate-300/80 bg-slate-100 px-3.5 font-mono text-sm font-bold text-slate-900 shadow-2xs">
+                        <span className="flex items-center gap-2">
+                          <Lock size={13} className="text-slate-500" aria-hidden="true" />
+                          {referenceAmount} VES
+                        </span>
+                        <span className="rounded bg-slate-200 px-2 py-0.5 font-sans text-[10px] font-semibold text-slate-600">
+                          Calculado
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
