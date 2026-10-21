@@ -130,6 +130,7 @@ export default function CobroIngresoModule() {
   const [reverseReason, setReverseReason] = useState("");
   const [tab, setTab] = useState("Todos");
   const [historySearch, setHistorySearch] = useState("");
+  const [activeRowMenuId, setActiveRowMenuId] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const referenceAmount = useMemo(
     () =>
@@ -620,10 +621,29 @@ export default function CobroIngresoModule() {
                   <input aria-label="Buscar en el histórico" value={historySearch} onChange={(event) => setHistorySearch(event.target.value)} placeholder="Buscar por ID, referencia o cliente" className="h-9 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 pl-9 text-xs outline-none transition-colors placeholder:text-slate-400 focus:border-[#2A4B93] focus:bg-white" />
                 </div>
               </div>
-              <div className="mb-5 inline-flex items-center gap-1 overflow-x-auto rounded-xl border border-slate-200/60 bg-slate-100/80 p-1">
-                {(["Todos", "Registrados", "Disponibles", "Aplicados", "Reversados"] as const).map((item) => (
-                  <button type="button" key={item} onClick={() => setTab(item)} className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-xs transition-all ${tab === item ? "bg-white font-semibold text-[#2A4B93] shadow-2xs" : "font-medium text-slate-500 hover:text-slate-800"}`}>
-                    {item}
+              <div className="mb-6 flex flex-wrap items-center gap-2">
+                {([
+                  ["Todos", 4],
+                  ["Registrados", 1],
+                  ["Disponibles", 1],
+                  ["Aplicados", 1],
+                  ["Reversados", 1],
+                ] as const).map(([item, count]) => (
+                  <button
+                    type="button"
+                    key={item}
+                    onClick={() => setTab(item)}
+                    className={tab === item
+                      ? "flex items-center gap-2 rounded-full bg-[#2A4B93] px-4 py-1.5 text-xs font-semibold text-white shadow-2xs"
+                      : "flex items-center gap-2 rounded-full bg-slate-100 px-4 py-1.5 text-xs font-semibold text-slate-600 transition-colors hover:bg-slate-200/80"}
+                  >
+                    <span>{item}</span>
+                    <span className={tab === item
+                      ? "flex size-5 items-center justify-center rounded-full bg-[#1e3871] text-[10px] font-bold text-white"
+                      : "flex size-5 items-center justify-center rounded-full bg-slate-200 text-[10px] font-bold text-slate-600"}
+                    >
+                      {count}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -646,8 +666,8 @@ export default function CobroIngresoModule() {
                         <td className="whitespace-nowrap px-4 py-3"><div className="font-semibold text-slate-800">{record.reference}</div><div className="text-[11px] text-slate-400">{record.method ?? "Transferencia"}</div></td>
                         <td className="px-4 py-3"><div className={`font-medium ${record.client === "Pendiente de identificación" ? "inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-500" : "text-slate-800"}`}>{record.client}</div></td>
                         <td className="whitespace-nowrap px-4 py-3 text-right font-mono font-bold text-slate-900">{record.amount}</td>
-                        <td className="px-4 py-3"><div className="flex items-center gap-2 whitespace-nowrap"><StatusBadge status={record.status} /><StatusBadge status={record.application} /></div></td>
-                        <td className="sticky right-0 z-10 border-l border-slate-200/60 bg-white px-4 py-3 text-right shadow-[-4px_0_8px_rgba(0,0,0,0.02)] group-hover:bg-slate-50"><div className="flex items-center justify-end gap-2"><button type="button" className="h-8 shrink-0 rounded-lg bg-indigo-50 px-3.5 text-xs font-semibold text-[#2A4B93] transition-colors hover:bg-indigo-100">Consultar</button><button type="button" aria-label={`Más acciones para ${record.id}`} className="flex size-8 shrink-0 items-center justify-center rounded-lg text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"><MoreVertical size={16} /></button></div></td>
+                        <td className="align-middle px-4 py-3"><div className="my-auto flex h-full items-center gap-2 whitespace-nowrap"><StatusBadge status={record.status} /><StatusBadge status={record.application} /></div></td>
+                        <td className="sticky right-0 z-10 border-l border-slate-200/60 bg-white px-4 py-3 text-right align-middle shadow-[-4px_0_8px_rgba(0,0,0,0.02)] group-hover:bg-slate-50"><div className="flex items-center justify-end gap-2"><button type="button" className="shrink-0 rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs transition-all hover:bg-slate-50 hover:text-[#2A4B93]">Consultar / Aplicar</button><div className="relative"><button type="button" aria-label={`Más acciones para ${record.id}`} onClick={() => setActiveRowMenuId(activeRowMenuId === record.id ? null : record.id)} className="flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full border border-slate-200 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"><MoreVertical size={16} /></button>{activeRowMenuId === record.id && (<div className="absolute right-0 z-50 mt-1 w-48 rounded-2xl border border-slate-200 bg-white p-1.5 text-left text-xs shadow-lg"><button type="button" onClick={() => setActiveRowMenuId(null)} className="block w-full rounded-xl px-3 py-2 text-left text-slate-700 hover:bg-slate-50">Ver comprobante digital</button><button type="button" onClick={() => { setActiveRowMenuId(null); setIsHistoryDrawerOpen(true); }} className="block w-full rounded-xl px-3 py-2 text-left text-slate-700 hover:bg-slate-50">Trazabilidad del registro</button><button type="button" onClick={() => { setActiveRowMenuId(null); setReverseOpen(true); }} className="block w-full rounded-xl px-3 py-2 text-left text-amber-800 hover:bg-amber-50">Reversar ingreso</button><button type="button" onClick={() => setActiveRowMenuId(null)} className="block w-full rounded-xl px-3 py-2 text-left text-slate-700 hover:bg-slate-50">Imprimir ficha F05</button></div>)}</div></div></td>
                       </tr>
                     ))}
                   </tbody>
