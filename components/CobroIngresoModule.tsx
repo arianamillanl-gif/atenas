@@ -284,12 +284,12 @@ export default function CobroIngresoModule() {
                 save();
               }}
             >
-              <section className="mb-6 rounded-3xl border border-slate-200/80 bg-white p-6 shadow-2xs">
-                <div className="mb-6 border-b border-slate-100 pb-4">
-                  <h2 className="text-base font-bold text-slate-900">
+              <section className="mb-6 rounded-3xl border border-slate-200/90 bg-white p-6 shadow-2xs">
+                <div className="mb-5">
+                  <h2 className="mb-1 text-sm font-bold text-slate-900">
                     Trazabilidad, Origen y Asociación de Cliente
                   </h2>
-                  <p className="mt-1 text-xs text-slate-500">
+                  <p className="text-xs text-slate-500">
                     Identifica el origen bancario del ingreso y su relación con
                     el cliente.
                   </p>
@@ -317,9 +317,9 @@ export default function CobroIngresoModule() {
                   </div>
                   <SelectField label="Medio de Ingreso *">
                     <option>Transferencia</option>
-                    <option>Depósito</option>
-                    <option>PAGO MÓVIL</option>
+                    <option>Pago Móvil</option>
                     <option>Zelle</option>
+                    <option>Depósito</option>
                     <option>Efectivo</option>
                   </SelectField>
                   <div className="relative">
@@ -340,7 +340,7 @@ export default function CobroIngresoModule() {
                           setClient(event.target.value);
                           setClientOpen(true);
                         }}
-                        className={`${inputClass} pl-9`}
+                        className={`${inputClass} pl-9 ${pendingId ? "bg-slate-100 text-slate-400" : ""}`}
                         placeholder="Buscar cliente..."
                       />
                     </div>
@@ -369,18 +369,24 @@ export default function CobroIngresoModule() {
                       </div>
                     )}
                   </div>
-                  <label className="mt-7 flex items-center gap-2 text-xs font-medium text-slate-600">
+                  <div className="flex items-center gap-3 self-end rounded-xl border border-slate-200/80 bg-slate-50/80 p-3">
                     <input
+                      id="pending-identification"
                       type="checkbox"
                       checked={pendingId}
                       onChange={(event) => {
                         setPendingId(event.target.checked);
                         markDirty();
                       }}
-                      className="size-4 accent-[#2A4B93]"
+                      className="size-4 shrink-0 accent-[#2A4B93]"
                     />
-                    Pendiente de identificación
-                  </label>
+                    <label htmlFor="pending-identification" className="cursor-pointer text-xs font-medium text-slate-700">
+                      <span className="block">Pendiente de identificación</span>
+                      <span className="mt-0.5 block text-[11px] leading-tight text-slate-500">
+                        Activar cuando el pago no pueda asociarse a un cliente en firme.
+                      </span>
+                    </label>
+                  </div>
                 </div>
               </section>
               <section className="mb-6 rounded-3xl border border-slate-200/80 bg-white p-6 shadow-2xs">
