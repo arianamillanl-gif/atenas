@@ -273,6 +273,32 @@ export default function CobroIngresoModule() {
   <span>Ver trazabilidad</span>
                     </button>
                   </div>
+                  <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+                    <p className="text-xs text-slate-500">
+                      Registro de dinero recibido independientemente de su posterior aplicación a CxC.
+                    </p>
+                    <div className="flex shrink-0 items-center gap-3 self-end sm:self-auto">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Fecha Registro:</span>
+                        <div className="flex h-8 items-center gap-1.5 rounded-lg border border-slate-200/80 bg-slate-50 px-2.5 text-xs font-semibold text-slate-600">
+                          <Lock size={12} className="text-slate-400" />
+                          <span>18/10/2026</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Fecha Valor:</span>
+                        <div className="relative h-8">
+                          <input
+                            type="date"
+                            aria-label="Fecha valor banco"
+                            defaultValue="2026-10-18"
+                            className="h-8 w-32 cursor-pointer rounded-lg border border-slate-200 bg-white pl-2.5 pr-7 text-xs font-semibold text-slate-800 focus:border-[#2A4B93] focus:ring-1 focus:ring-[#2A4B93] [&::-webkit-calendar-picker-indicator]:opacity-0"
+                          />
+                          <Calendar size={14} className="pointer-events-none absolute right-2 top-2 text-slate-400" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </section>
@@ -282,37 +308,8 @@ export default function CobroIngresoModule() {
                 event.preventDefault();
                 save();
               }}
-              className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"
+              className="overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-2xs"
             >
-              <section className="border-b border-slate-200/80 px-6 py-6">
-                <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-                  <div>
-                    <h2 className="mb-1 text-sm font-bold text-slate-900">Fechas del ingreso</h2>
-                    <p className="text-xs text-slate-500">Controla la fecha de registro y la fecha valor bancaria.</p>
-                  </div>
-                  <div className="flex shrink-0 flex-wrap items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Fecha Registro:</span>
-                      <div className="flex h-8 items-center gap-1.5 rounded-lg border border-slate-200/80 bg-slate-50 px-2.5 text-xs font-semibold text-slate-600">
-                        <Lock size={12} className="text-slate-400" />
-                        <span>18/10/2026</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Fecha Valor:</span>
-                      <div className="relative h-8">
-                        <input
-                          type="date"
-                          aria-label="Fecha valor banco"
-                          defaultValue="2026-10-18"
-                          className="h-8 w-32 cursor-pointer rounded-lg border border-slate-200 bg-white pl-2.5 pr-7 text-xs font-semibold text-slate-800 focus:border-[#2A4B93] focus:ring-1 focus:ring-[#2A4B93] [&::-webkit-calendar-picker-indicator]:opacity-0"
-                        />
-                        <Calendar size={14} className="pointer-events-none absolute right-2 top-2 text-slate-400" />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
               <section className="border-b border-slate-200/80 px-6 py-6">
                 <div className="mb-5">
                   <h2 className="mb-1 text-sm font-bold text-slate-900">
@@ -586,24 +583,24 @@ export default function CobroIngresoModule() {
                   </div>
                 </div>
               </section>
-              <footer className="w-full bg-slate-50 border-t border-slate-200 px-6 py-4 flex items-center justify-between mt-6">
+              <footer className="flex flex-col gap-3 border-t border-slate-200/80 bg-white px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
                 <button
                   type="button"
                   onClick={cancel}
-                  className="rounded-full bg-white border border-slate-300 text-slate-700 px-6 py-2.5 hover:bg-slate-50"
+                  className="rounded-full border border-slate-200 bg-white px-6 py-2.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
                 >
                   Cancelar
                 </button>
                 <button
                   type="button"
                   onClick={() => setReverseOpen(true)}
-                  className="border border-rose-200 bg-rose-50/50 text-rose-600 rounded-full px-6 py-2.5 hover:bg-rose-100/50"
+                  className="rounded-full border border-rose-200 bg-rose-50 px-5 py-2.5 text-xs font-semibold text-rose-700 hover:bg-rose-100 sm:order-2"
                 >
                   Reversar ingreso
                 </button>
                 <button
                   type="submit"
-                  className="bg-[#2A4B93] text-white rounded-full px-8 py-2.5 font-medium hover:bg-[#1E3A75] shadow-sm"
+                  className="rounded-full bg-[#2A4B93] px-8 py-2.5 text-xs font-semibold text-white shadow-2xs hover:bg-[#1E366B] sm:order-3"
                 >
                   {saved ? "Ingreso registrado" : "Registrar Ingreso"}
                 </button>
