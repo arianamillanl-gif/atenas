@@ -308,8 +308,9 @@ export default function CobroIngresoModule() {
                 event.preventDefault();
                 save();
               }}
+              className="overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-2xs"
             >
-              <section className="mb-6 rounded-3xl border border-slate-200/90 bg-white p-6 shadow-2xs">
+              <section className="border-b border-slate-200/80 px-6 py-6">
                 <div className="mb-5">
                   <h2 className="mb-1 text-sm font-bold text-slate-900">
                     Trazabilidad, Origen y Asociación de Cliente
@@ -414,7 +415,7 @@ export default function CobroIngresoModule() {
                   </div>
                 </div>
               </section>
-              <section className="mb-6 rounded-3xl border border-slate-200/90 bg-white p-6 shadow-2xs">
+              <section className="border-b border-slate-200/80 px-6 py-6">
                 <div className="mb-5">
                   <h2 className="mb-1 text-sm font-bold text-slate-900">
                     Valores Financieros y Monedas Multivariable
@@ -512,7 +513,7 @@ export default function CobroIngresoModule() {
                   </div>
                 </div>
               </section>
-              <section className="mb-6 rounded-3xl border border-slate-200/90 bg-white p-6 shadow-2xs">
+              <section className="border-b border-slate-200/80 px-6 py-6">
                 <div className="mb-5">
                   <h2 className="mb-0.5 text-sm font-bold text-slate-900">
                     Comprobante y Observaciones
@@ -582,7 +583,7 @@ export default function CobroIngresoModule() {
                   </div>
                 </div>
               </section>
-              <footer className="rounded-b-3xl border-t border-slate-200/80 bg-white p-4 flex items-center justify-between">
+              <footer className="flex flex-col gap-3 border-t border-slate-200/80 bg-white px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
                 <button
                   type="button"
                   onClick={cancel}
@@ -590,24 +591,22 @@ export default function CobroIngresoModule() {
                 >
                   Cancelar
                 </button>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setReverseOpen(true)}
-                    className="rounded-full border border-rose-200 bg-rose-50 px-5 py-2.5 text-xs font-semibold text-rose-700 hover:bg-rose-100"
-                  >
-                    Reversar ingreso
-                  </button>
-                  <button
-                    type="submit"
-                    className="rounded-full bg-[#2A4B93] px-8 py-2.5 text-xs font-semibold text-white shadow-2xs hover:bg-[#1E366B]"
-                  >
-                    {saved ? "Ingreso registrado" : "Registrar Ingreso"}
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={() => setReverseOpen(true)}
+                  className="rounded-full border border-rose-200 bg-rose-50 px-5 py-2.5 text-xs font-semibold text-rose-700 hover:bg-rose-100 sm:order-2"
+                >
+                  Reversar ingreso
+                </button>
+                <button
+                  type="submit"
+                  className="rounded-full bg-[#2A4B93] px-8 py-2.5 text-xs font-semibold text-white shadow-2xs hover:bg-[#1E366B] sm:order-3"
+                >
+                  {saved ? "Ingreso registrado" : "Registrar Ingreso"}
+                </button>
               </footer>
             </form>
-            <section className="mb-6 rounded-3xl border border-slate-200/90 bg-white p-6 shadow-2xs">
+            <section className="mt-8 mb-6 rounded-3xl border border-slate-200/90 bg-white p-6 shadow-2xs">
               <div className="mb-5 flex flex-col justify-between gap-4 border-b border-slate-100 pb-4 md:flex-row md:items-center">
                 <div>
                   <div className="flex items-center gap-2">
