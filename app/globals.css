@@ -21,6 +21,8 @@
 
 * { box-sizing: border-box; border-color: var(--border); }
 body { margin: 0; background: var(--background); color: var(--foreground); font-family: var(--font-poppins), Poppins, sans-serif; font-size: 14px; font-weight: 400; }
+.input-class { width: 100%; border: 1px solid #e2e8f0; background: #fff; color: #334155; border-radius: 10px; padding: 10px 14px; font-size: 12px; outline: none; transition: border-color .2s, box-shadow .2s; }
+.input-class:focus { border-color: #2a4b93; box-shadow: 0 0 0 3px rgba(42,75,147,.1); }
 button, input { font: inherit; } button { cursor: pointer; }
 .app-shell { display: flex; min-height: 100vh; background: #f8fafc; }
 .sidebar { width: 250px; flex: 0 0 250px; height: 100vh; position: sticky; top: 0; background: #fff; transition: width .3s ease-in-out, flex-basis .3s ease-in-out; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; justify-content: space-between; min-height: 100vh; overflow: hidden; box-shadow: 6px 0 20px rgba(30,41,59,.03); }
