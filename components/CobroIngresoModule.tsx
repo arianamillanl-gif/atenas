@@ -246,6 +246,61 @@ export default function CobroIngresoModule() {
                 Registrar o revisar el dinero recibido independientemente de su
                 posterior aplicación a CxC.
               </p>
+              <div className="mb-6 overflow-hidden rounded-3xl border border-slate-200/90 bg-white p-5 shadow-2xs">
+                <div className="flex flex-col gap-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#2A4B93] text-xs font-bold text-white shadow-2xs">
+                        CI
+                      </div>
+                      <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Ficha F05</span>
+                      <span className="text-slate-300">•</span>
+                      <h2 className="text-lg font-bold tracking-tight text-slate-900">ING-2026-0048</h2>
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200/80 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-700">
+                        <span className="size-1.5 rounded-full bg-emerald-500" />
+                        Ingreso: Registrado
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200/80 bg-amber-50 px-2.5 py-0.5 text-[11px] font-semibold text-amber-700">
+                        <span className="size-1.5 rounded-full bg-amber-500" />
+                        Aplicación: Pendiente
+                      </span>
+                    </div>
+<button
+  onClick={() => setIsHistoryDrawerOpen(true)}
+  className="h-9 px-4 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 hover:text-[#2A4B93] rounded-full text-xs font-medium flex items-center gap-2 transition-all cursor-pointer shadow-2xs shrink-0"
+>
+  <History className="w-3.5 h-3.5 text-slate-500" />
+  <span>Ver trazabilidad</span>
+                    </button>
+                  </div>
+                  <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+                    <p className="text-xs text-slate-500">
+                      Registro de dinero recibido independientemente de su posterior aplicación a CxC.
+                    </p>
+                    <div className="flex shrink-0 items-center gap-3 self-end sm:self-auto">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Fecha Registro:</span>
+                        <div className="flex h-8 items-center gap-1.5 rounded-lg border border-slate-200/80 bg-slate-50 px-2.5 text-xs font-semibold text-slate-600">
+                          <Lock size={12} className="text-slate-400" />
+                          <span>18/10/2026</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Fecha Valor:</span>
+                        <div className="relative h-8">
+                          <input
+                            type="date"
+                            aria-label="Fecha valor banco"
+                            defaultValue="2026-10-18"
+                            className="h-8 w-32 cursor-pointer rounded-lg border border-slate-200 bg-white pl-2.5 pr-7 text-xs font-semibold text-slate-800 focus:border-[#2A4B93] focus:ring-1 focus:ring-[#2A4B93] [&::-webkit-calendar-picker-indicator]:opacity-0"
+                          />
+                          <Calendar size={14} className="pointer-events-none absolute right-2 top-2 text-slate-400" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </section>
             <form
               onChange={markDirty}
@@ -253,46 +308,9 @@ export default function CobroIngresoModule() {
                 event.preventDefault();
                 save();
               }}
-              className="overflow-hidden rounded-xl border border-slate-200 bg-white p-6 shadow-sm"
+              className="overflow-hidden rounded-3xl border border-slate-200/90 bg-white shadow-2xs"
             >
-              <div className="flex flex-col gap-4">
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
-                  <div className="flex flex-wrap items-center gap-3">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Ficha F05</span>
-                    <span className="text-slate-300">•</span>
-                    <h2 className="text-lg font-bold tracking-tight text-slate-900">ING-2026-0048</h2>
-                    <StatusBadge status={status} />
-                    <StatusBadge status="Pendiente" />
-                  </div>
-                  <button type="button" onClick={() => setIsHistoryDrawerOpen(true)} className="inline-flex h-9 shrink-0 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-xs font-medium text-slate-700 shadow-2xs transition-colors hover:bg-slate-50 hover:text-[#2A4B93]">
-                    <History className="h-3.5 w-3.5 text-slate-500" />
-                    Ver trazabilidad
-                  </button>
-                </div>
-                <section className="border-b border-slate-200/80 pb-6">
-                  <div className="mb-4 flex items-center gap-2">
-                    <Calendar size={15} className="text-[#2A4B93]" />
-                    <h2 className="text-sm font-bold text-slate-900">Fechas</h2>
-                  </div>
-                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                    <div>
-                      <label className={labelClass}>Fecha Registro</label>
-                      <div className="flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-xs font-semibold text-slate-600">
-                        <Lock size={13} className="text-slate-400" />
-                        18/10/2026
-                      </div>
-                    </div>
-                    <div>
-                      <label htmlFor="bank-value-date" className={labelClass}>Fecha Valor Banco</label>
-                      <div className="relative">
-                        <input id="bank-value-date" type="date" defaultValue="2026-10-18" className={`${inputClass} pr-10`} />
-                        <Calendar size={14} className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                      </div>
-                    </div>
-                  </div>
-                </section>
-              </div>
-              <section className="border-b border-slate-200/80 py-6">
+              <section className="border-b border-slate-200/80 px-6 py-6">
                 <div className="mb-5">
                   <h2 className="mb-1 text-sm font-bold text-slate-900">
                     Trazabilidad, Origen y Asociación de Cliente
@@ -565,7 +583,7 @@ export default function CobroIngresoModule() {
                   </div>
                 </div>
               </section>
-              <footer className="-mx-6 -mb-6 mt-6 flex flex-col gap-3 border-t border-slate-200 bg-slate-50 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <footer className="flex flex-col gap-3 border-t border-slate-200/80 bg-white px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
                 <button
                   type="button"
                   onClick={cancel}
