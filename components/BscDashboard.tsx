@@ -108,12 +108,14 @@ export default function BscDashboard() {
         <div>
           <div className="bsc-brand"><div className="bsc-brand-mark">A</div>{sidebarOpen && <div><strong>ATENAS</strong><span>ERP · v2.0</span></div>}<button className="bsc-icon-button sidebar-toggle" onClick={() => setSidebarOpen(!sidebarOpen)} aria-label="Colapsar menú"><Menu /></button></div>
           <div className="bsc-workspace"><div className="bsc-avatar">AT</div>{sidebarOpen && <div><strong>Grupo Atenas</strong><span>Operación global</span></div>}<ChevronDown /></div>
-          <nav className="bsc-nav" aria-label="Navegación global">
-            <p className="bsc-nav-heading">MÓDULOS</p>
-            {[[LayoutDashboard, 'Resumen'], [CircleDollarSign, 'Ventas verificadas'], [Users, 'Clientes'], [BarChart3, 'Reportes'], [Settings2, 'Integraciones'], [ShieldCheck, 'BSC Comisiones']].map(([Icon, label]) => <button key={label as string} className={`bsc-nav-item ${label === 'BSC Comisiones' ? 'active' : ''}`}><Icon />{sidebarOpen && <span>{label}</span>}</button>)}
-          </nav>
-        </div>
-        <div className="bsc-side-footer">{sidebarOpen && <div className="bsc-readonly"><ShieldCheck /><div><strong>Modo consultivo</strong><span>Sin permisos de edición</span></div></div>}<div className="bsc-user"><div className="bsc-avatar user">MG</div>{sidebarOpen && <div><strong>María González</strong><span>Directora General</span></div>}</div></div>
+  <nav className="bsc-nav" aria-label="Navegación global">
+  <p className="bsc-nav-heading">MENÚ PRINCIPAL</p>
+  {[[LayoutDashboard, 'Resumen'], [CircleDollarSign, 'Ventas verificadas'], [Users, 'Clientes'], [BarChart3, 'Reportes']].map(([Icon, label]) => <button key={label as string} className="bsc-nav-item"><Icon />{sidebarOpen && <span>{label}</span>}</button>)}
+  <p className="bsc-nav-heading bsc-nav-heading-secondary">GESTIÓN</p>
+  {[[Settings2, 'Integraciones'], [ShieldCheck, 'BSC Comisiones']].map(([Icon, label]) => <button key={label as string} className={`bsc-nav-item ${label === 'BSC Comisiones' ? 'active' : ''}`}><Icon />{sidebarOpen && <span>{label}</span>}</button>)}
+  </nav>
+  </div>
+  <div className="bsc-side-footer"><div className="bsc-user"><div className="bsc-avatar user">MG</div>{sidebarOpen && <div><strong>María González</strong><span>Directora General</span></div>}<ChevronDown /></div></div>
       </aside>
 
       <main className="bsc-main">
