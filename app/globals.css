@@ -134,3 +134,13 @@ th.col-ref, td.col-ref { min-width: 150px; } th.col-client, td.col-client { min-
 .bsc-filter-card{display:block;overflow:visible}.bsc-filter-grid{display:grid;width:100%;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px 14px}.bsc-filter-actions{display:flex;width:100%;justify-content:flex-end;align-items:center;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid #eef1f5}.bsc-filter-more,.bsc-filter-actions .bsc-filter-clear{margin:0;height:38px}.bsc-view-tabs{display:none}
 @media (max-width: 1200px){.bsc-filter-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width: 520px){.bsc-filter-grid{grid-template-columns:1fr}.bsc-filter-actions{flex-direction:column;align-items:stretch}.bsc-filter-more,.bsc-filter-actions .bsc-filter-clear{width:100%}}
+
+/* Keep the KPI summary compact and scrollbar-free across dashboard widths. */
+.bsc-kpi-grid{display:grid;width:100%;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;overflow:visible}
+.bsc-kpi-card{min-width:0;padding:16px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden}
+.bsc-kpi-card strong{display:block;min-width:0;font-size:24px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bsc-kpi-top{min-width:0}
+.bsc-kpi-top>span{min-width:0;overflow-wrap:anywhere}
+@media (max-width: 1100px){.bsc-kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width: 640px){.bsc-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width: 420px){.bsc-kpi-grid{grid-template-columns:1fr}}
