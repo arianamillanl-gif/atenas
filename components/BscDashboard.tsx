@@ -119,7 +119,7 @@ export default function BscDashboard() {
 
       <main className="bsc-main">
         <header className="bsc-topbar"><div className="bsc-search"><Search /><input placeholder="Buscar en ATENAS" aria-label="Buscar" /><kbd>⌘ K</kbd></div><div className="bsc-top-actions"><button className="bsc-icon-button" aria-label="Notificaciones"><Bell /><i /></button><div className="bsc-profile"><div className="bsc-avatar user">MG</div><div><strong>María González</strong><span>Directora General</span></div><ChevronDown /></div></div></header>
-        <div className="bsc-subnav"><div className="bsc-breadcrumb"><span>BSC</span><ChevronRight /><span>Ejecutivo de Comisiones</span><ChevronRight /><strong>Gerencial de Control de Comisiones</strong></div><div className="bsc-subnav-bottom"><div className="bsc-module-tabs"><button className="active">Gerencial de Control</button><button>Individual de Comisiones</button><button>Operativo de Cierre</button></div></div></div>
+        <div className="bsc-subnav"><div className="bsc-subnav-bottom"><div className="bsc-module-tabs"><button className="active">Gerencial de Control</button><button>Individual de Comisiones</button><button>Operativo de Cierre</button></div></div></div>
 
         <div className="bsc-content">
           <section className="bsc-module-banner"><div><p className="bsc-eyebrow">BSC · COMISIONES</p><h1>Tablero Gerencial de Control de Comisiones</h1><p>REVISIÓN, CONCILIACIÓN Y CIERRE MENSUAL</p></div><div className="bsc-banner-actions"><button className="bsc-banner-export"><Download /> Exportar PDF</button></div></section>
