@@ -141,7 +141,7 @@ function AnalysisView({ search, setSearch, filteredRows }: { search: string; set
       key={idx}
       className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-2 ${
         tab.active
-          ? "bg-[#1e1b4b] text-white shadow-sm"
+          ? "bg-indigo-50 text-indigo-700 shadow-sm"
           : "bg-transparent text-slate-600 hover:text-slate-900"
       }`}
     >
@@ -153,22 +153,22 @@ function AnalysisView({ search, setSearch, filteredRows }: { search: string; set
   ))}
 </div><div className="bsc-table-wrap"><table><thead><tr>{['CLIENTE', 'ÁREA', 'BENEFICIARIO', 'TIPO COMISIÓN', 'MONTO VENTA', 'FACTURA / CXC', 'COBRO', 'REGLA APLICADA'].map((head) => <th key={head}>{head}</th>)}</tr></thead><tbody>{visibleRows.map((row) => <tr key={row[0]}>{row.map((cell, i) => <td key={`${row[0]}-${i}`}>{i === 5 || i === 6 ? (() => { const isPositive = cell === 'Conciliado' || cell === 'Emitida'; const StatusIcon = isPositive ? ShieldCheck : AlertTriangle; return <span className={`bsc-table-status ${isPositive ? 'ok' : 'pending'}`}><StatusIcon className="h-3.5 w-3.5" aria-hidden="true" />{cell}</span> })() : cell}</td>)}</tr>)}</tbody></table></div>{/* Paginador inferior derecho */}
 <div className="flex items-center justify-end gap-1.5 mt-4">
-  <button className="flex size-8 items-center justify-center rounded-full bg-transparent text-xs text-slate-600 transition-colors hover:bg-slate-100" aria-label="Página anterior">
+  <button className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-transparent text-xs font-medium text-slate-600 transition-colors hover:bg-slate-100" aria-label="Página anterior">
     &lt;
   </button>
   {[1, 2, 3].map((page) => (
     <button
       key={page}
-      className={`flex size-8 items-center justify-center rounded-full text-xs font-medium transition-colors ${
+      className={`flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-xs font-medium transition-colors ${
         page === 1
-          ? "bg-[#1e1b4b] text-white shadow-sm"
+          ? "border-[#1e1b4b] bg-[#1e1b4b] text-white shadow-sm"
           : "bg-transparent text-slate-600 hover:bg-slate-100"
       }`}
     >
       {page}
     </button>
   ))}
-  <button className="flex size-8 items-center justify-center rounded-full bg-transparent text-xs text-slate-600 transition-colors hover:bg-slate-100" aria-label="Página siguiente">
+  <button className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-transparent text-xs font-medium text-slate-600 transition-colors hover:bg-slate-100" aria-label="Página siguiente">
     &gt;
   </button>
 </div></section>
