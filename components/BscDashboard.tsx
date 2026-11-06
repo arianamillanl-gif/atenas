@@ -130,7 +130,7 @@ export default function BscDashboard() {
                   type="button"
                   onClick={() => setActiveTab(tab)}
                   aria-current={activeTab === tab ? 'page' : undefined}
-                  style={activeTab === tab ? undefined : { borderBottomColor: 'transparent' }}
+                  style={{ borderBottomColor: activeTab === tab ? '#2563eb' : 'transparent' }}
                   className={`text-sm whitespace-nowrap -mb-px transition-colors ${activeTab === tab ? 'font-semibold text-blue-600 border-b-2 border-blue-600 pb-3' : 'font-medium text-slate-500 hover:text-slate-800 border-b-2 border-transparent pb-3 cursor-pointer'}`}
                 >
                   {tab}
