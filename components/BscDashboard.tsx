@@ -235,7 +235,42 @@ function AnalysisView({ search, setSearch, filteredRows }: { search: string; set
         </ol>
       </div>
     </div>
-    <section className="bsc-card bsc-traceability !rounded-xl !border-slate-200/80 !p-4 !shadow-sm"><div className="bsc-card-heading"><div><h2>Trazabilidad del proceso</h2></div><span className="bsc-muted">Comparativo de registros, alertas y completitud</span></div><div className="bsc-trace-grid">{traceability.map((item) => <article className="bsc-trace-card" key={item.label}><span className="bsc-trace-label">{item.label}</span><div className="bsc-trace-count"><strong>{item.records}</strong><small>registros</small></div><div className="bsc-alert-line"><AlertTriangle aria-hidden="true" /> <span>{item.alerts} alertas</span></div><div className="bsc-complete"><div className="bsc-complete-meta"><span>Completitud</span><strong>{item.complete}%</strong></div><div className="bsc-complete-track" role="progressbar" aria-label={`Completitud de ${item.label}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={item.complete}><i style={{ width: `${item.complete}%` }} /></div></div></article>)}</div></section>
+    <section className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm" aria-labelledby="trace-title">
+      <div className="mb-5 flex flex-wrap items-end justify-between gap-2">
+        <div>
+          <h2 id="trace-title" className="text-base font-semibold text-slate-900">Trazabilidad del proceso</h2>
+          <p className="mt-0.5 text-xs text-slate-500">Comparativo de registros, alertas y completitud</p>
+        </div>
+        <span className="text-[11px] font-medium text-slate-400">{traceability.length} etapas</span>
+      </div>
+      <div className="grid grid-cols-2 gap-y-6 md:grid-cols-3 lg:grid-cols-5 lg:gap-y-0 lg:divide-x lg:divide-slate-100">
+        {traceability.map((item) => {
+          const healthy = item.complete > 90
+          return (
+            <article key={item.label} className="flex min-w-0 flex-col px-4 first:pl-0 lg:last:pr-0">
+              <h3 className="min-h-8 text-xs font-semibold uppercase leading-4 tracking-wider text-slate-500">{item.label}</h3>
+              <div className="mt-3 flex items-baseline gap-1.5">
+                <strong className="text-2xl font-bold leading-none tracking-tight text-slate-900 tabular-nums">{item.records}</strong>
+                <span className="text-xs text-slate-400">registros</span>
+              </div>
+              <span className="mt-3 inline-flex w-max items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-600">
+                <AlertTriangle className="h-3 w-3" aria-hidden="true" />
+                {item.alerts} alertas
+              </span>
+              <div className="mt-4">
+                <div className="mb-1.5 flex items-center justify-between text-[10px] font-medium uppercase tracking-wider text-slate-400">
+                  <span>Completitud</span>
+                  <span className={`text-xs font-semibold tabular-nums tracking-normal ${healthy ? 'text-emerald-600' : 'text-amber-600'}`}>{item.complete}%</span>
+                </div>
+                <div className="h-1 overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-label={`Completitud de ${item.label}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={item.complete}>
+                  <div className={`h-full rounded-full ${healthy ? 'bg-emerald-500' : 'bg-amber-500'}`} style={{ width: `${item.complete}%` }} />
+                </div>
+              </div>
+            </article>
+          )
+        })}
+      </div>
+    </section>
     <section className="bsc-card"><div className="flex flex-col gap-4 border-b border-slate-200/60 pb-4 mb-4 sm:flex-row sm:items-center sm:justify-between"><h2 className="text-base font-bold text-slate-900">Detalle de control de comisiones</h2><div className="flex flex-col gap-3 sm:flex-row sm:items-center"><div className="bsc-table-search max-w-xs"><Search /><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar cliente o beneficiario" /></div><button className="bsc-outline-button"><Download /> Exportar CSV</button></div></div>{/* Filtros de pestañas superiores */}
 	<div className="mb-4 flex items-center gap-2">
   {[
