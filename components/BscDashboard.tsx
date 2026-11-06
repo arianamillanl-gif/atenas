@@ -10,8 +10,6 @@ import {
   ChevronLeft,
   ChevronRight,
   CircleDollarSign,
-  Eye,
-  MoreHorizontal,
   ClipboardCheck,
   Download,
   FileText,
@@ -144,7 +142,7 @@ function AnalysisView({ search, setSearch, filteredRows }: { search: string; set
       className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-2 ${
         tab.active
           ? "bg-[#1e1b4b] text-white shadow-sm"
-          : "bg-transparent text-slate-600 hover:text-slate-900 border border-slate-200/60"
+          : "bg-transparent text-slate-600 hover:text-slate-900"
       }`}
     >
       <span>{tab.name}</span>
@@ -153,24 +151,24 @@ function AnalysisView({ search, setSearch, filteredRows }: { search: string; set
       </span>
     </button>
   ))}
-</div><div className="bsc-table-wrap"><table><thead><tr>{['CLIENTE', 'ÁREA', 'BENEFICIARIO', 'TIPO COMISIÓN', 'MONTO VENTA', 'FACTURA / CXC', 'COBRO', 'REGLA APLICADA', 'ACCIONES'].map((head) => <th key={head}>{head}</th>)}</tr></thead><tbody>{visibleRows.map((row) => <tr key={row[0]}>{row.map((cell, i) => <td key={`${row[0]}-${i}`}>{i === 5 || i === 6 ? (() => { const isPositive = cell === 'Conciliado' || cell === 'Emitida'; const StatusIcon = isPositive ? ShieldCheck : AlertTriangle; return <span className={`bsc-table-status ${isPositive ? 'ok' : 'pending'}`}><StatusIcon className="h-3.5 w-3.5" aria-hidden="true" />{cell}</span> })() : cell}</td>)}<td className="bsc-table-actions-cell"><button type="button" className="bsc-table-action"><Eye aria-hidden="true" /> {row[5] === 'Pendiente' || row[6] === 'Pendiente' ? 'Conciliar' : 'Ver detalle'}</button><button type="button" className="bsc-table-menu" aria-label={`Más acciones para ${row[0]}`}><MoreHorizontal aria-hidden="true" /></button></td></tr>)}</tbody></table></div>{/* Paginador inferior derecho */}
+</div><div className="bsc-table-wrap"><table><thead><tr>{['CLIENTE', 'ÁREA', 'BENEFICIARIO', 'TIPO COMISIÓN', 'MONTO VENTA', 'FACTURA / CXC', 'COBRO', 'REGLA APLICADA'].map((head) => <th key={head}>{head}</th>)}</tr></thead><tbody>{visibleRows.map((row) => <tr key={row[0]}>{row.map((cell, i) => <td key={`${row[0]}-${i}`}>{i === 5 || i === 6 ? (() => { const isPositive = cell === 'Conciliado' || cell === 'Emitida'; const StatusIcon = isPositive ? ShieldCheck : AlertTriangle; return <span className={`bsc-table-status ${isPositive ? 'ok' : 'pending'}`}><StatusIcon className="h-3.5 w-3.5" aria-hidden="true" />{cell}</span> })() : cell}</td>)}</tr>)}</tbody></table></div>{/* Paginador inferior derecho */}
 <div className="flex items-center justify-end gap-1.5 mt-4">
-  <button className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 text-xs">
+  <button className="flex size-8 items-center justify-center rounded-full bg-transparent text-xs text-slate-600 transition-colors hover:bg-slate-100" aria-label="Página anterior">
     &lt;
   </button>
   {[1, 2, 3].map((page) => (
     <button
       key={page}
-      className={`w-8 h-8 rounded-full text-xs font-medium flex items-center justify-center transition-colors ${
+      className={`flex size-8 items-center justify-center rounded-full text-xs font-medium transition-colors ${
         page === 1
           ? "bg-[#1e1b4b] text-white shadow-sm"
-          : "text-slate-600 hover:bg-slate-100 border border-slate-200/60"
+          : "bg-transparent text-slate-600 hover:bg-slate-100"
       }`}
     >
       {page}
     </button>
   ))}
-  <button className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 text-xs">
+  <button className="flex size-8 items-center justify-center rounded-full bg-transparent text-xs text-slate-600 transition-colors hover:bg-slate-100" aria-label="Página siguiente">
     &gt;
   </button>
 </div></section>
