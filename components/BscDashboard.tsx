@@ -20,23 +20,10 @@ import {
   Search,
   Settings2,
   ShieldCheck,
-  SlidersHorizontal,
   Users,
   X,
 } from 'lucide-react'
-import {
-  Bar,
-  BarChart,
-  Cell,
-  LabelList,
-  Legend,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts'
+import AnalyticsCards from './analytics-cards'
 
 const kpis = [
   { label: 'Pendientes de Activación', value: '$439,700', cases: '3 Casos', tone: 'slate', icon: RefreshCw },
@@ -62,27 +49,6 @@ const exceptions = [
   ['Pagos englobados', 'Media', '16 casos', '$21,400', 'medium'],
 ] as const
 
-const beneficiaries = [
-  { name: 'María Fernanda Ruiz', amount: 780400 },
-  { name: 'Carlos Mendoza', amount: 624180 },
-  { name: 'Ana Sofía Torres', amount: 488900 },
-  { name: 'Luis Ramírez', amount: 314650 },
-  { name: 'Equipo gerencial', amount: 223370 },
-]
-const areas = [
-  { name: 'Comercial', amount: 920500 },
-  { name: 'Operaciones', amount: 618200 },
-  { name: 'Marketing', amount: 452180 },
-  { name: 'Finanzas', amount: 298700 },
-  { name: 'Servicio', amount: 141920 },
-]
-const commissionTypes = [
-  { name: 'Renovación', value: 34, color: '#1d4ed8' },
-  { name: 'Venta Nueva', value: 27, color: '#38bdf8' },
-  { name: 'On Hand', value: 18, color: '#f59e0b' },
-  { name: 'Gerencial', value: 13, color: '#8b5cf6' },
-  { name: 'Geomarketing', value: 8, color: '#cbd5e1' },
-]
 const traceability = [
   { label: 'Venta', records: 248, alerts: 12, complete: 95 },
   { label: 'Factura / CxC', records: 235, alerts: 18, complete: 92 },
@@ -97,8 +63,6 @@ const rows = [
   ['Constructora Norte', 'Comercial', 'Luis Ramírez', 'Gerencial', '$94,120', 'Pendiente', 'Pendiente', 'AT-GER-09'],
   ['Logística Integral', 'Marketing', 'María F. Ruiz', 'Geomarketing', '$72,900', 'Emitida', 'Conciliado', 'AT-GEO-07'],
 ]
-
-function money(value: number) { return `$${value.toLocaleString('en-US')}` }
 
 export default function BscDashboard() {
   const [view, setView] = useState<'control' | 'analysis'>('control')
@@ -161,10 +125,9 @@ function ControlView() {
 
 function AnalysisView({ search, setSearch, filteredRows }: { search: string; setSearch: (value: string) => void; filteredRows: string[][] }) {
   return <>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mb-6"><ChartCard title="Comisiones por Beneficiario"><ResponsiveContainer width="100%" height={235}><BarChart data={beneficiaries} layout="vertical" margin={{ left: 4, right: 54, top: 5, bottom: 5 }}><XAxis type="number" hide /><YAxis type="category" dataKey="name" width={125} tickLine={false} axisLine={false} tick={{ fill: '#334155', fontSize: 11, fontWeight: 500 }} /><Tooltip formatter={(v) => money(Number(v))} cursor={{ fill: '#f8fafc' }} /><Bar dataKey="amount" fill="#1d4ed8" radius={[0, 5, 5, 0]} barSize={19}><LabelList dataKey="amount" position="right" formatter={(value) => money(Number(value))} style={{ fill: '#0f172a', fontSize: 11, fontWeight: 700 }} /></Bar></BarChart></ResponsiveContainer></ChartCard><ChartCard title="Comisiones por tipo de comisión"><div className="w-full flex items-center justify-between gap-2 p-2"><div className="relative h-[205px] w-[52%] min-w-0"><ResponsiveContainer width="100%" height="100%"><PieChart><Pie data={commissionTypes} dataKey="value" nameKey="name" innerRadius={49} outerRadius={72} paddingAngle={3}>{commissionTypes.map((item) => <Cell key={item.name} fill={item.color} />)}</Pie><text x="50%" y="47%" textAnchor="middle" dominantBaseline="middle" className="fill-slate-900 text-sm font-bold">$1,144.9K</text><text x="50%" y="58%" textAnchor="middle" dominantBaseline="middle" className="fill-slate-500 text-[10px]">Total</text><Tooltip formatter={(v) => `${v}%`} /></PieChart></ResponsiveContainer></div><div className="flex w-[48%] flex-col gap-2.5"><div className="sr-only">Distribución por tipo de comisión</div>{commissionTypes.map((item) => <div key={item.name} className="flex items-center gap-2"><i className="h-2 w-2 shrink-0 rounded-full" style={{ background: item.color }} /><span className="min-w-0 flex-1 truncate text-xs font-medium text-slate-600">{item.name}</span><strong className="font-mono text-xs font-semibold text-slate-900">{item.value}%</strong></div>)}</div></div></ChartCard><ChartCard title="Comisiones por área"><ResponsiveContainer width="100%" height={235}><BarChart data={areas} layout="vertical" margin={{ left: 4, right: 54, top: 5, bottom: 5 }}><XAxis type="number" hide /><YAxis type="category" dataKey="name" width={85} tickLine={false} axisLine={false} tick={{ fill: '#334155', fontSize: 11, fontWeight: 500 }} /><Tooltip formatter={(v) => money(Number(v))} cursor={{ fill: '#f8fafc' }} /><Bar dataKey="amount" fill="#38bdf8" radius={[0, 5, 5, 0]} barSize={19}><LabelList dataKey="amount" position="right" formatter={(value) => money(Number(value))} style={{ fill: '#0f172a', fontSize: 11, fontWeight: 700 }} /></Bar></BarChart></ResponsiveContainer></ChartCard></div>
+    <AnalyticsCards />
     <section className="bsc-card bsc-traceability"><div className="bsc-card-heading"><div><h2>Trazabilidad del proceso</h2></div><span className="bsc-muted">Comparativo de registros, alertas y completitud</span></div><div className="bsc-trace-grid">{traceability.map((item) => <div className="bsc-trace-card" key={item.label}><span>{item.label}</span><strong>{item.records}</strong><small>registros</small><div className="bsc-alert-line"><AlertTriangle /> {item.alerts} alertas</div><div className="bsc-complete"><i style={{ width: `${item.complete}%` }} /><strong>{item.complete}%</strong></div><small>completitud</small></div>)}</div></section>
     <section className="bsc-card"><div className="bsc-card-heading"><div><h2>Detalle de control de comisiones</h2></div><div className="bsc-table-actions"><div className="bsc-table-search"><Search /><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar cliente o beneficiario" /></div><button className="bsc-outline-button"><Download /> Exportar CSV</button></div></div><div className="bsc-table-wrap"><table><thead><tr>{['CLIENTE', 'ÁREA', 'BENEFICIARIO', 'TIPO COMISIÓN', 'MONTO VENTA', 'FACTURA / CXC', 'COBRO', 'REGLA APLICADA'].map((head) => <th key={head}>{head}</th>)}</tr></thead><tbody>{filteredRows.map((row) => <tr key={row[0]}>{row.map((cell, i) => <td key={`${row[0]}-${i}`}>{i === 5 || i === 6 ? <span className={`bsc-table-status ${cell === 'Conciliado' || cell === 'Emitida' ? 'ok' : 'pending'}`}>{cell}</span> : cell}</td>)}</tr>)}</tbody></table></div><div className="bsc-pagination"><span>Mostrando {filteredRows.length} de 968 registros</span><div><button aria-label="Anterior"><ChevronLeft /></button><button className="current">1</button><button>2</button><button>3</button><button aria-label="Siguiente"><ChevronRight /></button></div></div></section>
   </>
 }
 
-function ChartCard({ title, children }: { title: string; children: React.ReactNode }) { return <section className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between"><div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4"><h3 className="text-sm font-bold text-slate-900">{title}</h3><button className="bsc-icon-button text-slate-400 hover:text-slate-600 cursor-pointer" aria-label="Más opciones"><SlidersHorizontal className="w-4 h-4" /></button></div>{children}</section> }
