@@ -19,10 +19,11 @@ import {
   Search,
   Settings2,
   ShieldCheck,
+  TrendingUp,
   Users,
   X,
 } from 'lucide-react'
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import AnalyticsCards from './analytics-cards'
 
 const kpis = [
@@ -58,6 +59,9 @@ const monthlyEvolution = [
   { month: 'Jun', value: 2260000 },
   { month: 'Jul', value: 2431500 },
 ]
+const latestEvolution = monthlyEvolution[monthlyEvolution.length - 1]
+const previousEvolution = monthlyEvolution[monthlyEvolution.length - 2]
+const monthOverMonth = (((latestEvolution.value - previousEvolution.value) / previousEvolution.value) * 100).toFixed(1)
 
 const closingImpact = [
   { name: 'Grupo Andino S.A.', type: 'Cliente', value: 284500 },
@@ -145,23 +149,37 @@ function AnalysisView({ search, setSearch, filteredRows }: { search: string; set
     <AnalyticsCards />
     {/* Sección Media: Evolución y Ranking */}
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
-      <div className="lg:col-span-8 bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm">
-        <div className="mb-2 flex items-start justify-between gap-3">
+      <div className="lg:col-span-8 flex flex-col bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm">
+        <div className="mb-3 flex items-end justify-between gap-3 border-b border-slate-100 pb-2.5">
           <div className="min-w-0">
-            <h2 className="text-xs font-bold leading-tight text-slate-900">Evolución mensual</h2>
-            <p className="mt-0.5 text-[10px] leading-tight text-slate-500">Histórico de cierre · ID S4-G05</p>
+            <h2 className="text-sm font-bold leading-tight text-slate-900">Evolución mensual</h2>
+            <p className="mt-0.5 text-[11px] leading-tight text-slate-500">Histórico de cierre por comisiones · Ene – Jul 2026</p>
           </div>
-          <span className="shrink-0 rounded-md bg-slate-50 px-2 py-0.5 text-[10px] font-medium leading-tight text-slate-500">Julio 2026</span>
+          <div className="flex shrink-0 items-center gap-2.5">
+            <div className="text-right">
+              <p className="text-[10px] font-medium uppercase leading-tight tracking-wide text-slate-400">Julio 2026</p>
+              <p className="text-sm font-semibold leading-tight tabular-nums text-slate-900">${latestEvolution.value.toLocaleString('en-US')}</p>
+            </div>
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold tabular-nums text-emerald-700 ring-1 ring-inset ring-emerald-600/15" title="Variación vs. mes anterior">
+              <TrendingUp className="h-3 w-3" aria-hidden="true" />+{monthOverMonth}%
+            </span>
+          </div>
         </div>
-        <div className="h-[190px] w-full" aria-label="Evolución mensual del cierre por comisiones">
+        <div className="h-[210px] w-full lg:h-auto lg:min-h-[210px] lg:flex-1" role="img" aria-label={`Evolución mensual del cierre por comisiones, de $${monthlyEvolution[0].value.toLocaleString('en-US')} en enero a $${latestEvolution.value.toLocaleString('en-US')} en julio`}>
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={monthlyEvolution} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-              <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 11 }} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10 }} tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`} width={42} />
-              <Tooltip formatter={(value) => [`$${Number(value).toLocaleString('en-US')}`, 'Cierre']} labelFormatter={(label) => `${label} 2026`} contentStyle={{ borderRadius: 10, border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(15, 23, 42, 0.08)', fontSize: 12 }} />
-              <Line type="monotone" dataKey="value" stroke="#1d4ed8" strokeWidth={2.5} dot={{ r: 3, fill: '#1d4ed8', strokeWidth: 0 }} activeDot={{ r: 5 }} />
-            </LineChart>
+            <AreaChart data={monthlyEvolution} margin={{ top: 6, right: 8, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="evolutionFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#1d4ed8" stopOpacity={0.14} />
+                  <stop offset="100%" stopColor="#1d4ed8" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid stroke="#f1f5f9" vertical={false} />
+              <XAxis dataKey="month" axisLine={false} tickLine={false} tickMargin={8} tick={{ fill: '#94a3b8', fontSize: 11 }} />
+              <YAxis axisLine={false} tickLine={false} tickMargin={6} tickCount={5} domain={[1500000, 2600000]} tick={{ fill: '#94a3b8', fontSize: 10 }} tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`} width={44} />
+              <Tooltip cursor={{ stroke: '#cbd5e1', strokeDasharray: '3 3' }} formatter={(value) => [`$${Number(value).toLocaleString('en-US')}`, 'Cierre']} labelFormatter={(label) => `${label} 2026`} contentStyle={{ borderRadius: 10, border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(15, 23, 42, 0.08)', fontSize: 12 }} />
+              <Area type="monotone" dataKey="value" stroke="#1d4ed8" strokeWidth={2} fill="url(#evolutionFill)" dot={{ r: 2.5, fill: '#fff', stroke: '#1d4ed8', strokeWidth: 1.5 }} activeDot={{ r: 4.5, fill: '#1d4ed8', stroke: '#fff', strokeWidth: 2 }} />
+            </AreaChart>
           </ResponsiveContainer>
         </div>
       </div>
