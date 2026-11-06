@@ -10,6 +10,8 @@ import {
   ChevronLeft,
   ChevronRight,
   CircleDollarSign,
+  Eye,
+  MoreHorizontal,
   ClipboardCheck,
   Download,
   FileText,
@@ -124,10 +126,23 @@ function ControlView() {
 }
 
 function AnalysisView({ search, setSearch, filteredRows }: { search: string; setSearch: (value: string) => void; filteredRows: string[][] }) {
+  const [statusFilter, setStatusFilter] = useState('Todos')
+  const filterOptions = [
+    { label: 'Todos', count: filteredRows.length },
+    { label: 'Pendientes', count: filteredRows.filter((row) => row[5] === 'Pendiente' || row[6] === 'Pendiente').length },
+    { label: 'Conciliados', count: filteredRows.filter((row) => row[6] === 'Conciliado').length },
+    { label: 'Con excepciones', count: filteredRows.filter((row) => row[5] === 'Pendiente' || row[6] === 'Parcial').length },
+  ]
+  const visibleRows = statusFilter === 'Todos' ? filteredRows : filteredRows.filter((row) => {
+    if (statusFilter === 'Pendientes') return row[5] === 'Pendiente' || row[6] === 'Pendiente'
+    if (statusFilter === 'Conciliados') return row[6] === 'Conciliado'
+    return row[5] === 'Pendiente' || row[6] === 'Parcial'
+  })
+
   return <>
     <AnalyticsCards />
     <section className="bsc-card bsc-traceability"><div className="bsc-card-heading"><div><h2>Trazabilidad del proceso</h2></div><span className="bsc-muted">Comparativo de registros, alertas y completitud</span></div><div className="bsc-trace-grid">{traceability.map((item) => <article className="bsc-trace-card" key={item.label}><span className="bsc-trace-label">{item.label}</span><div className="bsc-trace-count"><strong>{item.records}</strong><small>registros</small></div><div className="bsc-alert-line"><AlertTriangle aria-hidden="true" /> <span>{item.alerts} alertas</span></div><div className="bsc-complete"><div className="bsc-complete-meta"><span>Completitud</span><strong>{item.complete}%</strong></div><div className="bsc-complete-track" role="progressbar" aria-label={`Completitud de ${item.label}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={item.complete}><i style={{ width: `${item.complete}%` }} /></div></div></article>)}</div></section>
-    <section className="bsc-card"><div className="bsc-card-heading"><div><h2>Detalle de control de comisiones</h2></div><div className="bsc-table-actions"><div className="bsc-table-search"><Search /><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar cliente o beneficiario" /></div><button className="bsc-outline-button"><Download /> Exportar CSV</button></div></div><div className="bsc-table-wrap"><table><thead><tr>{['CLIENTE', 'ÁREA', 'BENEFICIARIO', 'TIPO COMISIÓN', 'MONTO VENTA', 'FACTURA / CXC', 'COBRO', 'REGLA APLICADA'].map((head) => <th key={head}>{head}</th>)}</tr></thead><tbody>{filteredRows.map((row) => <tr key={row[0]}>{row.map((cell, i) => <td key={`${row[0]}-${i}`}>{i === 5 || i === 6 ? <span className={`bsc-table-status ${cell === 'Conciliado' || cell === 'Emitida' ? 'ok' : 'pending'}`}>{cell}</span> : cell}</td>)}</tr>)}</tbody></table></div><div className="bsc-pagination"><span>Mostrando {filteredRows.length} de 968 registros</span><div><button aria-label="Anterior"><ChevronLeft /></button><button className="current">1</button><button>2</button><button>3</button><button aria-label="Siguiente"><ChevronRight /></button></div></div></section>
+    <section className="bsc-card"><div className="bsc-card-heading"><div><h2>Detalle de control de comisiones</h2></div><div className="bsc-table-actions"><div className="bsc-table-search"><Search /><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar cliente o beneficiario" /></div><button className="bsc-outline-button"><Download /> Exportar CSV</button></div></div><div className="bsc-table-filters" role="tablist" aria-label="Filtros de estado">{filterOptions.map((option) => <button key={option.label} type="button" role="tab" aria-selected={statusFilter === option.label} className={statusFilter === option.label ? 'is-active' : ''} onClick={() => setStatusFilter(option.label)}>{option.label}<span>{option.count}</span></button>)}</div><div className="bsc-table-wrap"><table><thead><tr>{['CLIENTE', 'ÁREA', 'BENEFICIARIO', 'TIPO COMISIÓN', 'MONTO VENTA', 'FACTURA / CXC', 'COBRO', 'REGLA APLICADA', 'ACCIONES'].map((head) => <th key={head}>{head}</th>)}</tr></thead><tbody>{visibleRows.map((row) => <tr key={row[0]}>{row.map((cell, i) => <td key={`${row[0]}-${i}`}>{i === 5 || i === 6 ? <span className={`bsc-table-status ${cell === 'Conciliado' || cell === 'Emitida' ? 'ok' : 'pending'}`}>{cell}</span> : cell}</td>)}<td className="bsc-table-actions-cell"><button type="button" className="bsc-table-action"><Eye aria-hidden="true" /> {row[5] === 'Pendiente' || row[6] === 'Pendiente' ? 'Conciliar' : 'Ver detalle'}</button><button type="button" className="bsc-table-menu" aria-label={`Más acciones para ${row[0]}`}><MoreHorizontal aria-hidden="true" /></button></td></tr>)}</tbody></table></div><div className="bsc-pagination"><span>Mostrando {visibleRows.length} de 968 registros</span><div><button aria-label="Anterior"><ChevronLeft /></button><button className="current">1</button><button>2</button><button>3</button><button aria-label="Siguiente"><ChevronRight /></button></div></div></section>
   </>
 }
 
