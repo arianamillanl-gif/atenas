@@ -19,10 +19,11 @@ import {
   Search,
   Settings2,
   ShieldCheck,
+  TrendingUp,
   Users,
   X,
 } from 'lucide-react'
-import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import AnalyticsCards from './analytics-cards'
 
 const kpis = [
@@ -58,6 +59,9 @@ const monthlyEvolution = [
   { month: 'Jun', value: 2260000 },
   { month: 'Jul', value: 2431500 },
 ]
+const latestEvolution = monthlyEvolution[monthlyEvolution.length - 1]
+const previousEvolution = monthlyEvolution[monthlyEvolution.length - 2]
+const monthOverMonth = (((latestEvolution.value - previousEvolution.value) / previousEvolution.value) * 100).toFixed(1)
 
 const closingImpact = [
   { name: 'Grupo Andino S.A.', type: 'Cliente', value: 284500 },
@@ -82,7 +86,17 @@ const rows = [
   ['Logística Integral', 'Marketing', 'María F. Ruiz', 'Geomarketing', '$72,900', 'Emitida', 'Conciliado', 'AT-GEO-07'],
 ]
 
+const dashboardTabs = [
+  'Ejecutivo de Comisiones',
+  'Gerencial de Control de Comisiones',
+  'Individual de Comisiones',
+  'Operativo de Cierre y Aprobación',
+] as const
+
+type DashboardTab = (typeof dashboardTabs)[number]
+
 export default function BscDashboard() {
+  const [activeTab, setActiveTab] = useState<DashboardTab>('Gerencial de Control de Comisiones')
   const [view, setView] = useState<'control' | 'analysis'>('control')
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [search, setSearch] = useState('')
@@ -108,10 +122,27 @@ export default function BscDashboard() {
 
       <main className="bsc-main">
         <header className="bsc-topbar"><div className="bsc-search"><Search /><input placeholder="Buscar en ATENAS" aria-label="Buscar" /><kbd>⌘ K</kbd></div><div className="bsc-top-actions"><button className="bsc-icon-button" aria-label="Notificaciones"><Bell /><i /></button><div className="bsc-profile"><div className="bsc-avatar user">MG</div><div><strong>María González</strong><span>Directora General</span></div><ChevronDown /></div></div></header>
+        <nav className="border-b border-slate-200/80 bg-white px-8 pt-4 pb-0 mb-6" aria-label="Tableros de comisiones">
+          <ul className="-mb-px flex w-full items-end gap-8 overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {dashboardTabs.map((tab) => (
+              <li key={tab} className="shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab(tab)}
+                  aria-current={activeTab === tab ? 'page' : undefined}
+                  style={{ borderBottomColor: activeTab === tab ? '#2563eb' : 'transparent' }}
+                  className={`block text-sm whitespace-nowrap transition-colors ${activeTab === tab ? 'font-semibold text-blue-600 border-b-2 border-blue-600 pb-3' : 'font-medium text-slate-500 hover:text-slate-800 border-b-2 border-transparent pb-3 cursor-pointer'}`}
+                >
+                  {tab}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </nav>
                 <div className="bsc-content">
-          <section className="bsc-module-banner mt-6 mb-4 min-h-0 py-3 px-5"><div><p className="bsc-eyebrow text-[10px] uppercase font-bold tracking-wider text-indigo-300">BSC · COMISIONES</p><h1 className="text-base font-bold tracking-tight text-white">Tablero Gerencial de Control de Comisiones</h1><p className="text-[11px] text-indigo-200 mt-0.5">REVISIÓN, CONCILIACIÓN Y CIERRE MENSUAL</p></div><div className="bsc-banner-actions"><button className="inline-flex items-center gap-1.5 rounded-lg border border-white/30 bg-white/10 px-3 py-1 text-xs font-medium text-white shadow-sm transition-all hover:bg-white/20"><Download aria-hidden="true" /> Exportar PDF</button></div></section>
+          <section className="bsc-module-banner bg-[#1e1b4b] rounded-2xl p-6 shadow-sm mb-4"><div><p className="bsc-eyebrow text-[10px] uppercase font-bold tracking-wider text-indigo-300">BSC · COMISIONES</p><h1 className="text-base font-bold tracking-tight text-white">Tablero Gerencial de Control de Comisiones</h1><p className="text-[11px] text-indigo-200 mt-0.5">REVISIÓN, CONCILIACIÓN Y CIERRE MENSUAL</p></div><div className="bsc-banner-actions"><button className="inline-flex items-center gap-1.5 rounded-lg border border-white/30 bg-white/10 px-3 py-1 text-xs font-medium text-white shadow-sm transition-all hover:bg-white/20"><Download aria-hidden="true" /> Exportar PDF</button></div></section>
 
-          <section className="bsc-filter-bar bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm mb-6" aria-label="Filtros de consulta"><div className="bsc-filter-controls gap-3">{([['period', 'Período de cierre'], ['area', 'Área'], ['line', 'Línea de negocio'], ['beneficiary', 'Beneficiario'], ['type', 'Tipo de comisión'], ['status', 'Estado de comisión']] as const).map(([key, label]) => <label key={key}><span>{label}</span><div className="bsc-select"><select value={filters[key]} onChange={(e) => setFilters({ ...filters, [key]: e.target.value })}><option>{filters[key]}</option><option>Todos</option><option>Todas</option><option>Julio 2026</option><option>Junio 2026</option></select><ChevronDown aria-hidden="true" /></div></label>)}<button type="button" onClick={clearFilters} className="bsc-filter-clear"><X aria-hidden="true" /><span>Limpiar</span></button></div></section>
+          <section className="bsc-filter-bar bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm mb-6" aria-label="Filtros de consulta"><div className="bsc-filter-controls gap-3">{([['period', 'Período de cierre'], ['area', 'Área'], ['line', 'Línea de negocio'], ['beneficiary', 'Beneficiario'], ['type', 'Tipo de comisión'], ['status', 'Estado de comisión']] as const).map(([key, label]) => <label key={key}><span>{label}</span><div className="bsc-select"><select value={filters[key]} onChange={(e) => setFilters({ ...filters, [key]: e.target.value })}><option>{filters[key]}</option><option>Todos</option><option>Todas</option><option>Julio 2026</option><option>Junio 2026</option></select><ChevronDown aria-hidden="true" /></div></label>)}<button type="button" onClick={clearFilters} className="bsc-filter-clear"><X aria-hidden="true" /><span>Limpiar</span></button></div></section>
           <nav className="mb-6 flex items-center gap-1 border-b border-slate-200 px-1" aria-label="Vista del tablero"><button type="button" onClick={() => setView('control')} className={`relative px-4 py-3 text-sm transition-colors ${view === 'control' ? 'font-semibold text-blue-600 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-blue-600' : 'font-medium text-slate-500 hover:text-slate-800'}`}>Control General del Cierre</button><button type="button" onClick={() => setView('analysis')} className={`relative px-4 py-3 text-sm transition-colors ${view === 'analysis' ? 'font-semibold text-blue-600 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-blue-600' : 'font-medium text-slate-500 hover:text-slate-800'}`}>Análisis y Trazabilidad</button></nav>
           {view === 'control' ? <ControlView /> : <AnalysisView search={search} setSearch={setSearch} filteredRows={filteredRows} />}
         </div>
@@ -143,28 +174,103 @@ function AnalysisView({ search, setSearch, filteredRows }: { search: string; set
 
   return <>
     <AnalyticsCards />
-<section className="mb-5 grid w-full grid-cols-1 gap-4 lg:grid-cols-12">
-  <article className="bsc-card min-w-0 lg:col-span-7">
-
-        <div className="bsc-card-heading"><div><h2 className="!text-xs !font-bold">Evolución mensual</h2><span className="bsc-muted !text-[10px] !text-slate-500">Histórico de cierre · ID S4-G05</span></div><span className="bsc-muted !text-[10px] !text-slate-500">Julio 2026</span></div>
-        <div className="h-40 w-full pt-1" aria-label="Evolución mensual del cierre por comisiones">
+    {/* Sección Media: Evolución y Ranking */}
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+      <div className="lg:col-span-8 flex flex-col bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm">
+        <div className="mb-3 flex items-end justify-between gap-3 border-b border-slate-100 pb-2.5">
+          <div className="min-w-0">
+            <h2 className="text-sm font-bold leading-tight text-slate-900">Evolución mensual</h2>
+            <p className="mt-0.5 text-[11px] leading-tight text-slate-500">Histórico de cierre por comisiones · Ene – Jul 2026</p>
+          </div>
+          <div className="flex shrink-0 items-center gap-2.5">
+            <div className="text-right">
+              <p className="text-[10px] font-medium uppercase leading-tight tracking-wide text-slate-400">Julio 2026</p>
+              <p className="text-sm font-semibold leading-tight tabular-nums text-slate-900">${latestEvolution.value.toLocaleString('en-US')}</p>
+            </div>
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold tabular-nums text-emerald-700 ring-1 ring-inset ring-emerald-600/15" title="Variación vs. mes anterior">
+              <TrendingUp className="h-3 w-3" aria-hidden="true" />+{monthOverMonth}%
+            </span>
+          </div>
+        </div>
+        <div className="h-[210px] w-full lg:h-auto lg:min-h-[210px] lg:flex-1" role="img" aria-label={`Evolución mensual del cierre por comisiones, de $${monthlyEvolution[0].value.toLocaleString('en-US')} en enero a $${latestEvolution.value.toLocaleString('en-US')} en julio`}>
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={monthlyEvolution} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-              <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 11 }} />
-              <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10 }} tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`} width={42} />
-              <Tooltip formatter={(value) => [`$${Number(value).toLocaleString('en-US')}`, 'Cierre']} labelFormatter={(label) => `${label} 2026`} contentStyle={{ borderRadius: 10, border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(15, 23, 42, 0.08)', fontSize: 12 }} />
-              <Line type="monotone" dataKey="value" stroke="#1d4ed8" strokeWidth={2.5} dot={{ r: 3, fill: '#1d4ed8', strokeWidth: 0 }} activeDot={{ r: 5 }} />
-            </LineChart>
+            <AreaChart data={monthlyEvolution} margin={{ top: 6, right: 8, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="evolutionFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#1d4ed8" stopOpacity={0.14} />
+                  <stop offset="100%" stopColor="#1d4ed8" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid stroke="#f1f5f9" vertical={false} />
+              <XAxis dataKey="month" axisLine={false} tickLine={false} tickMargin={8} tick={{ fill: '#94a3b8', fontSize: 11 }} />
+              <YAxis axisLine={false} tickLine={false} tickMargin={6} tickCount={5} domain={[1500000, 2600000]} tick={{ fill: '#94a3b8', fontSize: 10 }} tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`} width={44} />
+              <Tooltip cursor={{ stroke: '#cbd5e1', strokeDasharray: '3 3' }} formatter={(value) => [`$${Number(value).toLocaleString('en-US')}`, 'Cierre']} labelFormatter={(label) => `${label} 2026`} contentStyle={{ borderRadius: 10, border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(15, 23, 42, 0.08)', fontSize: 12 }} />
+              <Area type="monotone" dataKey="value" stroke="#1d4ed8" strokeWidth={2} fill="url(#evolutionFill)" dot={{ r: 2.5, fill: '#fff', stroke: '#1d4ed8', strokeWidth: 1.5 }} activeDot={{ r: 4.5, fill: '#1d4ed8', stroke: '#fff', strokeWidth: 2 }} />
+            </AreaChart>
           </ResponsiveContainer>
         </div>
-      </article>
-      <article className="bsc-card min-w-0 !p-3 lg:col-span-5">
-        <div className="bsc-card-heading !mb-2"><div><h2 className="!text-xs !font-bold">Cliente o Servicio que inciden en el Cierre por Comisiones</h2><span className="bsc-muted !text-[10px] !text-slate-500">Ranking de impacto en el periodo</span></div></div>
-        <div className="overflow-x-auto pt-0.5"><table className="w-full text-left text-[11px]"><thead><tr className="border-b border-slate-100 text-[10px] uppercase tracking-wider text-slate-500"><th className="py-1.5 font-semibold">Cuenta / servicio</th><th className="py-1.5 font-semibold">Tipo</th><th className="py-1.5 text-right font-semibold">Impacto</th></tr></thead><tbody>{closingImpact.map((item) => <tr key={item.name} className="border-b border-slate-50 last:border-0"><td className="py-1.5 font-medium text-slate-700">{item.name}</td><td className="py-1.5 font-medium text-slate-500">{item.type}</td><td className="py-1.5 text-right font-bold tabular-nums text-slate-900">${item.value.toLocaleString('en-US')}</td></tr>)}</tbody></table></div>
-      </article>
+      </div>
+      <div className="lg:col-span-4 min-w-0 bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm">
+        <div className="mb-3 flex items-end justify-between gap-2 border-b border-slate-100 pb-2.5">
+          <div className="min-w-0">
+            <h2 className="text-sm font-bold leading-tight text-slate-900">Impacto en Cierre de Comisiones</h2>
+            <p className="mt-0.5 text-[11px] leading-tight text-slate-500">Ranking de incidencia en el período</p>
+          </div>
+          <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide text-slate-400">Impacto</span>
+        </div>
+        <ol aria-label="Ranking de clientes o servicios por impacto" className="flex flex-col">
+          {closingImpact.map((item, index) => {
+            const isClient = item.type.toLowerCase().startsWith('cliente')
+            return (
+              <li key={item.name} className="flex items-center gap-3 rounded-lg border-b border-slate-100 px-1.5 py-2 transition-colors last:border-0 hover:bg-slate-50">
+                <span aria-hidden="true" className="w-4 shrink-0 text-[11px] font-semibold tabular-nums text-slate-400">{index + 1}</span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold leading-tight text-slate-900" title={item.name}>{item.name}</p>
+                  <span className={`mt-1 inline-flex items-center rounded-full px-1.5 py-px text-[10px] font-medium leading-4 ring-1 ring-inset ${isClient ? 'bg-blue-50 text-blue-700 ring-blue-600/15' : 'bg-emerald-50 text-emerald-700 ring-emerald-600/15'}`}>{item.type}</span>
+                </div>
+                <span className="shrink-0 whitespace-nowrap text-right text-sm font-semibold tabular-nums text-slate-900">${item.value.toLocaleString('en-US')}</span>
+              </li>
+            )
+          })}
+        </ol>
+      </div>
+    </div>
+    <section className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm" aria-labelledby="trace-title">
+      <div className="mb-5 flex flex-wrap items-end justify-between gap-2">
+        <div>
+          <h2 id="trace-title" className="text-base font-semibold text-slate-900">Trazabilidad del proceso</h2>
+          <p className="mt-0.5 text-xs text-slate-500">Comparativo de registros, alertas y completitud</p>
+        </div>
+        <span className="text-[11px] font-medium text-slate-400">{traceability.length} etapas</span>
+      </div>
+      <div className="grid grid-cols-2 gap-y-6 md:grid-cols-3 lg:grid-cols-5 lg:gap-y-0 lg:divide-x lg:divide-slate-100">
+        {traceability.map((item) => {
+          const healthy = item.complete > 90
+          return (
+            <article key={item.label} className="flex min-w-0 flex-col px-4 first:pl-0 lg:last:pr-0">
+              <h3 className="min-h-8 text-xs font-semibold uppercase leading-4 tracking-wider text-slate-500">{item.label}</h3>
+              <div className="mt-3 flex items-baseline gap-1.5">
+                <strong className="text-2xl font-bold leading-none tracking-tight text-slate-900 tabular-nums">{item.records}</strong>
+                <span className="text-xs text-slate-400">registros</span>
+              </div>
+              <span className="mt-3 inline-flex w-max items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-600">
+                <AlertTriangle className="h-3 w-3" aria-hidden="true" />
+                {item.alerts} alertas
+              </span>
+              <div className="mt-4">
+                <div className="mb-1.5 flex items-center justify-between text-[10px] font-medium uppercase tracking-wider text-slate-400">
+                  <span>Completitud</span>
+                  <span className={`text-xs font-semibold tabular-nums tracking-normal ${healthy ? 'text-emerald-600' : 'text-amber-600'}`}>{item.complete}%</span>
+                </div>
+                <div className="h-1 overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-label={`Completitud de ${item.label}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={item.complete}>
+                  <div className={`h-full rounded-full ${healthy ? 'bg-emerald-500' : 'bg-amber-500'}`} style={{ width: `${item.complete}%` }} />
+                </div>
+              </div>
+            </article>
+          )
+        })}
+      </div>
     </section>
-    <section className="bsc-card bsc-traceability !rounded-xl !border-slate-200/80 !p-4 !shadow-sm"><div className="bsc-card-heading"><div><h2>Trazabilidad del proceso</h2></div><span className="bsc-muted">Comparativo de registros, alertas y completitud</span></div><div className="bsc-trace-grid">{traceability.map((item) => <article className="bsc-trace-card" key={item.label}><span className="bsc-trace-label">{item.label}</span><div className="bsc-trace-count"><strong>{item.records}</strong><small>registros</small></div><div className="bsc-alert-line"><AlertTriangle aria-hidden="true" /> <span>{item.alerts} alertas</span></div><div className="bsc-complete"><div className="bsc-complete-meta"><span>Completitud</span><strong>{item.complete}%</strong></div><div className="bsc-complete-track" role="progressbar" aria-label={`Completitud de ${item.label}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={item.complete}><i style={{ width: `${item.complete}%` }} /></div></div></article>)}</div></section>
     <section className="bsc-card"><div className="flex flex-col gap-4 border-b border-slate-200/60 pb-4 mb-4 sm:flex-row sm:items-center sm:justify-between"><h2 className="text-base font-bold text-slate-900">Detalle de control de comisiones</h2><div className="flex flex-col gap-3 sm:flex-row sm:items-center"><div className="bsc-table-search max-w-xs"><Search /><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar cliente o beneficiario" /></div><button className="bsc-outline-button"><Download /> Exportar CSV</button></div></div>{/* Filtros de pestañas superiores */}
 	<div className="mb-4 flex items-center gap-2">
   {[
