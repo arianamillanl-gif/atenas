@@ -166,24 +166,28 @@ function AnalysisView({ search, setSearch, filteredRows }: { search: string; set
         </div>
       </div>
       <div className="lg:col-span-4 min-w-0 bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm">
-        <div className="mb-2">
-          <h2 className="text-xs font-bold leading-snug text-balance text-slate-900">Cliente o Servicio que inciden en el Cierre por Comisiones</h2>
-          <p className="mt-0.5 text-[10px] leading-tight text-slate-500">Ranking de impacto en el periodo</p>
-        </div>
-        <div role="table" aria-label="Ranking de clientes o servicios por impacto" className="w-full text-xs">
-          <div role="row" className="grid grid-cols-[minmax(0,1fr)_auto_auto] gap-x-2 border-b border-slate-100 px-1 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-            <span role="columnheader">Cuenta / servicio</span>
-            <span role="columnheader">Tipo</span>
-            <span role="columnheader" className="text-right">Impacto</span>
+        <div className="mb-3 flex items-end justify-between gap-2 border-b border-slate-100 pb-2.5">
+          <div className="min-w-0">
+            <h2 className="text-sm font-bold leading-tight text-slate-900">Impacto en Cierre de Comisiones</h2>
+            <p className="mt-0.5 text-[11px] leading-tight text-slate-500">Ranking de incidencia en el período</p>
           </div>
-          {closingImpact.map((item) => (
-            <div role="row" key={item.name} className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-2 rounded-md border-b border-slate-50 px-1 py-1.5 transition-colors last:border-0 hover:bg-slate-50">
-              <span role="cell" className="truncate font-medium text-slate-700" title={item.name}>{item.name}</span>
-              <span role="cell" className="text-[11px] font-medium text-slate-500">{item.type}</span>
-              <span role="cell" className="whitespace-nowrap text-right font-bold tabular-nums text-slate-900">${item.value.toLocaleString('en-US')}</span>
-            </div>
-          ))}
+          <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide text-slate-400">Impacto</span>
         </div>
+        <ol aria-label="Ranking de clientes o servicios por impacto" className="flex flex-col">
+          {closingImpact.map((item, index) => {
+            const isClient = item.type.toLowerCase().startsWith('cliente')
+            return (
+              <li key={item.name} className="flex items-center gap-3 rounded-lg border-b border-slate-100 px-1.5 py-2 transition-colors last:border-0 hover:bg-slate-50">
+                <span aria-hidden="true" className="w-4 shrink-0 text-[11px] font-semibold tabular-nums text-slate-400">{index + 1}</span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold leading-tight text-slate-900" title={item.name}>{item.name}</p>
+                  <span className={`mt-1 inline-flex items-center rounded-full px-1.5 py-px text-[10px] font-medium leading-4 ring-1 ring-inset ${isClient ? 'bg-blue-50 text-blue-700 ring-blue-600/15' : 'bg-emerald-50 text-emerald-700 ring-emerald-600/15'}`}>{item.type}</span>
+                </div>
+                <span className="shrink-0 whitespace-nowrap text-right text-sm font-semibold tabular-nums text-slate-900">${item.value.toLocaleString('en-US')}</span>
+              </li>
+            )
+          })}
+        </ol>
       </div>
     </div>
     <section className="bsc-card bsc-traceability !rounded-xl !border-slate-200/80 !p-4 !shadow-sm"><div className="bsc-card-heading"><div><h2>Trazabilidad del proceso</h2></div><span className="bsc-muted">Comparativo de registros, alertas y completitud</span></div><div className="bsc-trace-grid">{traceability.map((item) => <article className="bsc-trace-card" key={item.label}><span className="bsc-trace-label">{item.label}</span><div className="bsc-trace-count"><strong>{item.records}</strong><small>registros</small></div><div className="bsc-alert-line"><AlertTriangle aria-hidden="true" /> <span>{item.alerts} alertas</span></div><div className="bsc-complete"><div className="bsc-complete-meta"><span>Completitud</span><strong>{item.complete}%</strong></div><div className="bsc-complete-track" role="progressbar" aria-label={`Completitud de ${item.label}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={item.complete}><i style={{ width: `${item.complete}%` }} /></div></div></article>)}</div></section>
