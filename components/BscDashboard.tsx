@@ -143,10 +143,11 @@ function AnalysisView({ search, setSearch, filteredRows }: { search: string; set
 
   return <>
     <AnalyticsCards />
-    <section className="mb-5 grid w-full grid-cols-1 gap-4 lg:grid-cols-2">
-      <article className="bsc-card min-w-0">
+<section className="mb-5 grid w-full grid-cols-1 gap-4 lg:grid-cols-12">
+  <article className="bsc-card min-w-0 lg:col-span-7">
+
         <div className="bsc-card-heading"><div><h2 className="!text-xs !font-bold">Evolución mensual</h2><span className="bsc-muted !text-[10px] !text-slate-500">Histórico de cierre · ID S4-G05</span></div><span className="bsc-muted !text-[10px] !text-slate-500">Julio 2026</span></div>
-        <div className="h-44 w-full pt-2" aria-label="Evolución mensual del cierre por comisiones">
+        <div className="h-40 w-full pt-1" aria-label="Evolución mensual del cierre por comisiones">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={monthlyEvolution} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
@@ -158,8 +159,8 @@ function AnalysisView({ search, setSearch, filteredRows }: { search: string; set
           </ResponsiveContainer>
         </div>
       </article>
-      <article className="bsc-card min-w-0">
-        <div className="bsc-card-heading"><div><h2 className="!text-xs !font-bold">Cliente o Servicio que inciden en el Cierre por Comisiones</h2><span className="bsc-muted !text-[10px] !text-slate-500">Ranking de impacto en el periodo</span></div></div>
+      <article className="bsc-card min-w-0 !p-3 lg:col-span-5">
+        <div className="bsc-card-heading !mb-2"><div><h2 className="!text-xs !font-bold">Cliente o Servicio que inciden en el Cierre por Comisiones</h2><span className="bsc-muted !text-[10px] !text-slate-500">Ranking de impacto en el periodo</span></div></div>
         <div className="overflow-x-auto pt-0.5"><table className="w-full text-left text-[11px]"><thead><tr className="border-b border-slate-100 text-[10px] uppercase tracking-wider text-slate-500"><th className="py-1.5 font-semibold">Cuenta / servicio</th><th className="py-1.5 font-semibold">Tipo</th><th className="py-1.5 text-right font-semibold">Impacto</th></tr></thead><tbody>{closingImpact.map((item) => <tr key={item.name} className="border-b border-slate-50 last:border-0"><td className="py-1.5 font-medium text-slate-700">{item.name}</td><td className="py-1.5 font-medium text-slate-500">{item.type}</td><td className="py-1.5 text-right font-bold tabular-nums text-slate-900">${item.value.toLocaleString('en-US')}</td></tr>)}</tbody></table></div>
       </article>
     </section>
