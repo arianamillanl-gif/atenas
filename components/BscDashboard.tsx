@@ -145,10 +145,15 @@ function AnalysisView({ search, setSearch, filteredRows }: { search: string; set
     <AnalyticsCards />
     {/* Sección Media: Evolución y Ranking */}
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
-      <div className="lg:col-span-8 bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
-        <div className="bsc-card-heading">
-<div><h2 className="!text-xs !font-bold">Evolución mensual</h2><span className="bsc-muted !text-[10px] !text-slate-500">Histórico de cierre · ID S4-G05</span></div><span className="bsc-muted !text-[10px] !text-slate-500">Julio 2026</span></div>
-        <div className="h-40 w-full pt-1" aria-label="Evolución mensual del cierre por comisiones">
+      <div className="lg:col-span-8 bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm">
+        <div className="mb-2 flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h2 className="text-xs font-bold leading-tight text-slate-900">Evolución mensual</h2>
+            <p className="mt-0.5 text-[10px] leading-tight text-slate-500">Histórico de cierre · ID S4-G05</p>
+          </div>
+          <span className="shrink-0 rounded-md bg-slate-50 px-2 py-0.5 text-[10px] font-medium leading-tight text-slate-500">Julio 2026</span>
+        </div>
+        <div className="h-[190px] w-full" aria-label="Evolución mensual del cierre por comisiones">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={monthlyEvolution} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
@@ -160,9 +165,25 @@ function AnalysisView({ search, setSearch, filteredRows }: { search: string; set
           </ResponsiveContainer>
         </div>
       </div>
-      <div className="lg:col-span-4 bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm">
-        <div className="bsc-card-heading !mb-2"><div><h2 className="!text-xs !font-bold">Cliente o Servicio que inciden en el Cierre por Comisiones</h2><span className="bsc-muted !text-[10px] !text-slate-500">Ranking de impacto en el periodo</span></div></div>
-        <div className="overflow-x-auto pt-0.5"><table className="w-full text-left text-[11px]"><thead><tr className="border-b border-slate-100 text-[10px] uppercase tracking-wider text-slate-500"><th className="py-1.5 font-semibold">Cuenta / servicio</th><th className="py-1.5 font-semibold">Tipo</th><th className="py-1.5 text-right font-semibold">Impacto</th></tr></thead><tbody>{closingImpact.map((item) => <tr key={item.name} className="border-b border-slate-50 last:border-0"><td className="py-1.5 font-medium text-slate-700">{item.name}</td><td className="py-1.5 font-medium text-slate-500">{item.type}</td><td className="py-1.5 text-right font-bold tabular-nums text-slate-900">${item.value.toLocaleString('en-US')}</td></tr>)}</tbody></table></div>
+      <div className="lg:col-span-4 min-w-0 bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm">
+        <div className="mb-2">
+          <h2 className="text-xs font-bold leading-snug text-balance text-slate-900">Cliente o Servicio que inciden en el Cierre por Comisiones</h2>
+          <p className="mt-0.5 text-[10px] leading-tight text-slate-500">Ranking de impacto en el periodo</p>
+        </div>
+        <div role="table" aria-label="Ranking de clientes o servicios por impacto" className="w-full text-xs">
+          <div role="row" className="grid grid-cols-[minmax(0,1fr)_auto_auto] gap-x-2 border-b border-slate-100 px-1 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+            <span role="columnheader">Cuenta / servicio</span>
+            <span role="columnheader">Tipo</span>
+            <span role="columnheader" className="text-right">Impacto</span>
+          </div>
+          {closingImpact.map((item) => (
+            <div role="row" key={item.name} className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-2 rounded-md border-b border-slate-50 px-1 py-1.5 transition-colors last:border-0 hover:bg-slate-50">
+              <span role="cell" className="truncate font-medium text-slate-700" title={item.name}>{item.name}</span>
+              <span role="cell" className="text-[11px] font-medium text-slate-500">{item.type}</span>
+              <span role="cell" className="whitespace-nowrap text-right font-bold tabular-nums text-slate-900">${item.value.toLocaleString('en-US')}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
     <section className="bsc-card bsc-traceability !rounded-xl !border-slate-200/80 !p-4 !shadow-sm"><div className="bsc-card-heading"><div><h2>Trazabilidad del proceso</h2></div><span className="bsc-muted">Comparativo de registros, alertas y completitud</span></div><div className="bsc-trace-grid">{traceability.map((item) => <article className="bsc-trace-card" key={item.label}><span className="bsc-trace-label">{item.label}</span><div className="bsc-trace-count"><strong>{item.records}</strong><small>registros</small></div><div className="bsc-alert-line"><AlertTriangle aria-hidden="true" /> <span>{item.alerts} alertas</span></div><div className="bsc-complete"><div className="bsc-complete-meta"><span>Completitud</span><strong>{item.complete}%</strong></div><div className="bsc-complete-track" role="progressbar" aria-label={`Completitud de ${item.label}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={item.complete}><i style={{ width: `${item.complete}%` }} /></div></div></article>)}</div></section>
