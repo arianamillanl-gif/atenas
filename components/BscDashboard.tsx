@@ -22,6 +22,7 @@ import {
   Users,
   X,
 } from 'lucide-react'
+import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import AnalyticsCards from './analytics-cards'
 
 const kpis = [
@@ -47,6 +48,24 @@ const exceptions = [
   ['Multipagos', 'Media', '28 casos', '$32,800', 'medium'],
   ['Pagos englobados', 'Media', '16 casos', '$21,400', 'medium'],
 ] as const
+
+const monthlyEvolution = [
+  { month: 'Ene', value: 1680000 },
+  { month: 'Feb', value: 1810000 },
+  { month: 'Mar', value: 1760000 },
+  { month: 'Abr', value: 2050000 },
+  { month: 'May', value: 2180000 },
+  { month: 'Jun', value: 2260000 },
+  { month: 'Jul', value: 2431500 },
+]
+
+const closingImpact = [
+  { name: 'Grupo Andino S.A.', type: 'Cliente', value: 284500 },
+  { name: 'Inversiones Litoral', type: 'Cliente', value: 198240 },
+  { name: 'Red Médica Nacional', type: 'Servicio', value: 156800 },
+  { name: 'Constructora Norte', type: 'Cliente', value: 94120 },
+  { name: 'Logística Integral', type: 'Servicio', value: 72900 },
+]
 
 const traceability = [
   { label: 'Venta', records: 248, alerts: 12, complete: 95 },
@@ -124,6 +143,26 @@ function AnalysisView({ search, setSearch, filteredRows }: { search: string; set
 
   return <>
     <AnalyticsCards />
+    <section className="mb-6 grid w-full grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+      <article className="bsc-card min-w-0">
+        <div className="bsc-card-heading"><div><h2>Evolución mensual</h2><span className="bsc-muted">Histórico de cierre · ID S4-G05</span></div><span className="bsc-muted">Julio 2026</span></div>
+        <div className="h-56 w-full pt-4" aria-label="Evolución mensual del cierre por comisiones">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={monthlyEvolution} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false} />
+              <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 11 }} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10 }} tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`} width={42} />
+              <Tooltip formatter={(value) => [`$${Number(value).toLocaleString('en-US')}`, 'Cierre']} labelFormatter={(label) => `${label} 2026`} contentStyle={{ borderRadius: 10, border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(15, 23, 42, 0.08)', fontSize: 12 }} />
+              <Line type="monotone" dataKey="value" stroke="#1d4ed8" strokeWidth={2.5} dot={{ r: 3, fill: '#1d4ed8', strokeWidth: 0 }} activeDot={{ r: 5 }} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </article>
+      <article className="bsc-card min-w-0">
+        <div className="bsc-card-heading"><div><h2>Cliente o Servicio que inciden en el Cierre por Comisiones</h2><span className="bsc-muted">Ranking de impacto en el periodo</span></div></div>
+        <div className="overflow-x-auto pt-2"><table className="w-full text-left text-xs"><thead><tr className="border-b border-slate-100 text-[10px] uppercase tracking-wider text-slate-400"><th className="py-2 font-medium">Cuenta / servicio</th><th className="py-2 font-medium">Tipo</th><th className="py-2 text-right font-medium">Impacto</th></tr></thead><tbody>{closingImpact.map((item) => <tr key={item.name} className="border-b border-slate-50 last:border-0"><td className="py-3 font-medium text-slate-700">{item.name}</td><td className="py-3 text-slate-500">{item.type}</td><td className="py-3 text-right font-semibold tabular-nums text-slate-900">${item.value.toLocaleString('en-US')}</td></tr>)}</tbody></table></div>
+      </article>
+    </section>
     <section className="bsc-card bsc-traceability"><div className="bsc-card-heading"><div><h2>Trazabilidad del proceso</h2></div><span className="bsc-muted">Comparativo de registros, alertas y completitud</span></div><div className="bsc-trace-grid">{traceability.map((item) => <article className="bsc-trace-card" key={item.label}><span className="bsc-trace-label">{item.label}</span><div className="bsc-trace-count"><strong>{item.records}</strong><small>registros</small></div><div className="bsc-alert-line"><AlertTriangle aria-hidden="true" /> <span>{item.alerts} alertas</span></div><div className="bsc-complete"><div className="bsc-complete-meta"><span>Completitud</span><strong>{item.complete}%</strong></div><div className="bsc-complete-track" role="progressbar" aria-label={`Completitud de ${item.label}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={item.complete}><i style={{ width: `${item.complete}%` }} /></div></div></article>)}</div></section>
     <section className="bsc-card"><div className="flex flex-col gap-4 border-b border-slate-200/60 pb-4 mb-4 sm:flex-row sm:items-center sm:justify-between"><h2 className="text-base font-bold text-slate-900">Detalle de control de comisiones</h2><div className="flex flex-col gap-3 sm:flex-row sm:items-center"><div className="bsc-table-search max-w-xs"><Search /><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar cliente o beneficiario" /></div><button className="bsc-outline-button"><Download /> Exportar CSV</button></div></div>{/* Filtros de pestañas superiores */}
 	<div className="mb-4 flex items-center gap-2">
