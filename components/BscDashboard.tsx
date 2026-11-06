@@ -143,10 +143,10 @@ function AnalysisView({ search, setSearch, filteredRows }: { search: string; set
 
   return <>
     <AnalyticsCards />
-    <section className="mb-5 grid w-full grid-cols-1 gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)]">
+    <section className="mb-5 grid w-full grid-cols-1 gap-4 lg:grid-cols-2">
       <article className="bsc-card min-w-0">
         <div className="bsc-card-heading"><div><h2 className="!text-xs !font-bold">Evolución mensual</h2><span className="bsc-muted !text-[10px] !text-slate-500">Histórico de cierre · ID S4-G05</span></div><span className="bsc-muted !text-[10px] !text-slate-500">Julio 2026</span></div>
-        <div className="h-56 w-full pt-4" aria-label="Evolución mensual del cierre por comisiones">
+        <div className="h-44 w-full pt-2" aria-label="Evolución mensual del cierre por comisiones">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={monthlyEvolution} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
@@ -160,7 +160,7 @@ function AnalysisView({ search, setSearch, filteredRows }: { search: string; set
       </article>
       <article className="bsc-card min-w-0">
         <div className="bsc-card-heading"><div><h2 className="!text-xs !font-bold">Cliente o Servicio que inciden en el Cierre por Comisiones</h2><span className="bsc-muted !text-[10px] !text-slate-500">Ranking de impacto en el periodo</span></div></div>
-        <div className="overflow-x-auto pt-1"><table className="w-full text-left text-xs"><thead><tr className="border-b border-slate-100 text-[11px] uppercase tracking-wider text-slate-500"><th className="py-2 font-semibold">Cuenta / servicio</th><th className="py-2 font-semibold">Tipo</th><th className="py-2 text-right font-semibold">Impacto</th></tr></thead><tbody>{closingImpact.map((item) => <tr key={item.name} className="border-b border-slate-50 last:border-0"><td className="py-2.5 font-medium text-slate-700">{item.name}</td><td className="py-2.5 font-medium text-slate-500">{item.type}</td><td className="py-2.5 text-right font-bold tabular-nums text-slate-900">${item.value.toLocaleString('en-US')}</td></tr>)}</tbody></table></div>
+        <div className="overflow-x-auto pt-0.5"><table className="w-full text-left text-[11px]"><thead><tr className="border-b border-slate-100 text-[10px] uppercase tracking-wider text-slate-500"><th className="py-1.5 font-semibold">Cuenta / servicio</th><th className="py-1.5 font-semibold">Tipo</th><th className="py-1.5 text-right font-semibold">Impacto</th></tr></thead><tbody>{closingImpact.map((item) => <tr key={item.name} className="border-b border-slate-50 last:border-0"><td className="py-1.5 font-medium text-slate-700">{item.name}</td><td className="py-1.5 font-medium text-slate-500">{item.type}</td><td className="py-1.5 text-right font-bold tabular-nums text-slate-900">${item.value.toLocaleString('en-US')}</td></tr>)}</tbody></table></div>
       </article>
     </section>
     <section className="bsc-card bsc-traceability !rounded-xl !border-slate-200/80 !p-4 !shadow-sm"><div className="bsc-card-heading"><div><h2>Trazabilidad del proceso</h2></div><span className="bsc-muted">Comparativo de registros, alertas y completitud</span></div><div className="bsc-trace-grid">{traceability.map((item) => <article className="bsc-trace-card" key={item.label}><span className="bsc-trace-label">{item.label}</span><div className="bsc-trace-count"><strong>{item.records}</strong><small>registros</small></div><div className="bsc-alert-line"><AlertTriangle aria-hidden="true" /> <span>{item.alerts} alertas</span></div><div className="bsc-complete"><div className="bsc-complete-meta"><span>Completitud</span><strong>{item.complete}%</strong></div><div className="bsc-complete-track" role="progressbar" aria-label={`Completitud de ${item.label}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={item.complete}><i style={{ width: `${item.complete}%` }} /></div></div></article>)}</div></section>
