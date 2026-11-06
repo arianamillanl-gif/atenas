@@ -123,7 +123,7 @@ export default function BscDashboard() {
       <main className="bsc-main">
         <header className="bsc-topbar"><div className="bsc-search"><Search /><input placeholder="Buscar en ATENAS" aria-label="Buscar" /><kbd>⌘ K</kbd></div><div className="bsc-top-actions"><button className="bsc-icon-button" aria-label="Notificaciones"><Bell /><i /></button><div className="bsc-profile"><div className="bsc-avatar user">MG</div><div><strong>María González</strong><span>Directora General</span></div><ChevronDown /></div></div></header>
         <nav className="border-b border-slate-200/80 bg-white px-8 pt-4 pb-0 mb-6" aria-label="Tableros de comisiones">
-          <ul className="flex items-center gap-8 overflow-x-auto">
+          <ul className="-mb-px flex w-full items-end gap-8 overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {dashboardTabs.map((tab) => (
               <li key={tab} className="shrink-0">
                 <button
@@ -131,7 +131,7 @@ export default function BscDashboard() {
                   onClick={() => setActiveTab(tab)}
                   aria-current={activeTab === tab ? 'page' : undefined}
                   style={{ borderBottomColor: activeTab === tab ? '#2563eb' : 'transparent' }}
-                  className={`text-sm whitespace-nowrap -mb-px transition-colors ${activeTab === tab ? 'font-semibold text-blue-600 border-b-2 border-blue-600 pb-3' : 'font-medium text-slate-500 hover:text-slate-800 border-b-2 border-transparent pb-3 cursor-pointer'}`}
+                  className={`block text-sm whitespace-nowrap transition-colors ${activeTab === tab ? 'font-semibold text-blue-600 border-b-2 border-blue-600 pb-3' : 'font-medium text-slate-500 hover:text-slate-800 border-b-2 border-transparent pb-3 cursor-pointer'}`}
                 >
                   {tab}
                 </button>
