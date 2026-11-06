@@ -50,7 +50,7 @@ const menuItemClass = 'gap-2 text-xs text-slate-700 focus:bg-slate-100 focus:tex
 
 export default function AnalyticsCards() {
   return (
-    <div className="mb-6 grid w-full grid-cols-1 gap-6 lg:grid-cols-3">
+    <div className="mb-5 grid w-full grid-cols-1 gap-4 lg:grid-cols-3">
       <AnalyticsCard
         title="Comisiones por Beneficiario"
         data={beneficiaries}
@@ -111,9 +111,9 @@ function AnalyticsCard({
   const items = useMemo(() => sortData(data, sortMode), [data, sortMode])
 
   return (
-    <section className="flex min-w-0 flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-      <header className="mb-4 flex h-10 items-center justify-between gap-3 border-b border-slate-100 pb-3">
-        <h3 className="m-0 truncate text-sm font-bold leading-none text-slate-900">{title}</h3>
+    <section className="flex min-w-0 flex-col rounded-xl border border-slate-200/80 bg-white p-4 shadow-sm">
+      <header className="mb-3 flex min-h-9 items-center justify-between gap-3 border-b border-slate-100 pb-2">
+        <h3 className="m-0 truncate text-xs font-bold leading-tight text-slate-900">{title}</h3>
         <DropdownMenu>
           <DropdownMenuTrigger
             className="inline-flex size-7 shrink-0 items-center justify-center rounded-lg text-slate-400 outline-none transition-colors hover:bg-slate-100 hover:text-slate-600 focus-visible:ring-2 focus-visible:ring-blue-500/30 data-popup-open:bg-slate-100 data-popup-open:text-slate-600"

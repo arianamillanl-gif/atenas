@@ -13,7 +13,6 @@ import {
   ClipboardCheck,
   Download,
   FileText,
-  Filter,
   LayoutDashboard,
   Menu,
   RefreshCw,
@@ -23,6 +22,7 @@ import {
   Users,
   X,
 } from 'lucide-react'
+import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import AnalyticsCards from './analytics-cards'
 
 const kpis = [
@@ -48,6 +48,24 @@ const exceptions = [
   ['Multipagos', 'Media', '28 casos', '$32,800', 'medium'],
   ['Pagos englobados', 'Media', '16 casos', '$21,400', 'medium'],
 ] as const
+
+const monthlyEvolution = [
+  { month: 'Ene', value: 1680000 },
+  { month: 'Feb', value: 1810000 },
+  { month: 'Mar', value: 1760000 },
+  { month: 'Abr', value: 2050000 },
+  { month: 'May', value: 2180000 },
+  { month: 'Jun', value: 2260000 },
+  { month: 'Jul', value: 2431500 },
+]
+
+const closingImpact = [
+  { name: 'Grupo Andino S.A.', type: 'Cliente', value: 284500 },
+  { name: 'Inversiones Litoral', type: 'Cliente', value: 198240 },
+  { name: 'Red Médica Nacional', type: 'Servicio', value: 156800 },
+  { name: 'Constructora Norte', type: 'Cliente', value: 94120 },
+  { name: 'Logística Integral', type: 'Servicio', value: 72900 },
+]
 
 const traceability = [
   { label: 'Venta', records: 248, alerts: 12, complete: 95 },
@@ -91,9 +109,9 @@ export default function BscDashboard() {
       <main className="bsc-main">
         <header className="bsc-topbar"><div className="bsc-search"><Search /><input placeholder="Buscar en ATENAS" aria-label="Buscar" /><kbd>⌘ K</kbd></div><div className="bsc-top-actions"><button className="bsc-icon-button" aria-label="Notificaciones"><Bell /><i /></button><div className="bsc-profile"><div className="bsc-avatar user">MG</div><div><strong>María González</strong><span>Directora General</span></div><ChevronDown /></div></div></header>
                 <div className="bsc-content">
-          <section className="bsc-module-banner mt-6 min-h-0 py-3 px-5"><div><p className="bsc-eyebrow text-[10px] uppercase font-bold tracking-wider text-indigo-300">BSC · COMISIONES</p><h1 className="text-base font-bold tracking-tight text-white">Tablero Gerencial de Control de Comisiones</h1><p className="text-[11px] text-indigo-200 mt-0.5">REVISIÓN, CONCILIACIÓN Y CIERRE MENSUAL</p></div><div className="bsc-banner-actions"><button className="inline-flex items-center gap-1.5 rounded-lg border border-white/30 bg-white/10 px-3 py-1 text-xs font-medium text-white shadow-sm transition-all hover:bg-white/20"><Download aria-hidden="true" /> Exportar PDF</button></div></section>
+          <section className="bsc-module-banner mt-6 mb-4 min-h-0 py-3 px-5"><div><p className="bsc-eyebrow text-[10px] uppercase font-bold tracking-wider text-indigo-300">BSC · COMISIONES</p><h1 className="text-base font-bold tracking-tight text-white">Tablero Gerencial de Control de Comisiones</h1><p className="text-[11px] text-indigo-200 mt-0.5">REVISIÓN, CONCILIACIÓN Y CIERRE MENSUAL</p></div><div className="bsc-banner-actions"><button className="inline-flex items-center gap-1.5 rounded-lg border border-white/30 bg-white/10 px-3 py-1 text-xs font-medium text-white shadow-sm transition-all hover:bg-white/20"><Download aria-hidden="true" /> Exportar PDF</button></div></section>
 
-          <section className="bsc-filter-bar" aria-label="Filtros de consulta"><div className="bsc-filter-controls">{([['period', 'Período de cierre'], ['area', 'Área'], ['line', 'Línea de negocio'], ['beneficiary', 'Beneficiario'], ['type', 'Tipo de comisión'], ['status', 'Estado de comisión']] as const).map(([key, label]) => <label key={key}><span>{label}</span><div className="bsc-select"><select value={filters[key]} onChange={(e) => setFilters({ ...filters, [key]: e.target.value })}><option>{filters[key]}</option><option>Todos</option><option>Todas</option><option>Julio 2026</option><option>Junio 2026</option></select><ChevronDown aria-hidden="true" /></div></label>)}<button type="button" className="bsc-filter-more"><Filter aria-hidden="true" /><span>Más filtros</span></button><button type="button" onClick={clearFilters} className="bsc-filter-clear"><X aria-hidden="true" /><span>Limpiar</span></button></div></section>
+          <section className="bsc-filter-bar bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm mb-6" aria-label="Filtros de consulta"><div className="bsc-filter-controls gap-3">{([['period', 'Período de cierre'], ['area', 'Área'], ['line', 'Línea de negocio'], ['beneficiary', 'Beneficiario'], ['type', 'Tipo de comisión'], ['status', 'Estado de comisión']] as const).map(([key, label]) => <label key={key}><span>{label}</span><div className="bsc-select"><select value={filters[key]} onChange={(e) => setFilters({ ...filters, [key]: e.target.value })}><option>{filters[key]}</option><option>Todos</option><option>Todas</option><option>Julio 2026</option><option>Junio 2026</option></select><ChevronDown aria-hidden="true" /></div></label>)}<button type="button" onClick={clearFilters} className="bsc-filter-clear"><X aria-hidden="true" /><span>Limpiar</span></button></div></section>
           <nav className="mb-6 flex items-center gap-1 border-b border-slate-200 px-1" aria-label="Vista del tablero"><button type="button" onClick={() => setView('control')} className={`relative px-4 py-3 text-sm transition-colors ${view === 'control' ? 'font-semibold text-blue-600 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-blue-600' : 'font-medium text-slate-500 hover:text-slate-800'}`}>Control General del Cierre</button><button type="button" onClick={() => setView('analysis')} className={`relative px-4 py-3 text-sm transition-colors ${view === 'analysis' ? 'font-semibold text-blue-600 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-blue-600' : 'font-medium text-slate-500 hover:text-slate-800'}`}>Análisis y Trazabilidad</button></nav>
           {view === 'control' ? <ControlView /> : <AnalysisView search={search} setSearch={setSearch} filteredRows={filteredRows} />}
         </div>
@@ -125,7 +143,28 @@ function AnalysisView({ search, setSearch, filteredRows }: { search: string; set
 
   return <>
     <AnalyticsCards />
-    <section className="bsc-card bsc-traceability"><div className="bsc-card-heading"><div><h2>Trazabilidad del proceso</h2></div><span className="bsc-muted">Comparativo de registros, alertas y completitud</span></div><div className="bsc-trace-grid">{traceability.map((item) => <article className="bsc-trace-card" key={item.label}><span className="bsc-trace-label">{item.label}</span><div className="bsc-trace-count"><strong>{item.records}</strong><small>registros</small></div><div className="bsc-alert-line"><AlertTriangle aria-hidden="true" /> <span>{item.alerts} alertas</span></div><div className="bsc-complete"><div className="bsc-complete-meta"><span>Completitud</span><strong>{item.complete}%</strong></div><div className="bsc-complete-track" role="progressbar" aria-label={`Completitud de ${item.label}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={item.complete}><i style={{ width: `${item.complete}%` }} /></div></div></article>)}</div></section>
+<section className="mb-5 grid w-full grid-cols-1 gap-4 lg:grid-cols-12">
+  <article className="bsc-card min-w-0 lg:col-span-7">
+
+        <div className="bsc-card-heading"><div><h2 className="!text-xs !font-bold">Evolución mensual</h2><span className="bsc-muted !text-[10px] !text-slate-500">Histórico de cierre · ID S4-G05</span></div><span className="bsc-muted !text-[10px] !text-slate-500">Julio 2026</span></div>
+        <div className="h-40 w-full pt-1" aria-label="Evolución mensual del cierre por comisiones">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={monthlyEvolution} margin={{ top: 8, right: 12, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+              <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 11 }} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748b', fontSize: 10 }} tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`} width={42} />
+              <Tooltip formatter={(value) => [`$${Number(value).toLocaleString('en-US')}`, 'Cierre']} labelFormatter={(label) => `${label} 2026`} contentStyle={{ borderRadius: 10, border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(15, 23, 42, 0.08)', fontSize: 12 }} />
+              <Line type="monotone" dataKey="value" stroke="#1d4ed8" strokeWidth={2.5} dot={{ r: 3, fill: '#1d4ed8', strokeWidth: 0 }} activeDot={{ r: 5 }} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </article>
+      <article className="bsc-card min-w-0 !p-3 lg:col-span-5">
+        <div className="bsc-card-heading !mb-2"><div><h2 className="!text-xs !font-bold">Cliente o Servicio que inciden en el Cierre por Comisiones</h2><span className="bsc-muted !text-[10px] !text-slate-500">Ranking de impacto en el periodo</span></div></div>
+        <div className="overflow-x-auto pt-0.5"><table className="w-full text-left text-[11px]"><thead><tr className="border-b border-slate-100 text-[10px] uppercase tracking-wider text-slate-500"><th className="py-1.5 font-semibold">Cuenta / servicio</th><th className="py-1.5 font-semibold">Tipo</th><th className="py-1.5 text-right font-semibold">Impacto</th></tr></thead><tbody>{closingImpact.map((item) => <tr key={item.name} className="border-b border-slate-50 last:border-0"><td className="py-1.5 font-medium text-slate-700">{item.name}</td><td className="py-1.5 font-medium text-slate-500">{item.type}</td><td className="py-1.5 text-right font-bold tabular-nums text-slate-900">${item.value.toLocaleString('en-US')}</td></tr>)}</tbody></table></div>
+      </article>
+    </section>
+    <section className="bsc-card bsc-traceability !rounded-xl !border-slate-200/80 !p-4 !shadow-sm"><div className="bsc-card-heading"><div><h2>Trazabilidad del proceso</h2></div><span className="bsc-muted">Comparativo de registros, alertas y completitud</span></div><div className="bsc-trace-grid">{traceability.map((item) => <article className="bsc-trace-card" key={item.label}><span className="bsc-trace-label">{item.label}</span><div className="bsc-trace-count"><strong>{item.records}</strong><small>registros</small></div><div className="bsc-alert-line"><AlertTriangle aria-hidden="true" /> <span>{item.alerts} alertas</span></div><div className="bsc-complete"><div className="bsc-complete-meta"><span>Completitud</span><strong>{item.complete}%</strong></div><div className="bsc-complete-track" role="progressbar" aria-label={`Completitud de ${item.label}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={item.complete}><i style={{ width: `${item.complete}%` }} /></div></div></article>)}</div></section>
     <section className="bsc-card"><div className="flex flex-col gap-4 border-b border-slate-200/60 pb-4 mb-4 sm:flex-row sm:items-center sm:justify-between"><h2 className="text-base font-bold text-slate-900">Detalle de control de comisiones</h2><div className="flex flex-col gap-3 sm:flex-row sm:items-center"><div className="bsc-table-search max-w-xs"><Search /><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar cliente o beneficiario" /></div><button className="bsc-outline-button"><Download /> Exportar CSV</button></div></div>{/* Filtros de pestañas superiores */}
 	<div className="mb-4 flex items-center gap-2">
   {[
