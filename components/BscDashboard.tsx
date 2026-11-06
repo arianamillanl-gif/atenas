@@ -10,6 +10,8 @@ import {
   ChevronLeft,
   ChevronRight,
   CircleDollarSign,
+  Eye,
+  MoreHorizontal,
   ClipboardCheck,
   Download,
   FileText,
@@ -124,10 +126,54 @@ function ControlView() {
 }
 
 function AnalysisView({ search, setSearch, filteredRows }: { search: string; setSearch: (value: string) => void; filteredRows: string[][] }) {
+  const visibleRows = filteredRows
+
   return <>
     <AnalyticsCards />
-    <section className="bsc-card bsc-traceability"><div className="bsc-card-heading"><div><h2>Trazabilidad del proceso</h2></div><span className="bsc-muted">Comparativo de registros, alertas y completitud</span></div><div className="bsc-trace-grid">{traceability.map((item) => <div className="bsc-trace-card" key={item.label}><span>{item.label}</span><strong>{item.records}</strong><small>registros</small><div className="bsc-alert-line"><AlertTriangle /> {item.alerts} alertas</div><div className="bsc-complete"><i style={{ width: `${item.complete}%` }} /><strong>{item.complete}%</strong></div><small>completitud</small></div>)}</div></section>
-    <section className="bsc-card"><div className="bsc-card-heading"><div><h2>Detalle de control de comisiones</h2></div><div className="bsc-table-actions"><div className="bsc-table-search"><Search /><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar cliente o beneficiario" /></div><button className="bsc-outline-button"><Download /> Exportar CSV</button></div></div><div className="bsc-table-wrap"><table><thead><tr>{['CLIENTE', 'ÁREA', 'BENEFICIARIO', 'TIPO COMISIÓN', 'MONTO VENTA', 'FACTURA / CXC', 'COBRO', 'REGLA APLICADA'].map((head) => <th key={head}>{head}</th>)}</tr></thead><tbody>{filteredRows.map((row) => <tr key={row[0]}>{row.map((cell, i) => <td key={`${row[0]}-${i}`}>{i === 5 || i === 6 ? <span className={`bsc-table-status ${cell === 'Conciliado' || cell === 'Emitida' ? 'ok' : 'pending'}`}>{cell}</span> : cell}</td>)}</tr>)}</tbody></table></div><div className="bsc-pagination"><span>Mostrando {filteredRows.length} de 968 registros</span><div><button aria-label="Anterior"><ChevronLeft /></button><button className="current">1</button><button>2</button><button>3</button><button aria-label="Siguiente"><ChevronRight /></button></div></div></section>
+    <section className="bsc-card bsc-traceability"><div className="bsc-card-heading"><div><h2>Trazabilidad del proceso</h2></div><span className="bsc-muted">Comparativo de registros, alertas y completitud</span></div><div className="bsc-trace-grid">{traceability.map((item) => <article className="bsc-trace-card" key={item.label}><span className="bsc-trace-label">{item.label}</span><div className="bsc-trace-count"><strong>{item.records}</strong><small>registros</small></div><div className="bsc-alert-line"><AlertTriangle aria-hidden="true" /> <span>{item.alerts} alertas</span></div><div className="bsc-complete"><div className="bsc-complete-meta"><span>Completitud</span><strong>{item.complete}%</strong></div><div className="bsc-complete-track" role="progressbar" aria-label={`Completitud de ${item.label}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={item.complete}><i style={{ width: `${item.complete}%` }} /></div></div></article>)}</div></section>
+    <section className="bsc-card"><div className="bsc-card-heading"><div><h2>Detalle de control de comisiones</h2></div><div className="bsc-table-actions"><div className="bsc-table-search"><Search /><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar cliente o beneficiario" /></div><button className="bsc-outline-button"><Download /> Exportar CSV</button></div></div>{/* Filtros de pestañas superiores */}
+<div className="flex items-center gap-2 mb-4">
+  {[
+    { name: "Todos", count: 5, active: true },
+    { name: "Pendientes", count: 1, active: false },
+    { name: "Conciliados", count: 3, active: false },
+    { name: "Con excepciones", count: 2, active: false },
+  ].map((tab, idx) => (
+    <button
+      key={idx}
+      className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-2 ${
+        tab.active
+          ? "bg-[#1e1b4b] text-white shadow-sm"
+          : "bg-transparent text-slate-600 hover:text-slate-900 border border-slate-200/60"
+      }`}
+    >
+      <span>{tab.name}</span>
+      <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${tab.active ? "bg-white/20 text-white" : "bg-slate-100 text-slate-600"}`}>
+        {tab.count}
+      </span>
+    </button>
+  ))}
+</div><div className="bsc-table-wrap"><table><thead><tr>{['CLIENTE', 'ÁREA', 'BENEFICIARIO', 'TIPO COMISIÓN', 'MONTO VENTA', 'FACTURA / CXC', 'COBRO', 'REGLA APLICADA', 'ACCIONES'].map((head) => <th key={head}>{head}</th>)}</tr></thead><tbody>{visibleRows.map((row) => <tr key={row[0]}>{row.map((cell, i) => <td key={`${row[0]}-${i}`}>{i === 5 || i === 6 ? (() => { const isPositive = cell === 'Conciliado' || cell === 'Emitida'; const StatusIcon = isPositive ? ShieldCheck : AlertTriangle; return <span className={`bsc-table-status ${isPositive ? 'ok' : 'pending'}`}><StatusIcon className="h-3.5 w-3.5" aria-hidden="true" />{cell}</span> })() : cell}</td>)}<td className="bsc-table-actions-cell"><button type="button" className="bsc-table-action"><Eye aria-hidden="true" /> {row[5] === 'Pendiente' || row[6] === 'Pendiente' ? 'Conciliar' : 'Ver detalle'}</button><button type="button" className="bsc-table-menu" aria-label={`Más acciones para ${row[0]}`}><MoreHorizontal aria-hidden="true" /></button></td></tr>)}</tbody></table></div>{/* Paginador inferior derecho */}
+<div className="flex items-center justify-end gap-1.5 mt-4">
+  <button className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 text-xs">
+    &lt;
+  </button>
+  {[1, 2, 3].map((page) => (
+    <button
+      key={page}
+      className={`w-8 h-8 rounded-full text-xs font-medium flex items-center justify-center transition-colors ${
+        page === 1
+          ? "bg-[#1e1b4b] text-white shadow-sm"
+          : "text-slate-600 hover:bg-slate-100 border border-slate-200/60"
+      }`}
+    >
+      {page}
+    </button>
+  ))}
+  <button className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center text-slate-500 hover:bg-slate-50 text-xs">
+    &gt;
+  </button>
+</div></section>
   </>
 }
 
