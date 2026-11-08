@@ -235,7 +235,7 @@ function AnalysisView({ search, setSearch, filteredRows }: { search: string; set
         </ol>
       </div>
     </div>
-    <section className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm" aria-labelledby="trace-title">
+    <section className="mb-8 bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm" aria-labelledby="trace-title">
       <div className="mb-5 flex flex-wrap items-end justify-between gap-2">
         <div>
           <h2 id="trace-title" className="text-base font-semibold text-slate-900">Trazabilidad del proceso</h2>
