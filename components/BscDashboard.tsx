@@ -243,11 +243,11 @@ function AnalysisView({ search, setSearch, filteredRows }: { search: string; set
         </div>
         <span className="text-[11px] font-medium text-slate-400">{traceability.length} etapas</span>
       </div>
-      <div className="grid grid-cols-2 gap-y-6 md:grid-cols-3 lg:grid-cols-5 lg:gap-y-0 lg:divide-x lg:divide-slate-100">
+      <div className="grid grid-cols-5 divide-x divide-slate-100">
         {traceability.map((item) => {
           const healthy = item.complete > 90
           return (
-            <article key={item.label} className="flex min-w-0 flex-col px-4 first:pl-0 lg:last:pr-0">
+            <article key={item.label} className="flex min-w-0 flex-col px-5 first:pl-0 last:pr-0">
               <h3 className="min-h-8 text-xs font-semibold uppercase leading-4 tracking-wider text-slate-500">{item.label}</h3>
               <div className="mt-3 flex items-baseline gap-1.5">
                 <strong className="text-2xl font-bold leading-none tracking-tight text-slate-900 tabular-nums">{item.records}</strong>
