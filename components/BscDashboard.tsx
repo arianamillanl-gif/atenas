@@ -245,7 +245,7 @@ function AnalysisView({ search, setSearch, filteredRows }: { search: string; set
       </div>
       <div className="grid grid-cols-5 divide-x divide-slate-100">
         {traceability.map((item) => {
-          const healthy = item.complete > 90
+          const healthy = item.complete >= 90
           return (
             <article key={item.label} className="flex min-w-0 flex-col px-5 first:pl-0 last:pr-0">
               <h3 className="min-h-8 text-xs font-semibold uppercase leading-4 tracking-wider text-slate-500">{item.label}</h3>
@@ -258,11 +258,11 @@ function AnalysisView({ search, setSearch, filteredRows }: { search: string; set
                 {item.alerts} alertas
               </span>
               <div className="mt-4">
-                <div className="mb-1.5 flex items-center justify-between text-[10px] font-medium uppercase tracking-wider text-slate-400">
-                  <span>Completitud</span>
+                <div className="mb-1.5 flex w-full items-center justify-between text-[11px] font-semibold uppercase tracking-wider">
+                  <span className="text-slate-400">Completitud</span>
                   <span className={`text-xs font-semibold tabular-nums tracking-normal ${healthy ? 'text-emerald-600' : 'text-amber-600'}`}>{item.complete}%</span>
                 </div>
-                <div className="h-1 overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-label={`Completitud de ${item.label}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={item.complete}>
+                <div className="h-1 w-full overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-label={`Completitud de ${item.label}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={item.complete}>
                   <div className={`h-full rounded-full ${healthy ? 'bg-emerald-500' : 'bg-amber-500'}`} style={{ width: `${item.complete}%` }} />
                 </div>
               </div>
