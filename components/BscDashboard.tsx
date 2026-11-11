@@ -1,319 +1,84 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import {
-  AlertTriangle,
-  BarChart3,
-  Bell,
-  BookOpen,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  CircleDollarSign,
-  ClipboardCheck,
-  Download,
-  FileText,
-  LayoutDashboard,
-  Menu,
-  RefreshCw,
-  Search,
-  Settings2,
-  ShieldCheck,
-  TrendingUp,
-  Users,
-  X,
-} from 'lucide-react'
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
-import AnalyticsCards from './analytics-cards'
+import { AlertTriangle, BarChart3, Bell, BriefcaseBusiness, Check, ChevronDown, CircleDollarSign, Download, FileText, LayoutDashboard, Printer, Search, Settings, Users, X } from 'lucide-react'
 
-const kpis = [
-  { label: 'Pendientes de Activación', value: '$439,700', cases: '3 Casos', tone: 'slate', icon: RefreshCw },
-  { label: 'En Revisión', value: '$2,431,500', cases: '5 Casos', tone: 'amber', icon: ClipboardCheck },
-  { label: 'Observadas', value: '$1,820,100', cases: '2 Casos', tone: 'rose', icon: AlertTriangle },
-  { label: 'Listas para Aprobación', value: '$1,987,200', cases: '5 Casos', tone: 'emerald', icon: ShieldCheck },
-  { label: 'Pendientes de Pago', value: '$439,700', cases: '2 Casos', tone: 'orange', icon: CircleDollarSign },
-  { label: 'Congelado / Diferido', value: '$167,100', cases: '1 Caso', tone: 'violet', icon: BookOpen },
-  { label: 'Condición Global Vesper / Calidad', value: '91.4%', cases: '10 Casos · Objetivo ≥ 95%', tone: 'blue', icon: BarChart3 },
+const tabs = ['Ejecutivo de Comisiones', 'Gerencial de Control de Comisiones', 'Individual de Comisiones', 'Operativo de Cierre y Aprobación']
+const reconciliationRows = [
+  { client: 'Grupo Andino S.A.', period: 'Julio 2026', bank: 842500, applied: 842500, commission: 691200, status: 'Cuadrado' },
+  { client: 'Inversiones Litoral', period: 'Julio 2026', bank: 615000, applied: 598000, commission: 488400, status: 'Descalce' },
+  { client: 'Red Médica Nacional', period: 'Julio 2026', bank: 496000, applied: 496000, commission: 412600, status: 'Cuadrado' },
+  { client: 'Constructora Norte', period: 'Julio 2026', bank: 278000, applied: 278000, commission: 227000, status: 'Cuadrado' },
+  { client: 'Logística Integral', period: 'Julio 2026', bank: 200000, applied: 165500, commission: 168000, status: 'Retenido' },
 ]
-
-const progress = [
-  { label: 'Listas para aprobación', count: '742', percent: 78.5, amount: '$1,860,097', color: '#1d4ed8' },
-  { label: 'Observadas', count: '101', percent: 12.1, amount: '$318,027', color: '#f59e0b' },
-  { label: 'Pendientes de ajuste', count: '48', percent: 3.6, amount: '$87,534', color: '#8b5cf6' },
-  { label: 'Excluidas del cierre', count: '37', percent: 5.8, amount: '$165,842', color: '#cbd5e1' },
+const exceptions: [string, string, string, number, string][] = [
+  ['STG-2026-0814', 'Cliente no identificado', 'Referencia bancaria sin RFC asociado', 18500, 'Alta'],
+  ['STG-2026-0809', 'Factura inexistente', 'INV-78421 · Grupo del Centro', 12400, 'Media'],
+  ['STG-2026-0796', 'Inconsistencia de monto', 'Diferencia entre depósito y factura', 8600, 'Alta'],
+  ['STG-2026-0788', 'Cliente no identificado', 'Transferencia sin referencia', 5200, 'Baja'],
 ]
-const exceptions = [
-  ['Diferencias de conciliación', 'Alta', '112 casos', '$127,400', 'critical'],
-  ['Comisiones con pagos parciales', 'Alta', '75 casos', '$89,600', 'critical'],
-  ['Cobros adelantados con comisión diferida', 'Media', '41 casos', '$54,200', 'medium'],
-  ['Multipagos', 'Media', '28 casos', '$32,800', 'medium'],
-  ['Pagos englobados', 'Media', '16 casos', '$21,400', 'medium'],
-] as const
-
-const monthlyEvolution = [
-  { month: 'Ene', value: 1680000 },
-  { month: 'Feb', value: 1810000 },
-  { month: 'Mar', value: 1760000 },
-  { month: 'Abr', value: 2050000 },
-  { month: 'May', value: 2180000 },
-  { month: 'Jun', value: 2260000 },
-  { month: 'Jul', value: 2431500 },
+const aging = [
+  { name: 'Vigente', amount: 1380000, percent: 100, color: 'bg-emerald-500' },
+  { name: '1–30 días', amount: 485000, percent: 62, color: 'bg-blue-600' },
+  { name: '31–60 días', amount: 292000, percent: 43, color: 'bg-amber-500' },
+  { name: '61–90 días', amount: 148000, percent: 28, color: 'bg-orange-500' },
+  { name: '+90 días', amount: 75600, percent: 16, color: 'bg-rose-600' },
 ]
-const latestEvolution = monthlyEvolution[monthlyEvolution.length - 1]
-const previousEvolution = monthlyEvolution[monthlyEvolution.length - 2]
-const monthOverMonth = (((latestEvolution.value - previousEvolution.value) / previousEvolution.value) * 100).toFixed(1)
+const formatMoney = (amount: number) => `$${amount.toLocaleString('en-US')}`
+type SelectFilterProps = { label: string; value: string; options: string[]; onChange: (value: string) => void }
 
-const closingImpact = [
-  { name: 'Grupo Andino S.A.', type: 'Cliente', value: 284500 },
-  { name: 'Inversiones Litoral', type: 'Cliente', value: 198240 },
-  { name: 'Red Médica Nacional', type: 'Servicio', value: 156800 },
-  { name: 'Constructora Norte', type: 'Cliente', value: 94120 },
-  { name: 'Logística Integral', type: 'Servicio', value: 72900 },
-]
-
-const traceability = [
-  { label: 'Venta', records: 248, alerts: 12, complete: 95 },
-  { label: 'Factura / CxC', records: 235, alerts: 18, complete: 92 },
-  { label: 'Cobro', records: 198, alerts: 9, complete: 95 },
-  { label: 'Regla Comisión', records: 189, alerts: 14, complete: 89 },
-  { label: 'Estado de la Comisión', records: 175, alerts: 14, complete: 92 },
-]
-const rows = [
-  ['Grupo Andino S.A.', 'Comercial', 'María F. Ruiz', 'Renovación', '$284,500', 'Emitida', 'Conciliado', 'AT-REN-04'],
-  ['Inversiones Litoral', 'Operaciones', 'Carlos Mendoza', 'Venta Nueva', '$198,240', 'Emitida', 'Parcial', 'AT-VN-11'],
-  ['Red Médica Nacional', 'Servicio', 'Ana S. Torres', 'On Hand', '$156,800', 'Emitida', 'Conciliado', 'AT-OH-02'],
-  ['Constructora Norte', 'Comercial', 'Luis Ramírez', 'Gerencial', '$94,120', 'Pendiente', 'Pendiente', 'AT-GER-09'],
-  ['Logística Integral', 'Marketing', 'María F. Ruiz', 'Geomarketing', '$72,900', 'Emitida', 'Conciliado', 'AT-GEO-07'],
-]
-
-const dashboardTabs = [
-  'Ejecutivo de Comisiones',
-  'Gerencial de Control de Comisiones',
-  'Individual de Comisiones',
-  'Operativo de Cierre y Aprobación',
-] as const
-
-type DashboardTab = (typeof dashboardTabs)[number]
+function SelectFilter({ label, value, options, onChange }: SelectFilterProps) {
+  return <label className="flex min-w-0 flex-col gap-1.5"><span className="text-[11px] font-semibold text-slate-600">{label}</span><span className="relative"><select value={value} onChange={(event) => onChange(event.target.value)} className="h-10 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-8 text-xs text-slate-700 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100">{options.map((option) => <option key={option}>{option}</option>)}</select><ChevronDown className="pointer-events-none absolute right-3 top-3 size-4 text-slate-400" /></span></label>
+}
 
 export default function BscDashboard() {
-  const [activeTab, setActiveTab] = useState<DashboardTab>('Gerencial de Control de Comisiones')
-  const [view, setView] = useState<'control' | 'analysis'>('control')
+  const [activeTab, setActiveTab] = useState(tabs[3])
+  const [period, setPeriod] = useState('Julio 2026')
+  const [client, setClient] = useState('Todos')
+  const [bank, setBank] = useState('Todas')
+  const [status, setStatus] = useState('Todos')
+  const [agingFilter, setAgingFilter] = useState('Todos los tramos')
+  const [query, setQuery] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [search, setSearch] = useState('')
-  const [filters, setFilters] = useState({ period: 'Julio 2026', area: 'Todas', line: 'Todos', beneficiary: 'Todos', type: 'Todos', status: 'Todos' })
-  const filteredRows = useMemo(() => rows.filter((row) => row.some((cell) => cell.toLowerCase().includes(search.toLowerCase()))), [search])
-  const clearFilters = () => setFilters({ period: 'Julio 2026', area: 'Todas', line: 'Todos', beneficiary: 'Todos', type: 'Todos', status: 'Todos' })
+  const visibleRows = useMemo(() => reconciliationRows.filter((row) => (client === 'Todos' || row.client === client) && (status === 'Todos' || row.status === status) && row.client.toLowerCase().includes(query.toLowerCase())), [client, status, query])
+  const clearFilters = () => { setPeriod('Julio 2026'); setClient('Todos'); setBank('Todas'); setStatus('Todos'); setAgingFilter('Todos los tramos'); setQuery('') }
+  const exportCsv = () => {
+    const content = [['Registro ID', 'Causa de retención', 'Detalle', 'Monto retenido', 'Alerta'], ...exceptions.map((row) => row.map(String))].map((row) => row.map((value) => `"${value.replaceAll('"', '""')}"`).join(',')).join('\n')
+    const url = URL.createObjectURL(new Blob([content], { type: 'text/csv;charset=utf-8' }))
+    const link = document.createElement('a'); link.href = url; link.download = 'excepciones-cobranza-julio-2026.csv'; link.click(); URL.revokeObjectURL(url)
+  }
+  const statusStyle: Record<string, string> = { Cuadrado: 'bg-emerald-50 text-emerald-700 ring-emerald-600/15', Descalce: 'bg-amber-50 text-amber-800 ring-amber-600/20', Retenido: 'bg-rose-50 text-rose-700 ring-rose-600/15' }
 
-  return (
-    <div className="bsc-shell">
-      <aside className={`bsc-sidebar ${sidebarOpen ? '' : 'is-collapsed'}`}>
-        <div>
-          <div className="bsc-brand"><div className="bsc-brand-mark">A</div>{sidebarOpen && <div><strong>ATENAS</strong><span>ERP · v2.0</span></div>}<button className="bsc-icon-button sidebar-toggle" onClick={() => setSidebarOpen(!sidebarOpen)} aria-label="Colapsar menú"><Menu /></button></div>
-          <div className="bsc-workspace"><div className="bsc-avatar">AT</div>{sidebarOpen && <div><strong>Grupo Atenas</strong><span>Operación global</span></div>}<ChevronDown /></div>
-  <nav className="bsc-nav" aria-label="Navegación global">
-  <p className="bsc-nav-heading">MENÚ PRINCIPAL</p>
-  {[[LayoutDashboard, 'Resumen'], [CircleDollarSign, 'Ventas verificadas'], [Users, 'Clientes'], [BarChart3, 'Reportes']].map(([Icon, label]) => <button key={label as string} className="bsc-nav-item"><Icon />{sidebarOpen && <span>{label}</span>}</button>)}
-  <p className="bsc-nav-heading bsc-nav-heading-secondary">GESTIÓN</p>
-  {[[Settings2, 'Integraciones'], [ShieldCheck, 'BSC Comisiones']].map(([Icon, label]) => <button key={label as string} className={`bsc-nav-item ${label === 'BSC Comisiones' ? 'active' : ''}`}><Icon />{sidebarOpen && <span>{label}</span>}</button>)}
-  </nav>
+  return <div className="flex min-h-screen bg-slate-50 text-slate-800">
+    <aside className={`${sidebarOpen ? 'w-[248px]' : 'w-[76px]'} sticky top-0 flex h-screen shrink-0 flex-col border-r border-slate-200 bg-white transition-[width] duration-200 max-md:fixed max-md:z-30 ${sidebarOpen ? 'max-md:w-[248px]' : 'max-md:w-[76px]'}`}>
+      <div className="flex h-[72px] items-center gap-3 border-b border-slate-100 px-5"><div className="grid size-9 shrink-0 place-items-center rounded-xl bg-[#294b91] text-lg font-bold text-white">A</div>{sidebarOpen && <div className="leading-tight"><strong className="text-sm tracking-[.2em] text-slate-800">ATENAS</strong><span className="mt-1 block text-[10px] text-slate-400">ERP · v2.0</span></div>}<button onClick={() => setSidebarOpen(!sidebarOpen)} aria-label="Alternar navegación" className="ml-auto rounded-lg p-2 text-slate-500 hover:bg-slate-100"><BarChart3 className="size-4" /></button></div>
+      <div className="mx-3 mt-5 flex items-center gap-3 rounded-xl border border-slate-200 p-3"><div className="grid size-8 shrink-0 place-items-center rounded-lg bg-blue-50 text-[10px] font-bold text-blue-800">AT</div>{sidebarOpen && <div className="min-w-0"><strong className="block truncate text-xs text-slate-700">Grupo Atenas</strong><span className="text-[10px] text-slate-400">Operación global</span></div>}{sidebarOpen && <ChevronDown className="ml-auto size-4 text-slate-400" />}</div>
+      <nav className="mt-5 flex flex-col gap-1 px-3" aria-label="Navegación principal">
+        {[[LayoutDashboard, 'Resumen'], [CircleDollarSign, 'Ventas verificadas'], [Users, 'Clientes'], [BriefcaseBusiness, 'BSC Comisiones'], [FileText, 'Reportes']].map(([Icon, label]) => <button key={label as string} className={`flex h-11 items-center gap-3 rounded-xl px-3 text-left text-[13px] transition ${label === 'BSC Comisiones' ? 'bg-indigo-50 font-semibold text-indigo-800' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}><Icon className="size-[18px] shrink-0" />{sidebarOpen && <span>{label as string}</span>}</button>)}
+        <div className="my-3 border-t border-slate-200" />
+        {[[Settings, 'Integraciones'], [Settings, 'Ajustes']].map(([Icon, label]) => <button key={label as string} className="flex h-11 items-center gap-3 rounded-xl px-3 text-left text-[13px] text-slate-600 transition hover:bg-slate-50"><Icon className="size-[18px] shrink-0" />{sidebarOpen && <span>{label as string}</span>}</button>)}
+      </nav>
+      <div className="mt-auto flex items-center gap-3 border-t border-slate-100 p-4"><div className="grid size-9 shrink-0 place-items-center rounded-full bg-slate-800 text-[11px] font-semibold text-white">MG</div>{sidebarOpen && <div><strong className="block text-xs text-slate-700">María González</strong><span className="text-[10px] text-slate-400">Directora General</span></div>}</div>
+    </aside>
+    <main className="min-w-0 flex-1">
+      <header className="flex h-[64px] items-center justify-between border-b border-slate-200 bg-white px-5 md:px-8"><div className="flex h-9 w-full max-w-[350px] items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 text-slate-400"><Search className="size-4 shrink-0" /><input aria-label="Buscar cliente" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar cliente o referencia…" className="w-full bg-transparent text-xs text-slate-700 outline-none placeholder:text-slate-400" /></div><div className="flex items-center gap-4"><button className="relative rounded-lg p-2 text-slate-500 hover:bg-slate-50" aria-label="Notificaciones"><Bell className="size-[18px]" /><span className="absolute right-2 top-2 size-1.5 rounded-full bg-rose-500" /></button><div className="hidden items-center gap-2.5 sm:flex"><div className="grid size-8 place-items-center rounded-full bg-slate-800 text-[10px] font-semibold text-white">MG</div><div className="leading-tight"><strong className="block text-xs text-slate-700">María González</strong><span className="text-[10px] text-slate-400">Directora General</span></div><ChevronDown className="size-4 text-slate-400" /></div></div></header>
+      <nav className="border-b border-slate-200 bg-white px-5 pt-3 md:px-8" aria-label="Tableros de comisiones"><ul className="-mb-px flex items-end gap-7 overflow-x-auto">{tabs.map((tab) => <li key={tab} className="shrink-0"><button onClick={() => setActiveTab(tab)} aria-current={activeTab === tab ? 'page' : undefined} className={`border-b-2 px-0 pb-3 text-xs transition-colors ${activeTab === tab ? 'border-indigo-600 font-semibold text-indigo-700' : 'border-transparent font-medium text-slate-500 hover:text-slate-800'}`}>{tab}</button></li>)}</ul></nav>
+      <div className="mx-auto flex max-w-[1600px] flex-col gap-5 p-4 md:p-7">
+        <div role="status" className="flex items-center gap-2 rounded-xl border border-sky-200 bg-sky-50/80 px-4 py-3 text-xs text-sky-900"><span className="grid size-5 shrink-0 place-items-center rounded-full bg-sky-100"><Check className="size-3" /></span><span><strong>Estado:</strong> Sin insumos de aplicación CxC para el período seleccionado (ATENAS-79/80)</span></div>
+        <section className="flex flex-col justify-between gap-4 rounded-2xl bg-slate-900 p-5 text-white shadow-sm md:flex-row md:items-center md:p-6"><div><p className="mb-1.5 text-[10px] font-bold uppercase tracking-[.16em] text-indigo-300">BSC · COMISIONES · CIERRE OPERATIVO</p><h1 className="text-xl font-semibold tracking-tight md:text-2xl">Vista Financiera-Operativa y Conciliación</h1><p className="mt-2 text-[10px] font-medium uppercase tracking-[.08em] text-slate-300">S4-09 / ATENAS-116 · CONTROL DE INGRESOS, APLICACIONES Y CARTERA VENCIDA</p></div><button onClick={() => window.print()} className="inline-flex h-10 shrink-0 items-center justify-center gap-2 self-start rounded-lg border border-white/20 bg-white/10 px-4 text-xs font-medium text-white transition hover:bg-white/20 md:self-auto"><Printer className="size-4" />Exportar PDF</button></section>
+        <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5" aria-label="Filtros de conciliación"><div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-6"><SelectFilter label="Período de Conciliación" value={period} onChange={setPeriod} options={['Julio 2026', 'Junio 2026', 'Mayo 2026']} /><SelectFilter label="Cliente / Cartera" value={client} onChange={setClient} options={['Todos', ...reconciliationRows.map((row) => row.client)]} /><SelectFilter label="Banco / Cuenta de Ingreso" value={bank} onChange={setBank} options={['Todas', 'Banco Atenas · 0084', 'Banco Nacional · 2910']} /><SelectFilter label="Estado de Conciliación" value={status} onChange={setStatus} options={['Todos', 'Cuadrado', 'Descalce', 'Retenido']} /><SelectFilter label="Tramo de Morosidad" value={agingFilter} onChange={setAgingFilter} options={['Todos los tramos', 'Vigente', '1–30 días', '31–60 días', '61–90 días', '+90 días']} /><button type="button" onClick={clearFilters} className="mt-auto inline-flex h-10 items-center justify-center gap-1.5 rounded-lg px-2 text-xs font-medium text-slate-500 transition hover:bg-slate-50 hover:text-slate-800"><X className="size-3.5" />Limpiar</button></div></section>
+<section aria-labelledby="matrix-heading"><div className="mb-3"><p className="mb-1 text-[10px] font-bold uppercase tracking-[.13em] text-indigo-600">VALIDACIÓN DE INGRESOS</p><h2 id="matrix-heading" className="text-base font-semibold text-slate-900">Matriz de Conciliación Tripartita</h2></div>
+	          <div className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-3">{[{ label: 'Total Ingresado en Banco', value: '$2,431,500', icon: CircleDollarSign, caption: 'Cobros procesados' }, { label: 'Total Aplicado a CxC', value: '$2,380,000', icon: Check, caption: 'Registros conciliados' }, { label: 'Total Comisión Activada', value: '$1,987,200', icon: BarChart3, caption: 'Comisiones calculadas' }].map(({ label, value, icon: Icon, caption }) => <article key={label} className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md"><div className="flex items-center gap-3"><span className="grid size-10 shrink-0 place-items-center rounded-xl bg-indigo-50 text-indigo-600"><Icon className="size-4" /></span><span className="text-left text-xs font-semibold leading-tight text-slate-600">{label}</span></div><strong className="my-1 block text-2xl font-bold tracking-tight tabular-nums text-slate-900">{value}</strong><span className="block text-[11px] font-normal text-slate-400">{caption}</span></article>)}</div>
+          <div className="mb-4 flex flex-wrap items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3"><span className="grid size-7 place-items-center rounded-lg bg-amber-100 text-amber-700"><AlertTriangle className="size-4" /></span><div className="flex flex-wrap items-baseline gap-x-2"><span className="text-xs font-semibold text-amber-900">Diferencia de Conciliación</span><span className="text-[10px] text-amber-800">met_diferencia_conciliacion_usd</span></div><strong className="ml-auto text-base font-bold tabular-nums text-amber-900">−$51,500</strong></div>
+          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"><div className="overflow-x-auto"><table className="w-full min-w-[780px] border-collapse text-left"><thead className="bg-slate-50"><tr>{['Cliente', 'Período', 'Ingresos Banco', 'Aplicación CxC', 'Comisión Activada', 'Estado'].map((heading) => <th key={heading} className="px-4 py-3 text-[10px] font-semibold uppercase tracking-wide text-slate-500">{heading}</th>)}</tr></thead><tbody>{visibleRows.map((row) => <tr key={row.client} className="border-t border-slate-100 hover:bg-slate-50/70"><td className="px-4 py-3 text-xs font-semibold text-slate-800">{row.client}</td><td className="px-4 py-3 text-xs text-slate-600">{period}</td><td className="px-4 py-3 text-xs tabular-nums text-slate-700">{formatMoney(row.bank)}</td><td className="px-4 py-3 text-xs tabular-nums text-slate-700">{formatMoney(row.applied)}</td><td className="px-4 py-3 text-xs tabular-nums text-slate-700">{formatMoney(row.commission)}</td><td className="px-4 py-3"><span className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-semibold ring-1 ring-inset ${statusStyle[row.status]}`}>{row.status}</span></td></tr>)}</tbody></table>{visibleRows.length === 0 && <p className="px-4 py-8 text-center text-xs text-slate-500">No se encontraron registros con estos filtros.</p>}</div><div className="border-t border-slate-100 px-4 py-2.5 text-[10px] text-slate-500">{visibleRows.length} de {reconciliationRows.length} registros · Corte al 31 jul 2026</div></div>
+        </section>
+        <section aria-labelledby="exceptions-heading"><div className="mb-3 flex flex-wrap items-end justify-between gap-3"><div><p className="mb-1 text-[10px] font-bold uppercase tracking-[.13em] text-indigo-600">REVISIÓN Y RETENCIONES</p><h2 id="exceptions-heading" className="text-base font-semibold text-slate-900">Panel de Excepciones de Cobranza</h2></div><button onClick={exportCsv} className="inline-flex h-9 items-center gap-2 rounded-xl bg-slate-900 px-4 text-[11px] font-semibold text-white transition hover:bg-slate-700"><Download className="size-3.5" />Exportar Excepciones (.csv) - 14 registros</button></div>
+          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"><div className="overflow-x-auto"><table className="w-full min-w-[780px] border-collapse text-left"><thead className="bg-slate-50"><tr>{['Registro ID', 'Cliente / Factura', 'Causa de Retención', 'Monto Retenido ($)', 'Alerta', 'Acción'].map((heading) => <th key={heading} className="px-4 py-3 text-[10px] font-semibold uppercase tracking-wide text-slate-500">{heading}</th>)}</tr></thead><tbody>{exceptions.map(([id, cause, detail, amount, alert]) => <tr key={id} className="border-t border-slate-100"><td className="px-4 py-3 font-mono text-[11px] text-slate-600">{id}</td><td className="px-4 py-3"><span className="block text-xs font-medium text-slate-800">{cause === 'Cliente no identificado' ? 'Sin identificar' : detail.split(' · ')[1] || 'Registro de cobranza'}</span><span className="block text-[10px] text-slate-500">{detail}</span></td><td className="px-4 py-3 text-xs text-slate-700">{cause}</td><td className="px-4 py-3 text-xs tabular-nums text-slate-800">{formatMoney(amount)}</td><td className="px-4 py-3"><span className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${alert === 'Alta' ? 'bg-rose-50 text-rose-700' : alert === 'Media' ? 'bg-amber-50 text-amber-800' : 'bg-slate-100 text-slate-600'}`}>{alert}</span></td><td className="px-4 py-3"><button className="text-xs font-semibold text-indigo-700 hover:text-indigo-900">Revisar</button></td></tr>)}</tbody></table></div><div className="border-t border-slate-100 px-4 py-2.5 text-[10px] text-slate-500">Mostrando 4 de 14 incidencias en staging</div></div>
+        </section>
+        <section aria-labelledby="aging-heading"><div className="mb-3"><p className="mb-1 text-[10px] font-bold uppercase tracking-[.13em] text-indigo-600">CARTERA Y EXPOSICIÓN</p><h2 id="aging-heading" className="text-base font-semibold text-slate-900">Control de Antigüedad de CxC y Riesgo de Comisiones</h2></div><div className="grid grid-cols-1 gap-4 lg:grid-cols-12"><article className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md lg:col-span-7"><div className="mb-5"><h3 className="text-base font-semibold text-slate-900">Antigüedad de cartera</h3><p className="mt-1 text-xs text-slate-400">Saldo pendiente por tramo de morosidad</p></div><div className="flex flex-col gap-4">{aging.filter((item) => agingFilter === 'Todos los tramos' || item.name === agingFilter).map((item) => <div key={item.name}><div className="flex items-center justify-between gap-3 text-xs"><span className="font-medium text-slate-600">{item.name}</span><strong className="font-semibold tabular-nums text-slate-900">{formatMoney(item.amount)}</strong></div><div className="my-2 h-2 w-full overflow-hidden rounded-full bg-slate-100"><div className={`h-full rounded-full ${item.color}`} style={{ width: `${item.percent}%` }} /></div></div>)}</div><div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4 text-sm font-semibold text-slate-900"><span>Total de cartera vencida</span><strong className="tabular-nums">$1,000,600</strong></div></article>
+            <article className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-sm transition-all duration-200 hover:shadow-md lg:col-span-5"><div className="mb-4 flex items-start justify-between gap-3"><div><h3 className="text-base font-semibold text-slate-900">Comisiones en Riesgo</h3><p className="mt-1 text-xs text-slate-400">Pausadas por morosidad del cliente</p></div><span className="rounded-full bg-rose-50 px-2.5 py-1 text-xs font-medium text-rose-600">3 casos</span></div><div className="flex flex-col divide-y divide-slate-100">{[{ name: 'Grupo del Centro', days: '96 días vencidos', amount: '$32,400', initials: 'GC' }, { name: 'Comercializadora Delta', days: '64 días vencidos', amount: '$21,800', initials: 'CD' }, { name: 'Servicios del Pacífico', days: '38 días vencidos', amount: '$14,200', initials: 'SP' }].map((item) => <div key={item.name} className="flex items-center gap-3 py-3"><div className="grid size-9 shrink-0 place-items-center rounded-xl bg-rose-50 text-[10px] font-bold text-rose-600">{item.initials}</div><div className="min-w-0 flex-1"><strong className="block truncate text-xs font-semibold text-slate-900">{item.name}</strong><span className="text-xs text-slate-500">{item.days}</span></div><strong className="text-sm font-semibold tabular-nums text-slate-900">{item.amount}</strong></div>)}</div><div className="mt-4 flex items-center justify-between rounded-xl border border-slate-200/60 bg-slate-50/80 p-4"><span className="text-sm font-medium text-slate-700">Comisión total pausada</span><strong className="text-lg font-bold tabular-nums text-slate-900">$68,400</strong></div></article></div></section>
+        <footer className="pb-2 text-center text-[10px] text-slate-400">ATENAS ERP · Conciliación operativa · Datos de referencia para julio 2026</footer>
+      </div>
+    </main>
   </div>
-  <div className="bsc-side-footer"><div className="bsc-user"><div className="bsc-avatar user">MG</div>{sidebarOpen && <div><strong>María González</strong><span>Directora General</span></div>}<ChevronDown /></div></div>
-      </aside>
-
-      <main className="bsc-main">
-        <header className="bsc-topbar"><div className="bsc-search"><Search /><input placeholder="Buscar en ATENAS" aria-label="Buscar" /><kbd>⌘ K</kbd></div><div className="bsc-top-actions"><button className="bsc-icon-button" aria-label="Notificaciones"><Bell /><i /></button><div className="bsc-profile"><div className="bsc-avatar user">MG</div><div><strong>María González</strong><span>Directora General</span></div><ChevronDown /></div></div></header>
-        <nav className="border-b border-slate-200/80 bg-white px-8 pt-4 pb-0 mb-6" aria-label="Tableros de comisiones">
-          <ul className="-mb-px flex w-full items-end gap-8 overflow-x-auto overflow-y-hidden [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {dashboardTabs.map((tab) => (
-              <li key={tab} className="shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setActiveTab(tab)}
-                  aria-current={activeTab === tab ? 'page' : undefined}
-                  style={{ borderBottomColor: activeTab === tab ? '#2563eb' : 'transparent' }}
-                  className={`block text-sm whitespace-nowrap transition-colors ${activeTab === tab ? 'font-semibold text-blue-600 border-b-2 border-blue-600 pb-3' : 'font-medium text-slate-500 hover:text-slate-800 border-b-2 border-transparent pb-3 cursor-pointer'}`}
-                >
-                  {tab}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </nav>
-                <div className="bsc-content">
-          <section className="bsc-module-banner bg-[#1e1b4b] rounded-2xl p-6 shadow-sm mb-4"><div><p className="bsc-eyebrow text-[10px] uppercase font-bold tracking-wider text-indigo-300">BSC · COMISIONES</p><h1 className="text-base font-bold tracking-tight text-white">Tablero Gerencial de Control de Comisiones</h1><p className="text-[11px] text-indigo-200 mt-0.5">REVISIÓN, CONCILIACIÓN Y CIERRE MENSUAL</p></div><div className="bsc-banner-actions"><button className="inline-flex items-center gap-1.5 rounded-lg border border-white/30 bg-white/10 px-3 py-1 text-xs font-medium text-white shadow-sm transition-all hover:bg-white/20"><Download aria-hidden="true" /> Exportar PDF</button></div></section>
-
-          <section className="bsc-filter-bar bg-white rounded-2xl border border-slate-200/80 p-5 shadow-sm mb-6" aria-label="Filtros de consulta"><div className="bsc-filter-controls gap-3">{([['period', 'Período de cierre'], ['area', 'Área'], ['line', 'Línea de negocio'], ['beneficiary', 'Beneficiario'], ['type', 'Tipo de comisión'], ['status', 'Estado de comisión']] as const).map(([key, label]) => <label key={key}><span>{label}</span><div className="bsc-select"><select value={filters[key]} onChange={(e) => setFilters({ ...filters, [key]: e.target.value })}><option>{filters[key]}</option><option>Todos</option><option>Todas</option><option>Julio 2026</option><option>Junio 2026</option></select><ChevronDown aria-hidden="true" /></div></label>)}<button type="button" onClick={clearFilters} className="bsc-filter-clear"><X aria-hidden="true" /><span>Limpiar</span></button></div></section>
-          <nav className="mb-6 flex items-center gap-1 border-b border-slate-200 px-1" aria-label="Vista del tablero"><button type="button" onClick={() => setView('control')} className={`relative px-4 py-3 text-sm transition-colors ${view === 'control' ? 'font-semibold text-blue-600 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-blue-600' : 'font-medium text-slate-500 hover:text-slate-800'}`}>Control General del Cierre</button><button type="button" onClick={() => setView('analysis')} className={`relative px-4 py-3 text-sm transition-colors ${view === 'analysis' ? 'font-semibold text-blue-600 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-blue-600' : 'font-medium text-slate-500 hover:text-slate-800'}`}>Análisis y Trazabilidad</button></nav>
-          {view === 'control' ? <ControlView /> : <AnalysisView search={search} setSearch={setSearch} filteredRows={filteredRows} />}
-        </div>
-      </main>
-    </div>
-  )
 }
-
-function ControlView() {
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
-  const [detailSearch, setDetailSearch] = useState('')
-  const [priorityFilter, setPriorityFilter] = useState<'Todas' | 'Alta' | 'Media'>('Todas')
-  const visibleExceptions = exceptions.filter(([name, level]) => {
-    const matchesSearch = name.toLowerCase().includes(detailSearch.toLowerCase())
-    const matchesPriority = priorityFilter === 'Todas' || level === priorityFilter
-    return matchesSearch && matchesPriority
-  })
-
-  return <>
-    <section className="bsc-kpi-grid grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:!grid-cols-7 gap-1.5 w-full mb-4">{kpis.map(({ label, value, cases, tone, icon: Icon }) => <article className={`bsc-kpi-card ${tone} flex min-w-0 flex-col justify-between h-full !p-2.5 bg-white rounded-lg border border-slate-200 shadow-sm`} key={label} title={label}><div className="bsc-kpi-top min-w-0"><div className="bsc-kpi-icon"><Icon /></div><div className="flex min-h-[2rem] min-w-0 items-center"><span className="min-w-0 text-[9px] font-medium leading-[1.15] text-slate-700">{label}</span></div></div><div className="mt-1.5"><strong className="block whitespace-nowrap text-base font-bold tabular-nums text-slate-900">{value}</strong><small className="mt-0.5 block min-h-6 text-[10px] leading-tight text-slate-500">{cases}</small></div></article>)}</section>
-    <div className="bsc-two-col"><section className="bsc-card"><div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100"><h3 className="text-base font-bold text-slate-900 m-0">Excepciones y diferencias de conciliación</h3><button type="button" onClick={() => setIsDetailModalOpen(true)} className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:text-blue-800 transition-colors cursor-pointer bg-transparent border-none p-0"><span>Ver detalle</span><ChevronRight className="w-4 h-4" /></button></div><div className="bsc-exception-list">{exceptions.map(([name, level, cases, amount, tone]) => <div className="bsc-exception hover:bg-slate-50/80 transition-all cursor-pointer rounded-lg px-2" key={name}><div className="bsc-exception-icon"><AlertTriangle /></div><div className="bsc-exception-name"><strong>{name}</strong><span>{cases}</span></div><span className={`bsc-severity ${tone} rounded-md px-2 py-1 text-[11px] font-semibold leading-none tracking-wide ${tone === 'critical' ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-700'}`}>{level}</span><strong className="bsc-exception-amount tabular-nums font-semibold text-slate-900">{amount}</strong></div>)}</div></section>
-      <section className="bsc-card"><div className="flex items-center justify-between mb-4 pb-2 border-b border-slate-100"><h3 className="text-base font-bold text-slate-900 m-0">Cierre mensual · Julio 2026</h3><span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-emerald-700 bg-emerald-50 rounded-full"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>En curso</span></div><div className="bsc-progress-list">{progress.map((item) => <div className="bsc-progress-row" key={item.label}><div className="bsc-progress-meta"><strong>{item.label}</strong><span>{item.count} comisiones · {item.percent}%</span><b>{item.amount}</b></div><div className="bsc-progress-track bg-slate-100 h-2.5 rounded-full overflow-hidden"><i className="block h-full rounded-full" style={{ width: `${item.percent}%`, background: item.color }} /></div></div>)}</div><div className="bsc-total bg-slate-50/70 border border-slate-200/60 rounded-xl p-4"><div><span>Total Comisiones Julio 2026</span><strong>968 comisiones</strong></div><strong className="tabular-nums text-2xl font-bold text-slate-900">$2,431,500</strong></div></section></div>
-      {isDetailModalOpen && <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setIsDetailModalOpen(false) }}><div className="w-full max-w-4xl rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="exception-detail-title"><div className="flex items-start justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-wider text-blue-600">Revisión de conciliación</p><h2 id="exception-detail-title" className="mt-1 text-xl font-bold text-slate-900">Detalle de excepciones</h2><p className="mt-1 text-sm text-slate-500">Casos que requieren seguimiento antes del cierre mensual.</p></div><button type="button" onClick={() => setIsDetailModalOpen(false)} className="rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900" aria-label="Cerrar detalle"><X className="h-5 w-5" /></button></div><div className="mt-5 mb-6 flex items-center justify-between gap-4 rounded-xl bg-slate-900 p-4 text-white"><div><p className="text-xs font-medium uppercase tracking-wider text-slate-300">Impacto Total en Excepciones</p><strong className="mt-1 block text-lg font-bold">262 casos · $333,600</strong></div><AlertTriangle className="h-6 w-6 text-amber-300" aria-hidden="true" /></div><div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><div className="relative w-full sm:max-w-xs"><Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" aria-hidden="true" /><input value={detailSearch} onChange={(event) => setDetailSearch(event.target.value)} placeholder="Buscar excepción..." aria-label="Buscar excepción" className="h-10 w-full rounded-lg border border-slate-200 bg-white pl-9 pr-3 text-sm text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" /></div><div className="flex flex-wrap gap-2" role="group" aria-label="Filtrar por prioridad">{(['Todas', 'Alta', 'Media'] as const).map((filter) => <button key={filter} type="button" onClick={() => setPriorityFilter(filter)} className={`rounded-full border px-3 py-2 text-xs font-semibold transition-colors ${priorityFilter === filter ? 'border-blue-600 bg-blue-600 text-white' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50'}`}>{filter === 'Alta' ? 'Alta prioridad' : filter === 'Media' ? 'Media prioridad' : 'Todas'}</button>)}</div></div><div className="space-y-0.5">{visibleExceptions.length > 0 ? visibleExceptions.map(([name, level, cases, amount, tone]) => <div className="mb-2.5 flex items-center justify-between gap-3 rounded-xl border border-slate-200/80 bg-white p-3.5 transition-all hover:border-slate-300 hover:shadow-sm" key={`detail-${name}`}><div className="flex min-w-0 items-center gap-3"><AlertTriangle className="h-4 w-4 shrink-0 text-amber-500" aria-hidden="true" /><div className="min-w-0"><p className="truncate text-sm font-semibold text-slate-800">{name}</p><p className="text-xs text-slate-500">{cases}</p></div></div><div className="flex shrink-0 items-center gap-3"><span className={`rounded-md px-2 py-1 text-[11px] font-semibold ${tone === 'critical' ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-700'}`}>{level}</span><strong className="min-w-[5.5rem] text-right tabular-nums text-sm font-bold text-slate-900">{amount}</strong><ChevronRight className="h-4 w-4 text-slate-400" aria-hidden="true" /></div></div>) : <div className="rounded-xl border border-dashed border-slate-200 px-4 py-8 text-center text-sm text-slate-500">No se encontraron excepciones con estos filtros.</div>}</div></div></div>}
-  </>
-}
-
-function AnalysisView({ search, setSearch, filteredRows }: { search: string; setSearch: (value: string) => void; filteredRows: string[][] }) {
-  const visibleRows = filteredRows
-
-  return <>
-    <AnalyticsCards />
-    {/* Sección Media: Evolución y Ranking */}
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
-      <div className="lg:col-span-8 flex flex-col bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm">
-        <div className="mb-3 flex items-end justify-between gap-3 border-b border-slate-100 pb-2.5">
-          <div className="min-w-0">
-            <h2 className="text-sm font-bold leading-tight text-slate-900">Evolución mensual</h2>
-            <p className="mt-0.5 text-[11px] leading-tight text-slate-500">Histórico de cierre por comisiones · Ene – Jul 2026</p>
-          </div>
-          <div className="flex shrink-0 items-center gap-2.5">
-            <div className="text-right">
-              <p className="text-[10px] font-medium uppercase leading-tight tracking-wide text-slate-400">Julio 2026</p>
-              <p className="text-sm font-semibold leading-tight tabular-nums text-slate-900">${latestEvolution.value.toLocaleString('en-US')}</p>
-            </div>
-            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold tabular-nums text-emerald-700 ring-1 ring-inset ring-emerald-600/15" title="Variación vs. mes anterior">
-              <TrendingUp className="h-3 w-3" aria-hidden="true" />+{monthOverMonth}%
-            </span>
-          </div>
-        </div>
-        <div className="h-[210px] w-full lg:h-auto lg:min-h-[210px] lg:flex-1" role="img" aria-label={`Evolución mensual del cierre por comisiones, de $${monthlyEvolution[0].value.toLocaleString('en-US')} en enero a $${latestEvolution.value.toLocaleString('en-US')} en julio`}>
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={monthlyEvolution} margin={{ top: 6, right: 8, left: 0, bottom: 0 }}>
-              <defs>
-                <linearGradient id="evolutionFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#1d4ed8" stopOpacity={0.14} />
-                  <stop offset="100%" stopColor="#1d4ed8" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid stroke="#f1f5f9" vertical={false} />
-              <XAxis dataKey="month" axisLine={false} tickLine={false} tickMargin={8} tick={{ fill: '#94a3b8', fontSize: 11 }} />
-              <YAxis axisLine={false} tickLine={false} tickMargin={6} tickCount={5} domain={[1500000, 2600000]} tick={{ fill: '#94a3b8', fontSize: 10 }} tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`} width={44} />
-              <Tooltip cursor={{ stroke: '#cbd5e1', strokeDasharray: '3 3' }} formatter={(value) => [`$${Number(value).toLocaleString('en-US')}`, 'Cierre']} labelFormatter={(label) => `${label} 2026`} contentStyle={{ borderRadius: 10, border: '1px solid #e2e8f0', boxShadow: '0 4px 12px rgba(15, 23, 42, 0.08)', fontSize: 12 }} />
-              <Area type="monotone" dataKey="value" stroke="#1d4ed8" strokeWidth={2} fill="url(#evolutionFill)" dot={{ r: 2.5, fill: '#fff', stroke: '#1d4ed8', strokeWidth: 1.5 }} activeDot={{ r: 4.5, fill: '#1d4ed8', stroke: '#fff', strokeWidth: 2 }} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-      <div className="lg:col-span-4 min-w-0 bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm">
-        <div className="mb-3 flex items-end justify-between gap-2 border-b border-slate-100 pb-2.5">
-          <div className="min-w-0">
-            <h2 className="text-sm font-bold leading-tight text-slate-900">Impacto en Cierre de Comisiones</h2>
-            <p className="mt-0.5 text-[11px] leading-tight text-slate-500">Ranking de incidencia en el período</p>
-          </div>
-          <span className="shrink-0 text-[10px] font-semibold uppercase tracking-wide text-slate-400">Impacto</span>
-        </div>
-        <ol aria-label="Ranking de clientes o servicios por impacto" className="flex flex-col">
-          {closingImpact.map((item, index) => {
-            const isClient = item.type.toLowerCase().startsWith('cliente')
-            return (
-              <li key={item.name} className="flex items-center gap-3 rounded-lg border-b border-slate-100 px-1.5 py-2 transition-colors last:border-0 hover:bg-slate-50">
-                <span aria-hidden="true" className="w-4 shrink-0 text-[11px] font-semibold tabular-nums text-slate-400">{index + 1}</span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold leading-tight text-slate-900" title={item.name}>{item.name}</p>
-                  <span className={`mt-1 inline-flex items-center rounded-full px-1.5 py-px text-[10px] font-medium leading-4 ring-1 ring-inset ${isClient ? 'bg-blue-50 text-blue-700 ring-blue-600/15' : 'bg-emerald-50 text-emerald-700 ring-emerald-600/15'}`}>{item.type}</span>
-                </div>
-                <span className="shrink-0 whitespace-nowrap text-right text-sm font-semibold tabular-nums text-slate-900">${item.value.toLocaleString('en-US')}</span>
-              </li>
-            )
-          })}
-        </ol>
-      </div>
-    </div>
-    <section className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm" aria-labelledby="trace-title">
-      <div className="mb-5 flex flex-wrap items-end justify-between gap-2">
-        <div>
-          <h2 id="trace-title" className="text-base font-semibold text-slate-900">Trazabilidad del proceso</h2>
-          <p className="mt-0.5 text-xs text-slate-500">Comparativo de registros, alertas y completitud</p>
-        </div>
-        <span className="text-[11px] font-medium text-slate-400">{traceability.length} etapas</span>
-      </div>
-      <div className="grid grid-cols-2 gap-y-6 md:grid-cols-3 lg:grid-cols-5 lg:gap-y-0 lg:divide-x lg:divide-slate-100">
-        {traceability.map((item) => {
-          const healthy = item.complete > 90
-          return (
-            <article key={item.label} className="flex min-w-0 flex-col px-4 first:pl-0 lg:last:pr-0">
-              <h3 className="min-h-8 text-xs font-semibold uppercase leading-4 tracking-wider text-slate-500">{item.label}</h3>
-              <div className="mt-3 flex items-baseline gap-1.5">
-                <strong className="text-2xl font-bold leading-none tracking-tight text-slate-900 tabular-nums">{item.records}</strong>
-                <span className="text-xs text-slate-400">registros</span>
-              </div>
-              <span className="mt-3 inline-flex w-max items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-600">
-                <AlertTriangle className="h-3 w-3" aria-hidden="true" />
-                {item.alerts} alertas
-              </span>
-              <div className="mt-4">
-                <div className="mb-1.5 flex items-center justify-between text-[10px] font-medium uppercase tracking-wider text-slate-400">
-                  <span>Completitud</span>
-                  <span className={`text-xs font-semibold tabular-nums tracking-normal ${healthy ? 'text-emerald-600' : 'text-amber-600'}`}>{item.complete}%</span>
-                </div>
-                <div className="h-1 overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-label={`Completitud de ${item.label}`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={item.complete}>
-                  <div className={`h-full rounded-full ${healthy ? 'bg-emerald-500' : 'bg-amber-500'}`} style={{ width: `${item.complete}%` }} />
-                </div>
-              </div>
-            </article>
-          )
-        })}
-      </div>
-    </section>
-    <section className="bsc-card"><div className="flex flex-col gap-4 border-b border-slate-200/60 pb-4 mb-4 sm:flex-row sm:items-center sm:justify-between"><h2 className="text-base font-bold text-slate-900">Detalle de control de comisiones</h2><div className="flex flex-col gap-3 sm:flex-row sm:items-center"><div className="bsc-table-search max-w-xs"><Search /><input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar cliente o beneficiario" /></div><button className="bsc-outline-button"><Download /> Exportar CSV</button></div></div>{/* Filtros de pestañas superiores */}
-	<div className="mb-4 flex items-center gap-2">
-  {[
-    { name: "Todos", count: 5, active: true },
-    { name: "Pendientes", count: 1, active: false },
-    { name: "Conciliados", count: 3, active: false },
-    { name: "Con excepciones", count: 2, active: false },
-  ].map((tab, idx) => (
-    <button
-      key={idx}
-      className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center gap-2 ${
-        tab.active
-          ? "bg-indigo-50 text-indigo-700 shadow-sm"
-          : "bg-transparent text-slate-600 hover:text-slate-900"
-      }`}
-    >
-      <span>{tab.name}</span>
-      <span className={`px-1.5 py-0.2 rounded-full text-[10px] ${tab.active ? "bg-white/20 text-white" : "bg-slate-100 text-slate-600"}`}>
-        {tab.count}
-      </span>
-    </button>
-  ))}
-</div><div className="bsc-table-wrap"><table><thead><tr>{['CLIENTE', 'ÁREA', 'BENEFICIARIO', 'TIPO COMISIÓN', 'MONTO VENTA', 'FACTURA / CXC', 'COBRO', 'REGLA APLICADA'].map((head) => <th key={head}>{head}</th>)}</tr></thead><tbody>{visibleRows.map((row) => <tr key={row[0]}>{row.map((cell, i) => <td key={`${row[0]}-${i}`}>{i === 5 || i === 6 ? (() => { const isPositive = cell === 'Conciliado' || cell === 'Emitida'; const StatusIcon = isPositive ? ShieldCheck : AlertTriangle; return <span className={`bsc-table-status ${isPositive ? 'ok' : 'pending'}`}><StatusIcon className="h-3.5 w-3.5" aria-hidden="true" />{cell}</span> })() : cell}</td>)}</tr>)}</tbody></table></div>{/* Paginador inferior derecho */}
-<div className="flex items-center justify-end gap-1.5 mt-4">
-  <button className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-transparent text-xs font-medium text-slate-600 transition-colors hover:bg-slate-100" aria-label="Página anterior">
-    &lt;
-  </button>
-  {[1, 2, 3].map((page) => (
-    <button
-      key={page}
-      className={`flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-xs font-medium transition-colors ${
-        page === 1
-          ? "border-[#1e1b4b] bg-[#1e1b4b] text-white shadow-sm"
-          : "bg-transparent text-slate-600 hover:bg-slate-100"
-      }`}
-    >
-      {page}
-    </button>
-  ))}
-  <button className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-transparent text-xs font-medium text-slate-600 transition-colors hover:bg-slate-100" aria-label="Página siguiente">
-    &gt;
-  </button>
-</div></section>
-  </>
-}
-
