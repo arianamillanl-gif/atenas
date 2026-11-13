@@ -12,8 +12,8 @@ const rows = [
 const fieldClass = 'mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50'
 const labelClass = 'text-xs font-semibold text-slate-600'
 
-function Field({ label, ...props }: { label: string; placeholder?: string; defaultValue?: string; type?: string; readOnly?: boolean }) {
-  return <label className="min-w-0"><span className={labelClass}>{label}</span><input className={fieldClass} placeholder={props.placeholder} defaultValue={props.defaultValue} type={props.type ?? 'text'} readOnly={props.readOnly} /></label>
+function Field({ label, className, inputClassName, ...props }: { label: string; placeholder?: string; defaultValue?: string; type?: string; readOnly?: boolean; className?: string; inputClassName?: string }) {
+  return <label className={`min-w-0 ${className ?? ''}`}><span className={labelClass}>{label}</span><input className={inputClassName ?? fieldClass} placeholder={props.placeholder} defaultValue={props.defaultValue} type={props.type ?? 'text'} readOnly={props.readOnly} /></label>
 }
 
 export default function RegistrarIngresos() {
@@ -27,12 +27,14 @@ export default function RegistrarIngresos() {
   const updateAmount = (key: keyof typeof amounts, value: string) => setAmounts((current) => ({ ...current, [key]: value }))
   const calculate = () => setAmounts((current) => ({ ...current, bs: (Number(current.bs.replace(',', '.')) || 0).toFixed(2).replace('.', ',') }))
 
-  return <div className="mx-auto flex max-w-[1600px] flex-col gap-0 p-4 md:p-7 [&>section]:mb-5 [&>section:first-of-type]:mb-6">
-    <header className="mb-6"><p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-indigo-600">TESORERÍA · FLUJO DE EFECTIVO</p><div className="border-l-4 border-indigo-600 pl-3"><h1 className="text-xl font-bold text-slate-900">Registro de Ingresos y Movimientos</h1></div><p className="mt-0.5 text-sm text-slate-500">Control de asientos contables, tasas de cambio y conciliación de caja</p></header>
+  return <div className="mx-auto flex max-w-[1600px] flex-col gap-0 p-4 md:p-7 [&>section]:mb-5 [&>section:first-of-type]:mb-4">
+    <header className="mb-4"><p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-indigo-600">TESORERÍA · FLUJO DE EFECTIVO</p><div className="border-l-4 border-indigo-600 pl-3"><h1 className="text-xl font-bold text-slate-900">Registro de Ingresos y Movimientos</h1></div><p className="mt-0.5 text-sm text-slate-500">Control de asientos contables, tasas de cambio y conciliación de caja</p></header>
 
-    <section className="mb-6 grid gap-5 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm md:p-6" aria-label="Tipo de cambio">
-      <div className="flex flex-wrap items-start justify-between gap-4"><div><h2 className="text-base font-bold text-slate-900">Tipo de Cambio</h2><p className="mt-0.5 text-xs text-slate-500">Tasas de referencia para el registro contable</p></div><span className="shrink-0 text-xs font-medium text-slate-400">Referencia vigente · 13/11/2026</span></div>
-      <div className="grid gap-4 md:grid-cols-2"><Field label="Tasa no oficial" defaultValue="1,00" /><div className="min-w-0"><span className={labelClass}>Tasa oficial</span><div className="mt-1.5 flex min-h-[42px] items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-2.5"><strong className="text-sm font-semibold tabular-nums text-slate-900">1,00 VE</strong><span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-600">+100</span></div></div></div>
+    <section className="mb-4 flex flex-wrap items-end gap-x-4 gap-y-2.5 rounded-2xl border border-slate-200/80 bg-white px-6 py-3.5 shadow-sm" aria-label="Tipo de cambio">
+      <div className="min-w-[220px] flex-[1.1_1_240px]"><h2 className="text-base font-bold text-slate-900">Tipo de Cambio</h2><p className="mt-0.5 text-xs text-slate-500">Tasas de referencia para el registro contable</p></div>
+      <Field label="Tasa no oficial" defaultValue="1,00" className="min-w-[190px] flex-1" inputClassName="mt-1 h-10 w-full rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50" />
+      <div className="min-w-[190px] flex-1"><span className={labelClass}>Tasa oficial</span><div className="mt-1 flex h-10 items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-2"><strong className="text-sm font-semibold tabular-nums text-slate-900">1,00 VE</strong><span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-600">+100</span></div></div>
+      <span className="ml-auto shrink-0 self-start text-right text-xs font-medium text-slate-400">Referencia vigente · 13/11/2026</span>
     </section>
 
     <section className="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm md:grid-cols-3 md:p-6" aria-label="Datos del asiento"><Field label="Fecha" defaultValue="13/11/2026" /><label className="min-w-0"><span className={labelClass}>Unidad</span><select className={fieldClass} defaultValue=""><option value="" disabled>Selecciona una unidad</option><option>Administración</option><option>Centro</option><option>Norte</option></select></label><Field label="Observación" placeholder="Agrega una nota para este movimiento" /></section>
