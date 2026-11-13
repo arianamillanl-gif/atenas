@@ -9,7 +9,7 @@ const rows = [
   { id: 'MOV-2026-0012', date: '12/11/2026', description: 'Compra de insumos administrativos', income: '0,00', payout: '2.400,00', payment: 'Transferencia', usd: '0,00', cashUsd: '0,00', bs: '2.400,00', cashBs: '0,00', bank: 'Banco Nacional' },
   { id: 'ING-2026-0046', date: '11/11/2026', description: 'Reintegro de gastos · Unidad Norte', income: '1.850,00', payout: '0,00', payment: 'Efectivo', usd: '0,00', cashUsd: '0,00', bs: '0,00', cashBs: '1.850,00', bank: 'Caja principal' },
 ]
-const fieldClass = 'mt-1.5 h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50'
+const fieldClass = 'mt-1.5 w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50'
 const labelClass = 'text-xs font-semibold text-slate-600'
 
 function Field({ label, ...props }: { label: string; placeholder?: string; defaultValue?: string; type?: string; readOnly?: boolean }) {
@@ -17,7 +17,6 @@ function Field({ label, ...props }: { label: string; placeholder?: string; defau
 }
 
 export default function RegistrarIngresos() {
-  const [operation, setOperation] = useState('Ingreso')
   const [exchangeOpen, setExchangeOpen] = useState(false)
   const [description, setDescription] = useState('')
   const [amounts, setAmounts] = useState({ bs: '', cashBs: '', usd: '', cashUsd: '' })
@@ -28,12 +27,12 @@ export default function RegistrarIngresos() {
   const updateAmount = (key: keyof typeof amounts, value: string) => setAmounts((current) => ({ ...current, [key]: value }))
   const calculate = () => setAmounts((current) => ({ ...current, bs: (Number(current.bs.replace(',', '.')) || 0).toFixed(2).replace('.', ',') }))
 
-  return <div className="mx-auto flex max-w-[1600px] flex-col gap-0 p-4 md:p-7 [&>section]:mb-5">
+  return <div className="mx-auto flex max-w-[1600px] flex-col gap-0 p-4 md:p-7 [&>section]:mb-5 [&>section:first-of-type]:mb-6">
     <header className="mb-6"><p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-indigo-600">TESORERÍA · FLUJO DE EFECTIVO</p><div className="border-l-4 border-indigo-600 pl-3"><h1 className="text-xl font-bold text-slate-900">Registro de Ingresos y Movimientos</h1></div><p className="mt-0.5 text-sm text-slate-500">Control de asientos contables, tasas de cambio y conciliación de caja</p></header>
 
-    <section className="grid gap-5 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm md:grid-cols-2 md:p-6" aria-label="Operación y tasas de cambio">
-      <fieldset><legend className={labelClass}>Tipo de Operación</legend><div className="mt-2 flex flex-wrap gap-2">{['Ingreso', 'Desembolso', 'Intercambio'].map((item) => <button type="button" key={item} onClick={() => setOperation(item)} aria-pressed={operation === item} className={`rounded-full border px-4 py-2 text-xs font-semibold transition ${operation === item ? 'border-indigo-600 bg-indigo-50 text-indigo-700' : 'border-slate-200 text-slate-600 hover:border-slate-300'}`}>{item}</button>)}</div></fieldset>
-      <div><p className={labelClass}>Tipo de Cambio</p><div className="mt-2 grid gap-3 sm:grid-cols-2"><Field label="Tasa no oficial" defaultValue="1,00" /><div className="rounded-xl border border-emerald-100 bg-emerald-50/60 p-3"><span className="text-xs font-semibold text-slate-600">Tasa oficial</span><div className="mt-1 flex items-center gap-2"><strong className="text-lg tabular-nums text-slate-900">1,00 VE</strong><span className="rounded-full bg-emerald-100 px-2 py-1 text-[10px] font-bold text-emerald-700">+100</span></div><span className="text-[11px] text-slate-500">13/11/2026</span></div></div></div>
+    <section className="mb-6 grid gap-5 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm md:p-6" aria-label="Tipo de cambio">
+      <div className="flex flex-wrap items-center justify-between gap-2"><div><h2 className="text-sm font-bold text-slate-900">Tipo de Cambio</h2><p className="mt-0.5 text-xs text-slate-500">Tasas de referencia para el registro contable</p></div><span className="rounded-full bg-slate-50 px-3 py-1 text-[11px] font-medium text-slate-500">Referencia vigente · 13/11/2026</span></div>
+      <div className="grid gap-4 md:grid-cols-2"><Field label="Tasa no oficial" defaultValue="1,00" /><div className="flex min-h-[74px] flex-col justify-center rounded-xl border border-emerald-100 bg-emerald-50/60 px-4 py-2.5"><span className="text-xs font-semibold text-slate-600">Tasa oficial</span><div className="mt-1 flex items-center gap-2"><strong className="text-lg tabular-nums text-slate-900">1,00 VE</strong><span className="rounded-full bg-emerald-100 px-2 py-1 text-[10px] font-bold text-emerald-700">+100</span></div></div></div>
     </section>
 
     <section className="grid gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm md:grid-cols-3 md:p-6" aria-label="Datos del asiento"><Field label="Fecha" defaultValue="13/11/2026" /><label className="min-w-0"><span className={labelClass}>Unidad</span><select className={fieldClass} defaultValue=""><option value="" disabled>Selecciona una unidad</option><option>Administración</option><option>Centro</option><option>Norte</option></select></label><Field label="Observación" placeholder="Agrega una nota para este movimiento" /></section>
