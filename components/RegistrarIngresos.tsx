@@ -28,8 +28,8 @@ export default function RegistrarIngresos() {
   const updateAmount = (key: keyof typeof amounts, value: string) => setAmounts((current) => ({ ...current, [key]: value }))
   const calculate = () => setAmounts((current) => ({ ...current, bs: (Number(current.bs.replace(',', '.')) || 0).toFixed(2).replace('.', ',') }))
 
-  return <div className="mx-auto flex max-w-[1600px] flex-col gap-5 p-4 md:p-7">
-    <header className="mb-1 rounded-2xl bg-[#0B0F19] px-6 py-5 text-white"><p className="text-[10px] font-bold uppercase tracking-[.16em] text-indigo-300">TESORERÍA · FLUJO DE EFECTIVO</p><h1 className="mt-2 text-xl font-bold tracking-tight sm:text-2xl">Registro de Ingresos y Movimientos</h1><p className="mt-1 text-[10px] font-medium uppercase tracking-[.08em] text-slate-300">CONTROL DE ASIENTOS CONTABLES, TASAS DE CAMBIO Y CONCILIACIÓN DE CAJA</p></header>
+  return <div className="mx-auto flex max-w-[1600px] flex-col gap-0 p-4 md:p-7 [&>section]:mb-5">
+    <header className="mb-6"><p className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-indigo-600">TESORERÍA · FLUJO DE EFECTIVO</p><div className="border-l-4 border-indigo-600 pl-3"><h1 className="text-xl font-bold text-slate-900">Registro de Ingresos y Movimientos</h1></div><p className="mt-0.5 text-sm text-slate-500">Control de asientos contables, tasas de cambio y conciliación de caja</p></header>
 
     <section className="grid gap-5 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm md:grid-cols-2 md:p-6" aria-label="Operación y tasas de cambio">
       <fieldset><legend className={labelClass}>Tipo de Operación</legend><div className="mt-2 flex flex-wrap gap-2">{['Ingreso', 'Desembolso', 'Intercambio'].map((item) => <button type="button" key={item} onClick={() => setOperation(item)} aria-pressed={operation === item} className={`rounded-full border px-4 py-2 text-xs font-semibold transition ${operation === item ? 'border-indigo-600 bg-indigo-50 text-indigo-700' : 'border-slate-200 text-slate-600 hover:border-slate-300'}`}>{item}</button>)}</div></fieldset>
