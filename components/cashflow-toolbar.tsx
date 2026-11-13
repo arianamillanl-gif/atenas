@@ -41,7 +41,7 @@ export function CashflowToolbar({ recordCount, search, onSearchChange, activeFil
     <div className="border-b border-slate-100 p-6">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
         <div className="flex items-center gap-2.5">
-          <h2 id="cashflow-heading" className="whitespace-nowrap text-lg font-bold text-slate-900">Flujo de Efectivo</h2>
+          <h2 id="cashflow-heading" className="whitespace-nowrap text-lg font-bold text-slate-900">Registro de Ingresos</h2>
           <span className="whitespace-nowrap rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium tabular-nums text-slate-600">{recordCount} registros</span>
         </div>
         <fieldset className="flex items-center gap-2 rounded-full border border-slate-200/80 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm">

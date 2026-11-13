@@ -112,7 +112,7 @@ export default function RegistrarIngresos() {
             </div>
           </header>
           <fieldset className="min-h-0 flex-1 overflow-y-auto border-0 p-0">
-            <legend className="sr-only">Columnas visibles en Flujo de Efectivo</legend>
+            <legend className="sr-only">Columnas visibles en Registro de Ingresos</legend>
             <div className="flex flex-col gap-1">
               {filterColumns.map(({ id, label }) => <label key={id} className="flex cursor-pointer items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-slate-700 transition-colors hover:bg-slate-50"><input type="checkbox" checked={draftFilters[id]} onChange={(event) => setDraftFilters((current) => ({ ...current, [id]: event.target.checked }))} className="size-4 rounded border-slate-300 accent-indigo-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500/40" /><span>{label}</span></label>)}
             </div>
