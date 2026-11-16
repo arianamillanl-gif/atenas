@@ -114,16 +114,13 @@ export function Collapse({ open, children }: { open: boolean; children: React.Re
   )
 }
 
-export function SectionCard({ step, title, description, action, children }: { step: string; title: string; description: string; action?: React.ReactNode; children: React.ReactNode }) {
+export function SectionCard({ title, description, action, children }: { title: string; description: string; action?: React.ReactNode; children: React.ReactNode }) {
   return (
     <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm md:p-7">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex items-start gap-3">
-          <span className="mt-0.5 grid size-7 shrink-0 place-items-center rounded-lg bg-[#1E2B58] text-xs font-semibold text-white tabular-nums">{step}</span>
-          <div>
-            <h2 className="text-base font-semibold text-slate-900 text-balance">{title}</h2>
-            <p className="mt-0.5 text-xs leading-relaxed text-slate-500 text-pretty">{description}</p>
-          </div>
+        <div className="min-w-0 border-l-2 pl-3 text-left" style={{ borderLeftColor: NAVY }}>
+          <h2 className="text-base font-semibold leading-snug text-slate-900 text-balance">{title}</h2>
+          <p className="mt-0.5 text-xs leading-relaxed text-slate-500 text-pretty">{description}</p>
         </div>
         {action}
       </div>

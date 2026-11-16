@@ -157,7 +157,6 @@ export default function DesgloseServicios({ lines, onChange }: { lines: ServiceL
   const assigned = lines.reduce((sum, line) => sum + (line.valor === 'Abonado' ? 0 : parseAmount(line.monto)), 0)
   return (
     <SectionCard
-      step="3"
       title="Desglose de Servicios y Atribución por Vértice"
       description="Distribuye el importe de Clientify entre los servicios contratados. La diferencia debe quedar en $0.00 para enviar a aprobación."
       action={<button type="button" onClick={() => onChange([...lines.map((l) => ({ ...l, expanded: false })), emptyLine()])} className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-slate-200/80 bg-white px-4 text-xs font-semibold text-[#1E2B58] shadow-sm transition hover:bg-slate-50"><Plus size={15} />Agregar Servicio</button>}

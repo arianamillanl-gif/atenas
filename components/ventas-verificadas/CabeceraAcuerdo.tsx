@@ -8,7 +8,7 @@ export type HeaderState = { responsable: string; contratoMarco: string; unificad
 
 export default function CabeceraAcuerdo({ value, onChange }: { value: HeaderState; onChange: (value: HeaderState) => void }) {
   return (
-    <SectionCard step="1" title="Cabecera del Acuerdo y Datos de la Venta" description="Datos heredados de Clientify en modo lectura y controles globales del acuerdo comercial.">
+    <SectionCard title="Cabecera del Acuerdo y Datos de la Venta" description="Datos heredados de Clientify en modo lectura y controles globales del acuerdo comercial.">
       <div className="grid grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2 lg:grid-cols-3">
         <ReadOnlyField label="Cliente" value="Inversiones Delta 360, C.A." />
         <ReadOnlyField label="Unidad de Negocio" value="Consultoría y Tecnología" />

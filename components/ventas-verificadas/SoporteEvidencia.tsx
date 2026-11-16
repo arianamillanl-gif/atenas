@@ -92,7 +92,7 @@ export default function SoporteEvidencia({ value, onChange }: { value: SupportSt
   )
 
   return (
-    <SectionCard step="2" title="Soporte Contractual y Evidencia" description="Referencias del documento que respalda la venta y expediente digital en formato PDF.">
+    <SectionCard title="Soporte Contractual y Evidencia" description="Referencias del documento que respalda la venta y expediente digital en formato PDF.">
       <div className="grid grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2 lg:grid-cols-3">
         {text('referencia', 'Referencia o Código del Contrato', true, 'text', 'Ej. CT-2026-0412')}
         <div>

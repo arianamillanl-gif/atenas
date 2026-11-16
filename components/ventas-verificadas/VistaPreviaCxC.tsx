@@ -52,7 +52,6 @@ export default function VistaPreviaCxC({ lines }: { lines: ServiceLine[] }) {
 
   return (
     <SectionCard
-      step="4"
       title="Vista previa de CxC"
       description="Cronograma consolidado de cuentas por cobrar generado a partir de los servicios con valor Vendido."
       action={<button type="button" onClick={() => setSnapshot({ signature, rows: buildSchedule(lines) })} className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full bg-[#1E2B58] px-4 text-xs font-semibold text-white shadow-sm transition hover:bg-[#16203F]">{snapshot ? <RefreshCw size={14} /> : <Calculator size={14} />}{snapshot ? 'Recalcular' : 'Calcular vista previa'}</button>}
