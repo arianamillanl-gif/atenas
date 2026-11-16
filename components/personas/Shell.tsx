@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import {
   ArrowLeftRight,
+  BadgeCheck,
   Bell,
   FileSearch,
   Building2,
@@ -21,9 +22,10 @@ import {
   Users,
 } from 'lucide-react'
 
-type NavKey = 'resumen' | 'personas' | 'servicios' | 'cartera' | 'asignaciones' | 'unidades' | 'estructuras' | 'cobro-ingreso' | 'gobernanza' | 'ajustes'
+type NavKey = 'resumen' | 'ventas' | 'personas' | 'servicios' | 'cartera' | 'asignaciones' | 'unidades' | 'estructuras' | 'cobro-ingreso' | 'gobernanza' | 'ajustes'
 
 const NAV_ROUTES: Partial<Record<NavKey, string>> = {
+  ventas: '/ventas-verificadas',
   personas: '/personas',
   servicios: '/servicios',
   cartera: '/maestro-cartera',
@@ -62,6 +64,8 @@ export function Sidebar({ collapsed, onToggle, active = 'personas' }: { collapse
         <nav className="nav" aria-label="Menú principal">
           <span className="nav-label">MENÚ PRINCIPAL</span>
           <NavLink id="resumen" active={active}><LayoutDashboard size={16} />Resumen</NavLink>
+          <span className="nav-label second">OPERACIÓN COMERCIAL</span>
+          <NavLink id="ventas" active={active}><BadgeCheck size={16} />Ventas verificadas</NavLink>
           <span className="nav-label second">GESTIÓN</span>
           <NavLink id="personas" active={active}><Users size={16} />Personas</NavLink>
           <NavLink id="servicios" active={active}><Package size={16} />Servicios</NavLink>
