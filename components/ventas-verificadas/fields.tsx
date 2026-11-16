@@ -118,7 +118,7 @@ export function SectionCard({ title, description, action, children }: { title: s
   return (
     <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm md:p-7">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div className="min-w-0 border-l-2 pl-3 text-left" style={{ borderLeftColor: NAVY }}>
+        <div className="min-w-0 text-left">
           <h2 className="text-base font-semibold leading-snug text-slate-900 text-balance">{title}</h2>
           <p className="mt-0.5 text-xs leading-relaxed text-slate-500 text-pretty">{description}</p>
         </div>
