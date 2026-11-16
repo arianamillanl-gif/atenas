@@ -2,7 +2,10 @@
 
 import { useMemo, useState } from 'react'
 import { AlertTriangle, BarChart3, Bell, BriefcaseBusiness, Check, ChevronDown, CircleDollarSign, Download, FileText, LayoutDashboard, Printer, Search, Settings, Users, WalletCards, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import RegistrarIngresos from '@/components/RegistrarIngresos'
+
+const MODULE_ROUTES: Record<string, string> = { 'Ventas verificadas': '/ventas-verificadas' }
 
 const tabs = [
   { id: 'ejecutivo', label: 'Ejecutivo de Comisiones', enabled: false },
@@ -73,6 +76,7 @@ function GerencialCommissionView() {
 }
 
 export default function BscDashboard() {
+  const router = useRouter()
   const [activeModule, setActiveModule] = useState('BSC Comisiones')
   const [activeTab, setActiveTab] = useState('operativo')
   const [period, setPeriod] = useState('Julio 2026')
@@ -102,7 +106,7 @@ export default function BscDashboard() {
       <div className="flex h-[72px] items-center gap-3 border-b border-slate-100 px-5 max-md:justify-center max-md:px-2"><div className="grid size-9 shrink-0 place-items-center rounded-xl bg-[#294b91] text-lg font-bold text-white">A</div>{sidebarOpen && <div className="leading-tight max-md:hidden"><strong className="text-sm tracking-[.2em] text-slate-800">ATENAS</strong><span className="mt-1 block text-[10px] text-slate-400">ERP · v2.0</span></div>}<button onClick={() => setSidebarOpen(!sidebarOpen)} aria-label="Alternar navegación" aria-expanded={sidebarOpen} className="ml-auto rounded-lg p-2 text-slate-500 hover:bg-slate-100 max-md:hidden"><BarChart3 className="size-4" /></button></div>
       <div className="mx-3 mt-5 flex items-center gap-3 rounded-xl border border-slate-200 p-3"><div className="grid size-8 shrink-0 place-items-center rounded-lg bg-blue-50 text-[10px] font-bold text-blue-800">AT</div>{sidebarOpen && <div className="min-w-0 max-md:hidden"><strong className="block truncate text-xs text-slate-700">Grupo Atenas</strong><span className="text-[10px] text-slate-400">Operación global</span></div>}{sidebarOpen && <ChevronDown className="ml-auto size-4 text-slate-400 max-md:hidden" />}</div>
       <nav className="mt-5 flex flex-col gap-1 px-3 max-md:px-2" aria-label="Navegación principal">
-        {[[LayoutDashboard, 'Resumen'], [CircleDollarSign, 'Ventas verificadas'], [WalletCards, 'Registrar Ingresos'], [Users, 'Clientes'], [BriefcaseBusiness, 'BSC Comisiones'], [FileText, 'Reportes']].map(([Icon, label]) => <button type="button" key={label as string} onClick={() => setActiveModule(label as string)} aria-label={label as string} aria-current={activeModule === label ? 'page' : undefined} className={`flex h-11 items-center gap-3 rounded-xl px-3 text-left text-[13px] transition ${activeModule === label ? 'bg-indigo-50 font-semibold text-indigo-600' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}><Icon className="size-[18px] shrink-0" />{sidebarOpen && <span className="max-md:hidden">{label as string}</span>}</button>)}
+        {[[LayoutDashboard, 'Resumen'], [CircleDollarSign, 'Ventas verificadas'], [WalletCards, 'Registrar Ingresos'], [Users, 'Clientes'], [BriefcaseBusiness, 'BSC Comisiones'], [FileText, 'Reportes']].map(([Icon, label]) => <button type="button" key={label as string} onClick={() => { const route = MODULE_ROUTES[label as string]; if (route) router.push(route); else setActiveModule(label as string) }} onMouseEnter={() => { const route = MODULE_ROUTES[label as string]; if (route) router.prefetch(route) }} aria-label={label as string} aria-current={activeModule === label ? 'page' : undefined} className={`flex h-11 items-center gap-3 rounded-xl px-3 text-left text-[13px] transition ${activeModule === label ? 'bg-indigo-50 font-semibold text-indigo-600' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}><Icon className="size-[18px] shrink-0" />{sidebarOpen && <span className="max-md:hidden">{label as string}</span>}</button>)}
         <div className="my-3 border-t border-slate-200" />
         {[[Settings, 'Integraciones'], [Settings, 'Ajustes']].map(([Icon, label]) => <button type="button" key={label as string} aria-label={label as string} className="flex h-11 items-center gap-3 rounded-xl px-3 text-left text-[13px] text-slate-600 transition hover:bg-slate-50"><Icon className="size-[18px] shrink-0" />{sidebarOpen && <span className="max-md:hidden">{label as string}</span>}</button>)}
       </nav>
