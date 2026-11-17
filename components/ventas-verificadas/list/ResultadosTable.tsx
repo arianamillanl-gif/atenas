@@ -1,21 +1,15 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Copy, Eye, History, MoreHorizontal } from 'lucide-react'
+import { FileSearch, MoreHorizontal } from 'lucide-react'
 import { TablePagination } from '@/components/table-pagination'
 import { fmt } from '../data'
 import type { ConditionStatus, CxcStatus, ListSale } from '../list-data'
+import { CONDITION_STYLE } from './status'
+import SaleDrawer from './SaleDrawer'
 
 export type TabKey = 'Todos' | ConditionStatus | 'Observada' | 'Retenidas'
-
-const CONDITION_STYLE: Record<ConditionStatus, string> = {
-  'Sin Condiciones': 'border-slate-200 bg-slate-50 text-slate-600',
-  'En Borrador': 'border-amber-200 bg-amber-50 text-amber-700',
-  'Por aprobar': 'border-sky-200 bg-sky-50 text-sky-700',
-  Vigente: 'border-emerald-200 bg-emerald-50 text-emerald-700',
-  Rechazada: 'border-rose-200 bg-rose-50 text-rose-700',
-}
 
 const CXC_STYLE: Record<CxcStatus, string> = {
   'No iniciada': 'bg-slate-300',
@@ -46,10 +40,18 @@ export default function ResultadosTable({ rows, total, tab, tabs, onTabChange }:
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [menuFor, setMenuFor] = useState<string | null>(null)
+  const [menuPos, setMenuPos] = useState({ top: 0, right: 0 })
+  const toggleMenu = (ref: string, button: HTMLElement) => {
+    const rect = button.getBoundingClientRect()
+    setMenuPos({ top: rect.bottom + 6, right: window.innerWidth - rect.right })
+    setMenuFor((v) => (v === ref ? null : ref))
+  }
   const totalPages = Math.max(1, Math.ceil(rows.length / pageSize))
   const current = Math.min(page, totalPages)
   const visible = rows.slice((current - 1) * pageSize, current * pageSize)
+  const [inspected, setInspected] = useState<ListSale | null>(null)
   const open = (ref: string) => router.push(`/ventas-verificadas/${ref}`)
+  const closeDrawer = useCallback(() => setInspected(null), [])
 
   return (
     <section className="rounded-2xl border border-slate-200/80 bg-white shadow-sm">
@@ -89,21 +91,19 @@ export default function ResultadosTable({ rows, total, tab, tabs, onTabChange }:
                   </td>
                   <td className="whitespace-nowrap px-4 py-3.5 text-slate-600 tabular-nums">{sale.date}</td>
                   <td className="whitespace-nowrap px-4 py-3.5 text-right font-semibold text-[#1E2B58] tabular-nums">${fmt(sale.amount)}</td>
-                  <td className="whitespace-nowrap px-4 py-3.5 text-slate-600">{sale.rep}</td>
+                  <td className="whitespace-nowrap px-4 py-3.5 text-slate-600">{sale.rep || <span className="text-slate-400" aria-label="Sin asignar">—</span>}</td>
                   <td className="px-4 py-3.5"><span className="inline-flex whitespace-nowrap rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-700">Verificado</span></td>
                   <td className="px-4 py-3.5"><span className={`inline-flex whitespace-nowrap rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${CONDITION_STYLE[sale.condition]}`}>{sale.condition}</span></td>
                   <td className="whitespace-nowrap px-4 py-3.5 text-slate-600"><span className="flex items-center gap-2"><span className={`size-1.5 rounded-full ${CXC_STYLE[sale.cxc]}`} aria-hidden="true" />{sale.cxc}</span></td>
-                  <td className="sticky right-0 bg-white px-4 py-3 shadow-[-8px_0_12px_-10px_rgba(15,23,42,0.2)] transition group-hover:bg-slate-50" onClick={(e) => e.stopPropagation()}>
+                  <td className={`sticky right-0 bg-white px-4 py-3 shadow-[-8px_0_12px_-10px_rgba(15,23,42,0.2)] transition group-hover:bg-slate-50 ${menuFor === sale.ref ? 'z-30' : ''}`} onClick={(e) => e.stopPropagation()}>
                     <div className="relative flex items-center justify-end gap-1.5">
                       <button type="button" onClick={() => open(sale.ref)} className={`h-8 whitespace-nowrap rounded-full px-4 text-xs font-semibold transition ${action.primary ? 'bg-[#1E2B58] text-white hover:bg-[#16203F]' : 'border border-slate-200 bg-white text-[#1E2B58] hover:bg-slate-50'}`}>{action.label}<span className="sr-only"> venta {sale.ref}</span></button>
-                      <button type="button" aria-label={`Más acciones para ${sale.ref}`} aria-haspopup="menu" aria-expanded={menuFor === sale.ref} onClick={() => setMenuFor((v) => (v === sale.ref ? null : sale.ref))} className="grid size-8 place-items-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"><MoreHorizontal size={16} /></button>
+                      <button type="button" aria-label={`Más acciones para ${sale.ref}`} aria-haspopup="menu" aria-expanded={menuFor === sale.ref} onClick={(e) => toggleMenu(sale.ref, e.currentTarget)} className="grid size-8 place-items-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"><MoreHorizontal size={16} /></button>
                       {menuFor === sale.ref && (
                         <>
-                          <div className="fixed inset-0 z-10" onClick={() => setMenuFor(null)} aria-hidden="true" />
-                          <div role="menu" className="absolute right-0 top-9 z-20 flex w-48 flex-col rounded-xl border border-slate-200 bg-white p-1 text-[13px] shadow-lg" onKeyDown={(e) => { if (e.key === 'Escape') setMenuFor(null) }}>
-                            <button type="button" role="menuitem" autoFocus onClick={() => open(sale.ref)} className="flex items-center gap-2 rounded-lg px-3 py-2 text-left text-slate-700 hover:bg-slate-50"><Eye size={14} />Ver detalle</button>
-                            <button type="button" role="menuitem" onClick={() => open(sale.ref)} className="flex items-center gap-2 rounded-lg px-3 py-2 text-left text-slate-700 hover:bg-slate-50"><History size={14} />Consultar historial</button>
-                            <button type="button" role="menuitem" onClick={() => { navigator.clipboard?.writeText(sale.ref); setMenuFor(null) }} className="flex items-center gap-2 rounded-lg px-3 py-2 text-left text-slate-700 hover:bg-slate-50"><Copy size={14} />Copiar referencia</button>
+                          <div className="fixed inset-0 z-10" onClick={() => setMenuFor(null)} onWheel={() => setMenuFor(null)} aria-hidden="true" />
+                          <div role="menu" aria-label={`Acciones para ${sale.ref}`} style={{ top: menuPos.top, right: menuPos.right }} className="fixed z-20 flex min-w-[160px] flex-col rounded-xl border border-slate-100 bg-white py-1.5 text-[13px] shadow-lg animate-in fade-in zoom-in-95" onKeyDown={(e) => { if (e.key === 'Escape') setMenuFor(null) }}>
+                            <button type="button" role="menuitem" autoFocus onClick={() => { setMenuFor(null); setInspected(sale) }} className="flex items-center gap-2 whitespace-nowrap px-3.5 py-2 text-left font-medium text-slate-700 transition hover:bg-slate-50 focus-visible:bg-slate-50 focus-visible:outline-none"><FileSearch size={14} className="text-slate-400" aria-hidden="true" />Consultar venta</button>
                           </div>
                         </>
                       )}
@@ -121,6 +121,8 @@ export default function ResultadosTable({ rows, total, tab, tabs, onTabChange }:
         <p className="text-xs text-slate-500">Mostrando <span className="tabular-nums">{rows.length ? (current - 1) * pageSize + 1 : 0}–{Math.min(current * pageSize, rows.length)}</span> de <span className="tabular-nums">{rows.length}</span> registros</p>
         <TablePagination page={current} totalPages={totalPages} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={(size) => { setPageSize(size); setPage(1) }} />
       </footer>
+
+      {inspected && <SaleDrawer key={inspected.ref} sale={inspected} onClose={closeDrawer} onOpenDetail={() => { const ref = inspected.ref; setInspected(null); open(ref) }} />}
     </section>
   )
 }

@@ -4,11 +4,14 @@ export type ConditionStatus = 'Sin Condiciones' | 'En Borrador' | 'Por aprobar' 
 export type IntegrationStatus = 'Pendiente' | 'Sincronizado' | 'Error'
 export type CxcStatus = 'No iniciada' | 'En preparación' | 'Lista para generar' | 'Generada' | 'Bloqueada'
 
+export type BreakdownLine = { name: string; vertice: string; amount: number; abonado: boolean; subcontratado: boolean }
+
 export type ListSale = {
   ref: string
   client: string
   unit: string
   services: string[]
+  breakdown: BreakdownLine[]
   date: string
   isoDate: string
   amount: number
@@ -61,15 +64,29 @@ function buildSales(): ListSale[] {
     const isoDate = day.toISOString().slice(0, 10)
     const serviceCount = condition === 'Sin Condiciones' ? 0 : 1 + Math.floor(rand() * 3)
     const firstService = (i * 5 + 3) % SERVICE_CATALOG.length
+    const amount = i === 0 ? 2397 : Math.round((800 + rand() * 48000) * 100) / 100
+    const catalog = Array.from({ length: serviceCount }, (_, k) => SERVICE_CATALOG[(firstService + k) % SERVICE_CATALOG.length])
+    const abonadoIndex = serviceCount === 3 ? 2 : -1
+    const paidCount = serviceCount - (abonadoIndex >= 0 ? 1 : 0)
+    const firstShare = paidCount > 1 ? Math.round(amount * 0.7 * 100) / 100 : amount
+    const breakdown: BreakdownLine[] = catalog.map((service, k) => ({
+      name: service.name,
+      vertice: service.vertice,
+      abonado: k === abonadoIndex,
+      subcontratado: k === 1 && i % 2 === 0,
+      amount: k === abonadoIndex ? 0 : k === 0 ? firstShare : Math.round((amount - firstShare) * 100) / 100,
+    }))
+    const rep = i === 0 ? SALES_REPS[0] : SALES_REPS[Math.floor(rand() * SALES_REPS.length)]
     return {
       ref: i === 0 ? '33505745' : String(33505745 - i * 37 - Math.floor(rand() * 30)),
       client,
       unit,
-      services: Array.from({ length: serviceCount }, (_, k) => SERVICE_CATALOG[(firstService + k) % SERVICE_CATALOG.length].name),
+      services: breakdown.map((line) => line.name),
+      breakdown,
       date: isoDate.split('-').reverse().join('/'),
       isoDate,
-      amount: i === 0 ? 2397 : Math.round((800 + rand() * 48000) * 100) / 100,
-      rep: SALES_REPS[i === 0 ? 0 : Math.floor(rand() * SALES_REPS.length)],
+      amount,
+      rep: condition === 'Sin Condiciones' && i % 3 === 1 ? '' : rep,
       condition,
       integration: condition === 'Vigente' ? 'Sincronizado' : 'Pendiente',
       cxc: CXC_BY_CONDITION[condition],
