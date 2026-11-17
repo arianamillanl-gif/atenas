@@ -1,22 +1,22 @@
 'use client'
 
 import { AlertTriangle, CalendarClock, CheckCircle2, ChevronDown, Lock, Plus, Trash2 } from 'lucide-react'
-import { CLIENTIFY_TOTAL, PROVIDERS, SERVICE_CATALOG, emptyLine, fmtUsd, parseAmount, type PaymentTerms, type ServiceLine } from './data'
+import { PROVIDERS, SERVICE_CATALOG, emptyLine, fmtUsd, parseAmount, type PaymentTerms, type ServiceLine } from './data'
 import { Collapse, FieldLabel, NativeSelect, SearchableSelect, SectionCard, Segmented, Toggle, controlClass } from './fields'
 
-export function ReconciliationBar({ assigned }: { assigned: number }) {
-  const diff = Math.round((CLIENTIFY_TOTAL - assigned) * 100) / 100
+export function ReconciliationBar({ total, assigned }: { total: number; assigned: number }) {
+  const diff = Math.round((total - assigned) * 100) / 100
   const state = diff === 0 ? 'ok' : diff > 0 ? 'under' : 'over'
   const tone = { ok: 'border-emerald-200 bg-emerald-50 text-emerald-700', under: 'border-amber-200 bg-amber-50 text-amber-700', over: 'border-rose-200 bg-rose-50 text-rose-700' }[state]
   const message = { ok: 'Desglose conciliado con Clientify', under: 'Falta asignar monto a servicios', over: 'El desglose excede el total de Clientify' }[state]
-  const pct = Math.min(100, (assigned / CLIENTIFY_TOTAL) * 100)
+  const pct = Math.min(100, (assigned / total) * 100)
 
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-slate-50/60" aria-live="polite">
       <div className="grid grid-cols-1 divide-y divide-slate-200/80 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
         <div className="px-5 py-4">
           <p className="text-[11px] font-medium uppercase tracking-wide text-slate-500">Monto Total Clientify</p>
-          <p className="mt-1 text-xl font-semibold text-slate-900 tabular-nums">{fmtUsd(CLIENTIFY_TOTAL)}</p>
+          <p className="mt-1 text-xl font-semibold text-slate-900 tabular-nums">{fmtUsd(total)}</p>
         </div>
         <div className="px-5 py-4">
           <p className="text-[11px] font-medium uppercase tracking-wide text-slate-500">Total Asignado</p>
@@ -153,7 +153,7 @@ function ServiceRow({ index, line, onChange, onRemove, canRemove }: { index: num
   )
 }
 
-export default function DesgloseServicios({ lines, onChange }: { lines: ServiceLine[]; onChange: (lines: ServiceLine[]) => void }) {
+export default function DesgloseServicios({ total, lines, onChange }: { total: number; lines: ServiceLine[]; onChange: (lines: ServiceLine[]) => void }) {
   const assigned = lines.reduce((sum, line) => sum + (line.valor === 'Abonado' ? 0 : parseAmount(line.monto)), 0)
   return (
     <SectionCard
@@ -162,7 +162,7 @@ export default function DesgloseServicios({ lines, onChange }: { lines: ServiceL
       action={<button type="button" onClick={() => onChange([...lines.map((l) => ({ ...l, expanded: false })), emptyLine()])} className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-slate-200/80 bg-white px-4 text-xs font-semibold text-[#1E2B58] shadow-sm transition hover:bg-slate-50"><Plus size={15} />Agregar Servicio</button>}
     >
       <div className="flex flex-col gap-4">
-        <ReconciliationBar assigned={assigned} />
+        <ReconciliationBar total={total} assigned={assigned} />
         {lines.map((line, index) => (
           <ServiceRow key={line.id} index={index} line={line} canRemove={lines.length > 1} onChange={(next) => onChange(lines.map((l) => l.id === line.id ? next : l))} onRemove={() => onChange(lines.filter((l) => l.id !== line.id))} />
         ))}

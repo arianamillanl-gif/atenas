@@ -1,24 +1,25 @@
 'use client'
 
 import { Layers } from 'lucide-react'
-import { FRAMEWORK_CONTRACTS, SALES_REPS, CLIENTIFY_TOTAL, fmt } from './data'
+import { FRAMEWORK_CONTRACTS, SALES_REPS, fmt } from './data'
+import type { ListSale } from './list-data'
 import { FieldLabel, ReadOnlyField, SearchableSelect, SectionCard } from './fields'
 
 export type HeaderState = { responsable: string; contratoMarco: string; unificado: boolean }
 
-export default function CabeceraAcuerdo({ value, onChange }: { value: HeaderState; onChange: (value: HeaderState) => void }) {
+export default function CabeceraAcuerdo({ sale, value, onChange }: { sale: ListSale; value: HeaderState; onChange: (value: HeaderState) => void }) {
   return (
     <SectionCard title="Cabecera del Acuerdo y Datos de la Venta" description="Datos heredados de Clientify en modo lectura y controles globales del acuerdo comercial.">
       <div className="grid grid-cols-1 gap-x-5 gap-y-4 md:grid-cols-2 lg:grid-cols-3">
-        <ReadOnlyField label="Cliente" value="Inversiones Delta 360, C.A." />
-        <ReadOnlyField label="Unidad de Negocio" value="Consultoría y Tecnología" />
+        <ReadOnlyField label="Cliente" value={sale.client} />
+        <ReadOnlyField label="Unidad de Negocio" value={sale.unit} />
         <div>
           <FieldLabel htmlFor="responsable" required>Responsable Comercial</FieldLabel>
           <SearchableSelect id="responsable" value={value.responsable} invalid={!value.responsable} onChange={(responsable) => onChange({ ...value, responsable })} options={SALES_REPS.map((rep) => ({ value: rep, label: rep }))} placeholder="Buscar responsable…" />
         </div>
-        <ReadOnlyField label="Fecha Económica" value={<span className="tabular-nums">02/11/2026</span>} />
-        <ReadOnlyField label="Importe Total Clientify" value={`${fmt(CLIENTIFY_TOTAL)} USD`} highlight />
-        <ReadOnlyField label="Fuente y Fecha de Carga" value={<span className="truncate">Clientify · <span className="tabular-nums">02/11/2026 09:14</span></span>} />
+        <ReadOnlyField label="Fecha Económica" value={<span className="tabular-nums">{sale.date}</span>} />
+        <ReadOnlyField label="Importe Total Clientify" value={`${fmt(sale.amount)} USD`} highlight />
+        <ReadOnlyField label="Fuente y Fecha de Carga" value={<span className="truncate">Clientify ID <span className="tabular-nums">{sale.ref}</span> · <span className="tabular-nums">{sale.date} 09:14</span></span>} />
       </div>
 
       <div className="mt-6 grid grid-cols-1 items-end gap-5 border-t border-slate-100 pt-6 md:grid-cols-[minmax(0,1fr)_auto]">

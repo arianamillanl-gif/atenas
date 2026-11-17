@@ -4,11 +4,15 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, CheckCircle2, ChevronRight, Clock3, FileSearch, History, Save, Send, X } from 'lucide-react'
 import { Sidebar, Topbar } from '../personas/Shell'
-import { CLIENTIFY_TOTAL, INITIAL_LINES, SERVICE_CATALOG, parseAmount, type ServiceLine } from './data'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { INITIAL_LINES, SERVICE_CATALOG, fmt, parseAmount, type ServiceLine } from './data'
+import type { ListSale } from './list-data'
 import CabeceraAcuerdo, { type HeaderState } from './CabeceraAcuerdo'
 import SoporteEvidencia, { missingSupport, type SupportState } from './SoporteEvidencia'
 import DesgloseServicios from './DesgloseServicios'
 import VistaPreviaCxC from './VistaPreviaCxC'
+
+const SUBMIT_HINT = 'La diferencia pendiente debe quedar en $0.00 y los campos obligatorios completos para enviar a aprobación.'
 
 const HISTORY = [
   { title: 'Venta importada desde Clientify', who: 'Integración ETL', when: '02/11/2026 · 09:14' },
@@ -28,9 +32,9 @@ function missingLines(lines: ServiceLine[]) {
   return issues
 }
 
-export default function DetalleVentaModule({ saleId }: { saleId: string }) {
+export default function DetalleVentaModule({ sale }: { sale: ListSale }) {
   const [collapsed, setCollapsed] = useState(false)
-  const [header, setHeader] = useState<HeaderState>({ responsable: 'María González', contratoMarco: '', unificado: false })
+  const [header, setHeader] = useState<HeaderState>({ responsable: sale.rep, contratoMarco: '', unificado: false })
   const [support, setSupport] = useState<SupportState>({ referencia: 'CT-2026-0412', tipo: 'Contrato firmado', documento: '', fechaDoc: '2026-11-02', inicio: '2026-11-15', fin: '', observacion: '', files: { contrato: null, orden: null, rif: null } })
   const [lines, setLines] = useState<ServiceLine[]>(INITIAL_LINES)
   const [status, setStatus] = useState<'Pendiente Condiciones' | 'En aprobación'>('Pendiente Condiciones')
@@ -38,13 +42,14 @@ export default function DetalleVentaModule({ saleId }: { saleId: string }) {
   const [historyOpen, setHistoryOpen] = useState(false)
 
   const assigned = lines.reduce((sum, l) => sum + (l.valor === 'Abonado' ? 0 : parseAmount(l.monto)), 0)
-  const balanced = Math.round((CLIENTIFY_TOTAL - assigned) * 100) === 0
+  const balanced = Math.round((sale.amount - assigned) * 100) === 0
   const missing = [...(!header.responsable ? ['Responsable comercial'] : []), ...missingSupport(support), ...missingLines(lines)]
   const canSubmit = balanced && missing.length === 0 && status === 'Pendiente Condiciones'
   const blocker = !balanced ? 'El desglose de servicios no coincide con el total de Clientify.' : missing.length ? `Faltan ${missing.length} campo(s): ${missing.slice(0, 2).join(', ')}${missing.length > 2 ? '…' : ''}` : ''
+  const showSubmitHint = !canSubmit && status === 'Pendiente Condiciones' && Boolean(blocker)
 
   const notify = (message: string) => { setToast(message); window.setTimeout(() => setToast(''), 2800) }
-  const shortId = saleId.slice(0, 8)
+
   const verticeCount = new Set(lines.map((l) => SERVICE_CATALOG.find((s) => s.id === l.serviceId)?.vertice).filter(Boolean)).size
 
   return (
@@ -57,7 +62,7 @@ export default function DetalleVentaModule({ saleId }: { saleId: string }) {
             <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1.5 text-xs text-slate-400">
               <span>Ventas</span><ChevronRight size={12} aria-hidden="true" />
               <Link href="/ventas-verificadas" className="transition hover:text-slate-700">Ventas verificadas</Link><ChevronRight size={12} aria-hidden="true" />
-              <span aria-current="page" className="font-semibold text-slate-700">Detalle <span className="tabular-nums">{shortId}</span>...</span>
+              <span aria-current="page" className="font-semibold text-slate-700">Detalle <span className="tabular-nums">{sale.ref}</span></span>
             </nav>
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div className="flex items-start gap-3">
@@ -65,7 +70,7 @@ export default function DetalleVentaModule({ saleId }: { saleId: string }) {
                 <div>
                   <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-[#1E2B58]">ATENAS-85 · Desglose de servicios</p>
                   <h1 className="mt-1 text-2xl font-semibold text-slate-900 text-balance md:text-[28px]">Detalle de Venta Verificada</h1>
-                  <p className="mt-1 text-[13px] text-slate-500">Inversiones Delta 360, C.A. · <span className="tabular-nums">{lines.length}</span> servicios · <span className="tabular-nums">{verticeCount}</span> vértices</p>
+                  <p className="mt-1 text-[13px] text-slate-500"><span className="font-semibold text-slate-700 tabular-nums">{sale.ref}</span> · {sale.client} · <span className="font-semibold text-[#1E2B58] tabular-nums">${fmt(sale.amount)}</span> · <span className="tabular-nums">{lines.length}</span> servicios · <span className="tabular-nums">{verticeCount}</span> vértices</p>
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-2">
@@ -75,22 +80,31 @@ export default function DetalleVentaModule({ saleId }: { saleId: string }) {
             </div>
           </div>
 
-          <CabeceraAcuerdo value={header} onChange={setHeader} />
+          <CabeceraAcuerdo sale={sale} value={header} onChange={setHeader} />
           <SoporteEvidencia value={support} onChange={setSupport} />
-          <DesgloseServicios lines={lines} onChange={setLines} />
+          <DesgloseServicios total={sale.amount} lines={lines} onChange={setLines} />
           <VistaPreviaCxC lines={lines} />
         </div>
 
         <footer className="sticky bottom-0 z-30 flex flex-col gap-3 border-t border-slate-200/80 bg-white/90 px-4 py-3.5 backdrop-blur-md md:flex-row md:items-center md:justify-between md:px-8">
-          <button type="button" onClick={() => setHistoryOpen(true)} className="inline-flex h-10 items-center gap-2 self-start rounded-full border border-slate-200/80 bg-white px-5 text-[13px] font-medium text-slate-700 transition hover:bg-slate-50"><History size={15} />Consultar historial</button>
-          <div className="flex flex-col items-stretch gap-2 md:items-end">
-            {blocker && status === 'Pendiente Condiciones' && <p className="text-[11px] font-medium text-amber-700 md:text-right" id="submit-blocker">{blocker}</p>}
-            <div className="flex flex-wrap items-center gap-2 md:justify-end">
-              <button type="button" disabled title="Disponible cuando la venta sea aprobada" className="inline-flex h-10 items-center gap-2 rounded-full border border-slate-200/80 bg-white px-5 text-[13px] font-medium text-slate-400 disabled:cursor-not-allowed"><FileSearch size={15} />Consultar CxC</button>
-              <button type="button" onClick={() => notify('Borrador guardado correctamente')} className="inline-flex h-10 items-center gap-2 rounded-full border border-slate-200/80 bg-white px-5 text-[13px] font-semibold text-[#1E2B58] transition hover:bg-slate-50"><Save size={15} />Guardar borrador</button>
-              <button type="button" disabled={!canSubmit} aria-describedby={blocker ? 'submit-blocker' : undefined} onClick={() => { setStatus('En aprobación'); notify('Venta enviada a aprobación') }} className="inline-flex h-10 items-center gap-2 rounded-full bg-[#1E2B58] px-6 text-[13px] font-semibold text-white shadow-sm transition hover:bg-[#16203F] disabled:cursor-not-allowed disabled:opacity-40"><Send size={15} />{status === 'En aprobación' ? 'Enviado a aprobación' : 'Enviar a aprobación'}</button>
+          <button type="button" onClick={() => setHistoryOpen(true)} className="inline-flex h-10 shrink-0 items-center gap-2 self-start whitespace-nowrap rounded-full border border-slate-200/80 bg-white px-5 text-[13px] font-medium text-slate-700 transition hover:bg-slate-50"><History size={15} />Consultar historial</button>
+  <div className="flex flex-wrap items-center gap-2.5 md:flex-nowrap md:justify-end">
+              <button type="button" disabled title="Disponible cuando la venta sea aprobada" className="inline-flex h-10 shrink-0 whitespace-nowrap items-center gap-2 rounded-full border border-slate-200/80 bg-white px-5 text-[13px] font-medium text-slate-400 disabled:cursor-not-allowed"><FileSearch size={15} />Consultar CxC</button>
+              <button type="button" onClick={() => notify('Borrador guardado correctamente')} className="inline-flex h-10 shrink-0 whitespace-nowrap items-center gap-2 rounded-full border border-slate-200/80 bg-white px-5 text-[13px] font-semibold text-[#1E2B58] transition hover:bg-slate-50"><Save size={15} />Guardar borrador</button>
+              <TooltipProvider delay={150}>
+                <Tooltip>
+                  <TooltipTrigger render={<span tabIndex={showSubmitHint ? 0 : undefined} aria-label={showSubmitHint ? `Enviar a aprobación no disponible. ${SUBMIT_HINT}` : undefined} className={`inline-flex shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1E2B58]/30 ${showSubmitHint ? 'cursor-not-allowed' : ''}`} />}>
+                    <button type="button" disabled={!canSubmit} onClick={() => { setStatus('En aprobación'); notify('Venta enviada a aprobación') }} className="inline-flex h-10 shrink-0 whitespace-nowrap items-center gap-2 rounded-full bg-[#1E2B58] px-6 text-[13px] font-semibold text-white shadow-sm transition hover:bg-[#16203F] disabled:pointer-events-none disabled:opacity-40"><Send size={15} />{status === 'En aprobación' ? 'Enviado a aprobación' : 'Enviar a aprobación'}</button>
+                  </TooltipTrigger>
+                  {showSubmitHint && (
+                    <TooltipContent side="top" align="end" className="flex max-w-xs flex-col items-start gap-1 rounded-lg bg-slate-900 px-3 py-2 text-xs font-medium leading-relaxed text-white shadow-lg">
+                      <span className="text-pretty">{SUBMIT_HINT}</span>
+                      <span className="font-normal text-slate-300 text-pretty">{blocker}</span>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
             </div>
-          </div>
         </footer>
       </section>
 

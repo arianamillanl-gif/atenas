@@ -13,26 +13,6 @@ export const SALES_REPS = ['María González', 'Carlos Méndez', 'Andrea Salazar
 export const FRAMEWORK_CONTRACTS = ['CM-2025-014 · Delta 360 Servicios Integrales', 'CM-2024-087 · Grupo Delta Corporativo', 'CM-2026-003 · Acuerdo Marco Tecnología']
 export const PROVIDERS = ['Nexo Cloud Partners, C.A.', 'Sistemas Andinos 2020, S.A.', 'Formarte Consultores', 'TaxPro Auditores Asociados']
 
-export const CLIENTIFY_TOTAL = 2397
-
-export type VerifiedSale = {
-  id: string
-  client: string
-  unit: string
-  rep: string
-  date: string
-  amount: number
-  status: 'Pendiente Condiciones' | 'En aprobación' | 'Aprobado'
-}
-
-export const VERIFIED_SALES: VerifiedSale[] = [
-  { id: '92f606db-4c1e-4b8a-9a3f-7e2d1c5b0a91', client: 'Inversiones Delta 360, C.A.', unit: 'Consultoría y Tecnología', rep: 'María González', date: '02/11/2026', amount: 2397, status: 'Pendiente Condiciones' },
-  { id: '5b1d8e20-77aa-4f3c-b1e2-0c9d4a6f2e13', client: 'Empresa Alfa C.A.', unit: 'Consultoría y Tecnología', rep: 'Carlos Méndez', date: '28/10/2026', amount: 60000, status: 'En aprobación' },
-  { id: 'c7e4a911-0b3d-4e5f-8a2c-6d1f9b7e3a40', client: 'Distribuidora Orinoco, S.A.', unit: 'Asesoría Tributaria', rep: 'Andrea Salazar', date: '21/10/2026', amount: 8450, status: 'Aprobado' },
-  { id: 'a3f0c6b2-9d18-4e27-b54a-2f8e1c0d7b65', client: 'Farmacias Caribe, C.A.', unit: 'Servicios Contables', rep: 'Luis Rivas', date: '15/10/2026', amount: 14200, status: 'Aprobado' },
-  { id: 'e81b2d4c-3f6a-4c09-9e7d-5a0b8c1f4d22', client: 'Constructora Ávila 21', unit: 'Formación Corporativa', rep: 'Daniela Ortega', date: '09/10/2026', amount: 3600, status: 'Pendiente Condiciones' },
-]
-
 export type PaymentTerms = {
   modalidad: 'Contado' | 'Cuotas' | 'Recurrente'
   periodicidad: 'Única' | 'Mensual' | 'Trimestral' | 'Semestral' | 'Anual'
