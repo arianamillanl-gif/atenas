@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { AlertTriangle, CalendarClock, CheckCircle2, ChevronDown, Lock, Plus, Trash2 } from 'lucide-react'
 import { PROVIDERS, SERVICE_CATALOG, emptyLine, fmtUsd, parseAmount, type PaymentTerms, type ServiceLine } from './data'
 import { Collapse, FieldLabel, NativeSelect, SearchableSelect, SectionCard, Segmented, Toggle, controlClass } from './fields'
@@ -64,7 +65,7 @@ function ServiceRow({ index, line, onChange, onRemove, canRemove }: { index: num
   const summary = [line.pago.modalidad, line.pago.modalidad !== 'Contado' && `${line.pago.cuotas} × ${line.pago.periodicidad.toLowerCase()}`, line.pago.moneda, line.pago.iva].filter(Boolean).join(' · ')
 
   return (
-    <article className="rounded-2xl border border-slate-200/80 bg-white shadow-sm transition hover:border-slate-300/80">
+    <article id={`${line.id}-card`} className="scroll-mt-20 rounded-2xl border border-slate-200/80 bg-white shadow-sm transition hover:border-slate-300/80">
       <header className="flex min-w-0 items-center gap-3 border-b border-slate-100 px-5 py-3">
         <h3 className="min-w-0 flex-1 truncate text-sm font-semibold text-slate-800">{service?.name ?? 'Nuevo servicio'}</h3>
         {isAbonado && <span className="hidden shrink-0 items-center gap-1 rounded-full border border-sky-200 bg-sky-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-sky-700 sm:inline-flex"><Lock size={10} />Abonado $0</span>}
@@ -153,12 +154,32 @@ function ServiceRow({ index, line, onChange, onRemove, canRemove }: { index: num
 }
 
 export default function DesgloseServicios({ total, lines, onChange }: { total: number; lines: ServiceLine[]; onChange: (lines: ServiceLine[]) => void }) {
+  const [pendingFocusId, setPendingFocusId] = useState<string | null>(null)
   const assigned = lines.reduce((sum, line) => sum + (line.valor === 'Abonado' ? 0 : parseAmount(line.monto)), 0)
+
+  useEffect(() => {
+    if (!pendingFocusId) return
+
+    const frame = window.requestAnimationFrame(() => {
+      document.getElementById(`${pendingFocusId}-card`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      document.getElementById(`${pendingFocusId}-srv`)?.focus({ preventScroll: true })
+      setPendingFocusId(null)
+    })
+
+    return () => window.cancelAnimationFrame(frame)
+  }, [lines, pendingFocusId])
+
+  const addService = () => {
+    const newLine = emptyLine()
+    setPendingFocusId(newLine.id)
+    onChange([newLine, ...lines.map((line) => ({ ...line, expanded: false }))])
+  }
+
   return (
     <SectionCard
       title="Desglose de Servicios y Atribución por Vértice"
       description="Distribuye el importe de Clientify entre los servicios contratados. La diferencia debe quedar en $0.00 para enviar a aprobación."
-      action={<button type="button" onClick={() => onChange([...lines.map((l) => ({ ...l, expanded: false })), emptyLine()])} className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-slate-200/80 bg-white px-4 text-xs font-semibold text-[#1E2B58] shadow-sm transition hover:bg-slate-50"><Plus size={15} />Agregar Servicio</button>}
+      action={<button type="button" onClick={addService} className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-slate-200/80 bg-white px-4 text-xs font-semibold text-[#1E2B58] shadow-sm transition hover:bg-slate-50"><Plus size={15} />Agregar Servicio</button>}
     >
       <div className="flex flex-col gap-4">
         <ReconciliationBar total={total} assigned={assigned} />
