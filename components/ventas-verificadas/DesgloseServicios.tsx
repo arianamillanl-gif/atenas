@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import { AlertTriangle, CalendarClock, CheckCircle2, ChevronDown, Lock, Plus, Trash2 } from 'lucide-react'
-import { PROVIDERS, SERVICE_CATALOG, emptyLine, fmtUsd, parseAmount, type PaymentTerms, type ServiceLine } from './data'
+import { PROVIDERS, SERVICE_CATALOG, defaultTerms, emptyLine, fmtUsd, parseAmount, type PaymentTerms, type ServiceLine } from './data'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Collapse, FieldLabel, NativeSelect, SearchableSelect, SectionCard, Segmented, Toggle, controlClass } from './fields'
 
 export function ReconciliationBar({ total, assigned }: { total: number; assigned: number }) {
@@ -54,6 +55,24 @@ function PaymentTermsPanel({ terms, disabled, onChange }: { terms: PaymentTerms;
       <div><FieldLabel>Retenciones</FieldLabel><NativeSelect disabled={disabled} value={terms.retencion} onChange={(v) => set('retencion', v as PaymentTerms['retencion'])} options={['Sin retención', 'IVA 75%', 'IVA 100%', 'ISLR 2%']} /></div>
       <div><FieldLabel>Política Cambiaria</FieldLabel><NativeSelect disabled={disabled} value={terms.politica} onChange={(v) => set('politica', v as PaymentTerms['politica'])} options={['Tasa BCV del día de pago', 'Tasa BCV de emisión', 'Tasa fija contractual']} /></div>
     </fieldset>
+  )
+}
+
+function hasEnteredServiceData(line: ServiceLine) {
+  const defaultPayment = defaultTerms()
+  const paymentTermsChanged = (Object.keys(defaultPayment) as (keyof PaymentTerms)[]).some((key) => line.pago[key] !== defaultPayment[key])
+
+  return Boolean(
+    line.serviceId ||
+    line.operacion ||
+    line.monto.trim() ||
+    line.valor !== 'Vendido' ||
+    !line.comision ||
+    line.subcontratado ||
+    line.proveedor ||
+    line.subValor.trim() ||
+    line.subModo !== 'pct' ||
+    paymentTermsChanged
   )
 }
 
@@ -155,6 +174,7 @@ function ServiceRow({ index, line, onChange, onRemove, canRemove }: { index: num
 
 export default function DesgloseServicios({ total, lines, onChange }: { total: number; lines: ServiceLine[]; onChange: (lines: ServiceLine[]) => void }) {
   const [pendingFocusId, setPendingFocusId] = useState<string | null>(null)
+  const [pendingDelete, setPendingDelete] = useState<ServiceLine | null>(null)
   const assigned = lines.reduce((sum, line) => sum + (line.valor === 'Abonado' ? 0 : parseAmount(line.monto)), 0)
 
   useEffect(() => {
@@ -175,7 +195,23 @@ export default function DesgloseServicios({ total, lines, onChange }: { total: n
     onChange([newLine, ...lines.map((line) => ({ ...line, expanded: false }))])
   }
 
+  const requestServiceRemoval = (line: ServiceLine) => {
+    if (hasEnteredServiceData(line)) {
+      setPendingDelete(line)
+      return
+    }
+
+    onChange(lines.filter((currentLine) => currentLine.id !== line.id))
+  }
+
+  const confirmServiceRemoval = () => {
+    if (!pendingDelete) return
+    onChange(lines.filter((line) => line.id !== pendingDelete.id))
+    setPendingDelete(null)
+  }
+
   return (
+    <>
     <SectionCard
       title="Desglose de Servicios y Atribución por Vértice"
       description="Distribuye el importe de Clientify entre los servicios contratados. La diferencia debe quedar en $0.00 para enviar a aprobación."
@@ -184,9 +220,36 @@ export default function DesgloseServicios({ total, lines, onChange }: { total: n
       <div className="flex flex-col gap-4">
         <ReconciliationBar total={total} assigned={assigned} />
         {lines.map((line, index) => (
-          <ServiceRow key={line.id} index={index} line={line} canRemove={lines.length > 1} onChange={(next) => onChange(lines.map((l) => l.id === line.id ? next : l))} onRemove={() => onChange(lines.filter((l) => l.id !== line.id))} />
+          <ServiceRow key={line.id} index={index} line={line} canRemove={lines.length > 1} onChange={(next) => onChange(lines.map((l) => l.id === line.id ? next : l))} onRemove={() => requestServiceRemoval(line)} />
         ))}
       </div>
     </SectionCard>
+
+      <Dialog open={pendingDelete !== null} onOpenChange={(open) => { if (!open) setPendingDelete(null) }}>
+        <DialogContent
+          showCloseButton={false}
+          overlayClassName="bg-slate-900/40 backdrop-blur-xs duration-200 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0"
+          className="flex w-full max-w-[calc(100vw-2rem)] flex-col gap-0 rounded-2xl border border-slate-100 bg-white p-6 text-slate-900 shadow-2xl duration-200 ease-out sm:max-w-md data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95"
+        >
+          <DialogHeader className="gap-0">
+            <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-rose-50 text-rose-600">
+              <AlertTriangle size={22} aria-hidden="true" />
+            </div>
+            <DialogTitle className="text-lg font-bold text-slate-900">Eliminar servicio del desglose</DialogTitle>
+            <DialogDescription className="mb-6 mt-2 text-sm text-slate-500">
+              ¿Estás seguro de que deseas eliminar este servicio y sus asignaciones financieras asociadas? Esta acción recalculará automáticamente la diferencia pendiente.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-3">
+            <button type="button" onClick={() => setPendingDelete(null)} className="h-10 flex-1 rounded-xl px-4 text-sm font-medium text-slate-600 transition hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300">
+              Cancelar
+            </button>
+            <button type="button" onClick={confirmServiceRemoval} className="h-10 flex-1 rounded-xl bg-rose-600 px-4 text-sm font-medium text-white transition hover:bg-rose-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-300">
+              Sí, eliminar servicio
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
