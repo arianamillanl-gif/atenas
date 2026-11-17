@@ -40,6 +40,7 @@ export default function ResultadosTable({ rows, total, tab, tabs, onTabChange }:
   const [page, setPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const [menuFor, setMenuFor] = useState<string | null>(null)
+  const [breakdownFor, setBreakdownFor] = useState<string | null>(null)
   const [menuPos, setMenuPos] = useState({ top: 0, right: 0 })
   const toggleMenu = (ref: string, button: HTMLElement) => {
     const rect = button.getBoundingClientRect()
@@ -85,7 +86,46 @@ export default function ResultadosTable({ rows, total, tab, tabs, onTabChange }:
                     {sale.services.length === 0 ? <span className="text-slate-400 italic">Sin desglosar</span> : (
                       <span className="flex items-center gap-1.5 whitespace-nowrap">
                         <span className="max-w-[190px] truncate text-slate-700" title={sale.services.join(', ')}>{sale.services[0]}</span>
-                        {sale.services.length > 1 && <span className="rounded-full bg-[#1E2B58]/[0.07] px-2 py-0.5 text-[11px] font-semibold text-[#1E2B58] tabular-nums">+{sale.services.length - 1} {sale.services.length === 2 ? 'servicio' : 'servicios'}</span>}
+                        {sale.services.length > 1 && (
+                          <span
+                            className="relative inline-flex"
+                            onMouseEnter={() => setBreakdownFor(sale.ref)}
+                            onMouseLeave={() => setBreakdownFor(null)}
+                            onFocus={() => setBreakdownFor(sale.ref)}
+                            onBlur={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setBreakdownFor(null) }}
+                          >
+                            <button
+                              type="button"
+                              aria-label={`Ver desglose de ${sale.services.length - 1} ${sale.services.length === 2 ? 'servicio' : 'servicios'} adicionales`}
+                              aria-expanded={breakdownFor === sale.ref}
+                              className="rounded-full bg-[#1E2B58]/[0.07] px-2 py-0.5 text-[11px] font-semibold text-[#1E2B58] tabular-nums outline-none transition hover:bg-[#1E2B58]/[0.12] focus-visible:ring-2 focus-visible:ring-[#1E2B58]/30"
+                              onClick={(event) => event.stopPropagation()}
+                            >
+                              +{sale.services.length - 1} {sale.services.length === 2 ? 'servicio' : 'servicios'}
+                            </button>
+                            <div
+                              role="tooltip"
+                              className={`absolute left-1/2 top-full z-50 w-72 origin-top -translate-x-1/2 rounded-xl border border-slate-200 bg-white p-3.5 text-left shadow-2xl transition-[opacity,transform,visibility] duration-150 ease-out ${breakdownFor === sale.ref ? 'visible scale-100 opacity-100' : 'invisible scale-95 opacity-0'}`}
+                            >
+                              <p className="mb-2 border-b border-slate-100 pb-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">Desglose de servicios</p>
+                              <ul className="flex flex-col gap-2">
+                                {sale.breakdown.map((line, index) => (
+                                  <li key={`${line.name}-${index}`} className="flex items-start justify-between gap-3">
+                                    <span className="text-sm font-medium text-slate-800">{line.name}</span>
+                                    <span className="shrink-0 text-sm tabular-nums text-slate-600">${fmt(line.amount)}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                              <a
+                                href={`/ventas-verificadas/${sale.ref}`}
+                                onClick={(event) => event.stopPropagation()}
+                                className="mt-3 block border-t border-slate-100 pt-2.5 text-xs font-medium text-[#1E2B58] transition hover:text-[#344b91] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1E2B58]/30"
+                              >
+                                Ver detalle completo
+                              </a>
+                            </div>
+                          </span>
+                        )}
                       </span>
                     )}
                   </td>
