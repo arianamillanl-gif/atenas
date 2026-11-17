@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { FileSearch, MoreHorizontal } from 'lucide-react'
+import { ArrowRight, FileSearch, MoreHorizontal } from 'lucide-react'
 import { TablePagination } from '@/components/table-pagination'
 import { fmt } from '../data'
 import type { ConditionStatus, CxcStatus, ListSale } from '../list-data'
@@ -105,23 +105,24 @@ export default function ResultadosTable({ rows, total, tab, tabs, onTabChange }:
                             </button>
                             <div
                               role="tooltip"
-                              className={`absolute left-1/2 top-full z-50 w-72 origin-top -translate-x-1/2 rounded-xl border border-slate-200 bg-white p-3.5 text-left shadow-2xl transition-[opacity,transform,visibility] duration-150 ease-out ${breakdownFor === sale.ref ? 'visible scale-100 opacity-100' : 'invisible scale-95 opacity-0'}`}
+                              className={`absolute left-1/2 top-full z-50 w-80 origin-top -translate-x-1/2 rounded-2xl border border-slate-200/80 bg-white p-4 text-left shadow-xl transition-[opacity,transform,visibility] duration-150 ease-out ${breakdownFor === sale.ref ? 'visible scale-100 opacity-100' : 'invisible scale-95 opacity-0'}`}
                             >
-                              <p className="mb-2 border-b border-slate-100 pb-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">Desglose de servicios</p>
-                              <ul className="flex flex-col gap-2">
+                              <p className="mb-3 border-b border-slate-100 pb-2 text-[11px] font-bold tracking-wider text-slate-400">DESGLOSE DE SERVICIOS</p>
+                              <ul className="flex flex-col">
                                 {sale.breakdown.map((line, index) => (
-                                  <li key={`${line.name}-${index}`} className="flex items-start justify-between gap-3">
+                                  <li key={`${line.name}-${index}`} className="flex items-center justify-between gap-4 py-2">
                                     <span className="text-sm font-medium text-slate-800">{line.name}</span>
-                                    <span className="shrink-0 text-sm tabular-nums text-slate-600">${fmt(line.amount)}</span>
+                                    <span className="shrink-0 text-sm font-semibold text-slate-900 tabular-nums">${fmt(line.amount)}</span>
                                   </li>
                                 ))}
                               </ul>
                               <a
                                 href={`/ventas-verificadas/${sale.ref}`}
                                 onClick={(event) => event.stopPropagation()}
-                                className="mt-3 block border-t border-slate-100 pt-2.5 text-xs font-medium text-[#1E2B58] transition hover:text-[#344b91] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1E2B58]/30"
+                                className="mt-2 flex cursor-pointer items-center justify-between border-t border-slate-100 pt-2.5 text-xs font-medium text-[#1E2B58] transition hover:underline focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1E2B58]/30"
                               >
-                                Ver detalle completo
+                                <span>Ver detalle completo</span>
+                                <ArrowRight size={14} aria-hidden="true" />
                               </a>
                             </div>
                           </span>
