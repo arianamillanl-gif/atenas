@@ -2,14 +2,17 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { AlertTriangle, ArrowLeft, CheckCircle2, ChevronRight, Clock3, FileSearch, History, Save, Send, X } from 'lucide-react'
+import { ArrowLeft, CheckCircle2, ChevronRight, Clock3, FileSearch, History, Save, Send, X } from 'lucide-react'
 import { Sidebar, Topbar } from '../personas/Shell'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { INITIAL_LINES, SERVICE_CATALOG, fmt, parseAmount, type ServiceLine } from './data'
 import type { ListSale } from './list-data'
 import CabeceraAcuerdo, { type HeaderState } from './CabeceraAcuerdo'
 import SoporteEvidencia, { missingSupport, type SupportState } from './SoporteEvidencia'
 import DesgloseServicios from './DesgloseServicios'
 import VistaPreviaCxC from './VistaPreviaCxC'
+
+const SUBMIT_HINT = 'La diferencia pendiente debe quedar en $0.00 y los campos obligatorios completos para enviar a aprobación.'
 
 const HISTORY = [
   { title: 'Venta importada desde Clientify', who: 'Integración ETL', when: '02/11/2026 · 09:14' },
@@ -43,7 +46,7 @@ export default function DetalleVentaModule({ sale }: { sale: ListSale }) {
   const missing = [...(!header.responsable ? ['Responsable comercial'] : []), ...missingSupport(support), ...missingLines(lines)]
   const canSubmit = balanced && missing.length === 0 && status === 'Pendiente Condiciones'
   const blocker = !balanced ? 'El desglose de servicios no coincide con el total de Clientify.' : missing.length ? `Faltan ${missing.length} campo(s): ${missing.slice(0, 2).join(', ')}${missing.length > 2 ? '…' : ''}` : ''
-  const blockerLabel = !balanced ? `Diferencia de $${fmt(Math.abs(sale.amount - assigned))} vs. Clientify` : missing.length ? `${missing.length} ${missing.length === 1 ? 'campo pendiente' : 'campos pendientes'}` : ''
+  const showSubmitHint = !canSubmit && status === 'Pendiente Condiciones' && Boolean(blocker)
 
   const notify = (message: string) => { setToast(message); window.setTimeout(() => setToast(''), 2800) }
 
@@ -85,17 +88,22 @@ export default function DetalleVentaModule({ sale }: { sale: ListSale }) {
 
         <footer className="sticky bottom-0 z-30 flex flex-col gap-3 border-t border-slate-200/80 bg-white/90 px-4 py-3.5 backdrop-blur-md md:flex-row md:items-center md:justify-between md:px-8">
           <button type="button" onClick={() => setHistoryOpen(true)} className="inline-flex h-10 shrink-0 items-center gap-2 self-start whitespace-nowrap rounded-full border border-slate-200/80 bg-white px-5 text-[13px] font-medium text-slate-700 transition hover:bg-slate-50"><History size={15} />Consultar historial</button>
-  <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2 md:justify-end lg:flex-nowrap">
-  {blocker && status === 'Pendiente Condiciones' && (
-  <p id="submit-blocker" role="status" className="flex min-w-0 max-w-md items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-800 animate-in fade-in">
-  <AlertTriangle size={13} className="shrink-0 text-amber-600" aria-hidden="true" />
-  <span className="truncate tabular-nums" title={blocker} aria-hidden="true">{blockerLabel}</span>
-  <span className="sr-only">{blocker}</span>
-  </p>
-  )}
+  <div className="flex flex-wrap items-center gap-2.5 md:flex-nowrap md:justify-end">
               <button type="button" disabled title="Disponible cuando la venta sea aprobada" className="inline-flex h-10 shrink-0 whitespace-nowrap items-center gap-2 rounded-full border border-slate-200/80 bg-white px-5 text-[13px] font-medium text-slate-400 disabled:cursor-not-allowed"><FileSearch size={15} />Consultar CxC</button>
               <button type="button" onClick={() => notify('Borrador guardado correctamente')} className="inline-flex h-10 shrink-0 whitespace-nowrap items-center gap-2 rounded-full border border-slate-200/80 bg-white px-5 text-[13px] font-semibold text-[#1E2B58] transition hover:bg-slate-50"><Save size={15} />Guardar borrador</button>
-              <button type="button" disabled={!canSubmit} aria-describedby={blocker ? 'submit-blocker' : undefined} onClick={() => { setStatus('En aprobación'); notify('Venta enviada a aprobación') }} className="inline-flex h-10 shrink-0 whitespace-nowrap items-center gap-2 rounded-full bg-[#1E2B58] px-6 text-[13px] font-semibold text-white shadow-sm transition hover:bg-[#16203F] disabled:cursor-not-allowed disabled:opacity-40"><Send size={15} />{status === 'En aprobación' ? 'Enviado a aprobación' : 'Enviar a aprobación'}</button>
+              <TooltipProvider delay={150}>
+                <Tooltip>
+                  <TooltipTrigger render={<span tabIndex={showSubmitHint ? 0 : undefined} aria-label={showSubmitHint ? `Enviar a aprobación no disponible. ${SUBMIT_HINT}` : undefined} className={`inline-flex shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1E2B58]/30 ${showSubmitHint ? 'cursor-not-allowed' : ''}`} />}>
+                    <button type="button" disabled={!canSubmit} onClick={() => { setStatus('En aprobación'); notify('Venta enviada a aprobación') }} className="inline-flex h-10 shrink-0 whitespace-nowrap items-center gap-2 rounded-full bg-[#1E2B58] px-6 text-[13px] font-semibold text-white shadow-sm transition hover:bg-[#16203F] disabled:pointer-events-none disabled:opacity-40"><Send size={15} />{status === 'En aprobación' ? 'Enviado a aprobación' : 'Enviar a aprobación'}</button>
+                  </TooltipTrigger>
+                  {showSubmitHint && (
+                    <TooltipContent side="top" align="end" className="flex max-w-xs flex-col items-start gap-1 rounded-lg bg-slate-900 px-3 py-2 text-xs font-medium leading-relaxed text-white shadow-lg">
+                      <span className="text-pretty">{SUBMIT_HINT}</span>
+                      <span className="font-normal text-slate-300 text-pretty">{blocker}</span>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
             </div>
         </footer>
       </section>
