@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import { CheckCircle2, FileText, UploadCloud, X } from 'lucide-react'
+import { Eye, FileCheck2, FileUp, Trash2 } from 'lucide-react'
 import { FieldLabel, NativeSelect, SectionCard, controlClass } from './fields'
 
 export type SupportState = {
@@ -44,38 +44,38 @@ function Dropzone({ slot, file, onFile }: { slot: (typeof SLOTS)[number]; file: 
     setError('')
     onFile(candidate)
   }
-
-  if (file) {
-    return (
-      <div className="flex h-full min-h-36 flex-col justify-between rounded-2xl border border-emerald-200 bg-emerald-50/50 p-4">
-        <div className="flex items-start justify-between gap-2">
-          <span className="grid size-9 place-items-center rounded-xl bg-white text-emerald-600 ring-1 ring-emerald-100"><FileText size={17} /></span>
-          <button type="button" onClick={() => onFile(null)} aria-label={`Quitar ${file.name}`} className="grid size-7 place-items-center rounded-lg text-slate-400 transition hover:bg-white hover:text-rose-600"><X size={15} /></button>
-        </div>
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-wide text-emerald-700">{slot.title}</p>
-          <p className="mt-0.5 truncate text-[13px] font-medium text-slate-800">{file.name}</p>
-          <p className="mt-0.5 flex items-center gap-1 text-[11px] text-slate-500 tabular-nums"><CheckCircle2 size={12} className="text-emerald-600" />{(file.size / 1024).toFixed(0)} KB · Cargado</p>
-        </div>
-      </div>
-    )
-  }
+  const fileSize = file ? file.size >= 1024 * 1024 ? `${(file.size / (1024 * 1024)).toFixed(1)} MB` : `${Math.max(1, Math.round(file.size / 1024))} KB` : ''
 
   return (
     <div>
-      <button
-        type="button"
-        onClick={() => input.current?.click()}
+      <div
         onDragOver={(event) => { event.preventDefault(); setDragging(true) }}
-        onDragLeave={() => setDragging(false)}
+        onDragLeave={(event) => { if (!event.currentTarget.contains(event.relatedTarget as Node)) setDragging(false) }}
         onDrop={(event) => { event.preventDefault(); setDragging(false); accept(event.dataTransfer.files[0]) }}
-        className={`flex min-h-36 w-full flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed p-4 text-center transition ${dragging ? 'border-[#1E2B58] bg-[#1E2B58]/[0.04]' : 'border-slate-200 bg-slate-50/60 hover:border-slate-300 hover:bg-slate-50'}`}
+        className={`flex flex-col gap-3 rounded-xl border border-dashed px-4 py-3 transition-colors sm:flex-row sm:items-center sm:justify-between sm:gap-4 ${file ? 'border-solid border-emerald-200 bg-emerald-50/30' : dragging ? 'border-[#1E2B58] bg-slate-50/60' : 'border-slate-300 hover:border-[#1E2B58] hover:bg-slate-50/60'}`}
       >
-        <span className="grid size-9 place-items-center rounded-xl bg-white text-[#1E2B58] shadow-sm ring-1 ring-slate-200/80"><UploadCloud size={17} /></span>
-        <span className="text-[13px] font-semibold text-slate-700">{slot.title} <span className="font-normal text-slate-400">(.pdf)</span></span>
-        <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${slot.required ? 'bg-rose-50 text-rose-600' : 'bg-slate-100 text-slate-500'}`}>{slot.required ? 'Obligatorio' : 'Opcional'}</span>
-        <span className="text-[11px] text-slate-400">Arrastra el archivo o haz clic para buscar</span>
-      </button>
+        <div className="flex min-w-0 items-center gap-3">
+          <span className={`grid size-8 shrink-0 place-items-center rounded-lg ${file ? 'bg-white text-emerald-600' : 'bg-slate-100 text-slate-600'}`}>
+            {file ? <FileCheck2 size={16} /> : <FileUp size={16} />}
+          </span>
+          <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+            <span className={`truncate text-[13px] font-semibold ${file ? 'text-slate-800' : 'text-slate-700'}`}>{file ? file.name : slot.title}</span>
+            {file ? <span className="shrink-0 text-xs text-slate-500 tabular-nums">{fileSize}</span> : <span className="shrink-0 text-xs text-slate-400">(.pdf)</span>}
+            {!file && <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${slot.required ? 'bg-rose-50 text-rose-600' : 'bg-slate-100 text-slate-500'}`}>{slot.required ? 'Obligatorio' : 'Opcional'}</span>}
+          </div>
+        </div>
+        {file ? (
+          <div className="flex shrink-0 items-center gap-1 self-end sm:self-auto">
+            <button type="button" title="Ver PDF" aria-label={`Ver PDF ${file.name}`} onClick={() => window.open(URL.createObjectURL(file), '_blank', 'noopener,noreferrer')} className="grid size-8 place-items-center rounded-lg text-slate-500 transition hover:bg-white hover:text-[#1E2B58]"><Eye size={16} /></button>
+            <button type="button" title="Quitar archivo" aria-label={`Quitar archivo ${file.name}`} onClick={() => onFile(null)} className="grid size-8 place-items-center rounded-lg text-slate-500 transition hover:bg-white hover:text-rose-600"><Trash2 size={16} /></button>
+          </div>
+        ) : (
+          <div className="flex shrink-0 items-center gap-2 self-end sm:self-auto">
+            <span className="text-[11px] text-slate-400">Arrastra o</span>
+            <button type="button" onClick={() => input.current?.click()} className="rounded-full border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-medium text-slate-700 transition hover:bg-slate-50">Seleccionar PDF</button>
+          </div>
+        )}
+      </div>
       <input ref={input} type="file" accept="application/pdf,.pdf" className="sr-only" tabIndex={-1} aria-label={`Cargar ${slot.title}`} onChange={(event) => { accept(event.target.files?.[0]); event.target.value = '' }} />
       {error && <p role="alert" className="mt-1.5 text-[11px] font-medium text-rose-600">{error}</p>}
     </div>
@@ -107,14 +107,14 @@ export default function SoporteEvidencia({ value, onChange }: { value: SupportSt
 
       <div className="mt-6">
         <p className="mb-2 text-xs font-medium text-slate-600">Expediente digital</p>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div className="flex flex-col gap-2.5">
           {SLOTS.map((slot) => <Dropzone key={slot.key} slot={slot} file={value.files[slot.key]} onFile={(file) => set('files', { ...value.files, [slot.key]: file })} />)}
         </div>
       </div>
 
       <div className="mt-6">
         <FieldLabel htmlFor="sop-observacion">Observación Contractual</FieldLabel>
-        <textarea id="sop-observacion" value={value.observacion} onChange={(event) => set('observacion', event.target.value)} rows={3} placeholder="Notas sobre cláusulas especiales, excepciones o acuerdos verbales documentados…" className={`${controlClass} h-auto resize-y py-2.5 leading-relaxed`} />
+        <textarea id="sop-observacion" value={value.observacion} onChange={(event) => set('observacion', event.target.value)} rows={2} placeholder="Notas sobre cláusulas especiales, excepciones o acuerdos verbales documentados…" className={`${controlClass} h-auto resize-y py-2.5 leading-relaxed`} />
       </div>
     </SectionCard>
   )
