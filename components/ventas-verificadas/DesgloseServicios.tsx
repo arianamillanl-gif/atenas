@@ -65,12 +65,11 @@ function ServiceRow({ index, line, onChange, onRemove, canRemove }: { index: num
 
   return (
     <article className="rounded-2xl border border-slate-200/80 bg-white shadow-sm transition hover:border-slate-300/80">
-      <header className="flex flex-wrap items-center gap-3 border-b border-slate-100 px-5 py-3">
-        <span className="grid size-6 place-items-center rounded-md bg-slate-100 text-[11px] font-semibold text-slate-600 tabular-nums">{index + 1}</span>
+      <header className="flex min-w-0 items-center gap-3 border-b border-slate-100 px-5 py-3">
         <h3 className="min-w-0 flex-1 truncate text-sm font-semibold text-slate-800">{service?.name ?? 'Nuevo servicio'}</h3>
-        {isAbonado && <span className="inline-flex items-center gap-1 rounded-full border border-sky-200 bg-sky-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-sky-700"><Lock size={10} />Abonado $0</span>}
-        <span className="text-sm font-semibold text-slate-900 tabular-nums">{fmtUsd(parseAmount(line.monto))}</span>
-        <button type="button" onClick={onRemove} disabled={!canRemove} aria-label={`Eliminar servicio ${index + 1}`} className="grid size-8 place-items-center rounded-lg text-slate-400 transition hover:bg-rose-50 hover:text-rose-600 disabled:pointer-events-none disabled:opacity-30"><Trash2 size={15} /></button>
+        {isAbonado && <span className="hidden shrink-0 items-center gap-1 rounded-full border border-sky-200 bg-sky-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-sky-700 sm:inline-flex"><Lock size={10} />Abonado $0</span>}
+        <span className="shrink-0 text-sm font-bold text-slate-900 tabular-nums">{fmtUsd(parseAmount(line.monto))}</span>
+        <button type="button" onClick={onRemove} disabled={!canRemove} aria-label={`Eliminar servicio ${index + 1}`} className="grid size-8 shrink-0 place-items-center rounded-lg text-slate-400 transition hover:bg-rose-50 hover:text-rose-600 disabled:pointer-events-none disabled:opacity-30"><Trash2 size={15} /></button>
       </header>
 
       <div className="grid grid-cols-1 gap-x-4 gap-y-4 p-5 md:grid-cols-2 xl:grid-cols-12">
@@ -96,7 +95,7 @@ function ServiceRow({ index, line, onChange, onRemove, canRemove }: { index: num
 
         <div className="xl:col-span-3">
           <FieldLabel required>Tipo de Valor</FieldLabel>
-          <Segmented label="Tipo de valor" value={line.valor} onChange={(valor) => onChange({ ...line, valor, ...(valor === 'Abonado' ? { monto: '0', comision: false } : { monto: line.monto === '0' ? '' : line.monto }) })} options={[{ value: 'Vendido', label: 'Vendido' }, { value: 'Abonado', label: 'Abonado ($0)' }]} />
+          <Segmented compact label="Tipo de valor" value={line.valor} onChange={(valor) => onChange({ ...line, valor, ...(valor === 'Abonado' ? { monto: '0', comision: false } : { monto: line.monto === '0' ? '' : line.monto }) })} options={[{ value: 'Vendido', label: 'Vendido' }, { value: 'Abonado', label: 'Abonado ($0)' }]} />
         </div>
         <div className="xl:col-span-3">
           <FieldLabel htmlFor={id('monto')} required>Monto Asignado ($ USD)</FieldLabel>
@@ -117,7 +116,7 @@ function ServiceRow({ index, line, onChange, onRemove, canRemove }: { index: num
 
         <div className="md:col-span-2 xl:col-span-12">
           <Collapse open={line.subcontratado}>
-            <div className="grid grid-cols-1 gap-4 rounded-xl border border-dashed border-slate-200 bg-slate-50/70 p-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+            <div className="-mx-5 -mb-5 mt-4 grid grid-cols-1 gap-4 rounded-b-2xl border-t border-slate-100 bg-slate-50/70 px-5 py-4 md:grid-cols-2">
               <div>
                 <FieldLabel htmlFor={id('prov')} required>Proveedor Subcontratado</FieldLabel>
                 <SearchableSelect id={id('prov')} value={line.proveedor} invalid={line.subcontratado && !line.proveedor} onChange={(v) => set('proveedor', v)} options={PROVIDERS.map((p) => ({ value: p, label: p }))} placeholder="Buscar proveedor…" />
@@ -138,8 +137,8 @@ function ServiceRow({ index, line, onChange, onRemove, canRemove }: { index: num
       <div className="border-t border-slate-100">
         <button type="button" aria-expanded={line.expanded} onClick={() => set('expanded', !line.expanded)} className="flex w-full items-center gap-2.5 px-5 py-3 text-left transition hover:bg-slate-50/70">
           <CalendarClock size={15} className="text-[#1E2B58]" />
-          <span className="text-[13px] font-semibold text-slate-700">Condiciones de Pago y Cronograma</span>
-          <span className="hidden truncate text-[11px] text-slate-400 sm:inline">{isAbonado ? 'No aplica para servicios abonados' : summary}</span>
+          <span className="min-w-0 shrink truncate text-[13px] font-semibold text-slate-700">Condiciones de Pago y Cronograma</span>
+          <span className="min-w-0 flex-1 truncate text-[11px] text-slate-400">{isAbonado ? 'No aplica para servicios abonados' : summary}</span>
           <ChevronDown size={15} className={`ml-auto text-slate-400 transition ${line.expanded ? 'rotate-180' : ''}`} />
         </button>
         <Collapse open={line.expanded}>

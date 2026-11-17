@@ -94,11 +94,11 @@ export function Toggle({ checked, onChange, label, disabled }: { checked: boolea
   )
 }
 
-export function Segmented<T extends string>({ value, onChange, options, label }: { value: T; onChange: (value: T) => void; options: { value: T; label: string }[]; label: string }) {
+export function Segmented<T extends string>({ value, onChange, options, label, compact = false }: { value: T; onChange: (value: T) => void; options: { value: T; label: string }[]; label: string; compact?: boolean }) {
   return (
-    <div role="radiogroup" aria-label={label} className="flex h-10 rounded-xl border border-slate-200/80 bg-slate-50 p-1">
+    <div role="radiogroup" aria-label={label} className={`flex rounded-xl border border-slate-200/80 bg-slate-50 p-1 ${compact ? 'h-9' : 'h-10'}`}>
       {options.map((option) => (
-        <button key={option.value} type="button" role="radio" aria-checked={value === option.value} onClick={() => onChange(option.value)} className={`flex-1 rounded-lg px-2 text-xs font-semibold transition ${value === option.value ? 'bg-white text-[#1E2B58] shadow-sm ring-1 ring-slate-200/80' : 'text-slate-500 hover:text-slate-700'}`}>
+        <button key={option.value} type="button" role="radio" aria-checked={value === option.value} onClick={() => onChange(option.value)} className={`min-w-0 flex-1 rounded-lg font-semibold transition ${compact ? 'whitespace-nowrap px-1 text-[10px]' : 'truncate px-2 text-xs'} ${value === option.value ? 'bg-white text-[#1E2B58] shadow-sm ring-1 ring-slate-200/80' : 'text-slate-500 hover:text-slate-700'}`}>
           {option.label}
         </button>
       ))}
