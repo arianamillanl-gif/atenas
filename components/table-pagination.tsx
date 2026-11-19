@@ -2,7 +2,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 const pageSizeOptions = [5, 10, 25, 50]
 
-const squareClass = 'flex h-10 w-10 items-center justify-center rounded-xl border text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1E2B58]/30 focus-visible:ring-offset-1'
+const squareClass = 'flex h-10 w-10 items-center justify-center rounded-lg border text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1E2B58]/30 focus-visible:ring-offset-1'
 const arrowClass = `${squareClass} border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white`
 const activePageClass = 'border-transparent bg-[#1E2B58] text-white shadow-sm'
 const inactivePageClass = 'border-slate-200 bg-white text-slate-700 hover:bg-slate-50'
@@ -30,7 +30,7 @@ export function TablePagination({ page, totalPages, pageSize, onPageChange, onPa
         <select
           value={pageSize}
           onChange={(event) => onPageSizeChange(Number(event.target.value))}
-          className="h-10 cursor-pointer rounded-xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 outline-none transition-all hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-[#1E2B58]/30"
+          className="h-10 cursor-pointer rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 outline-none transition-all hover:bg-slate-50 focus-visible:ring-2 focus-visible:ring-[#1E2B58]/30"
         >
           {pageSizeOptions.map((size) => <option key={size} value={size}>{size} por página</option>)}
         </select>
