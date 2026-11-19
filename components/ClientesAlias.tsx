@@ -8,29 +8,20 @@ import {
   Calendar,
   Check,
   ChevronDown,
-  ChevronRight,
-  CircleHelp,
   Clock3,
-  FilePlus2,
   FileSearch,
-  LayoutDashboard,
   Lock,
   Menu,
-  MoreHorizontal,
-  PanelLeftClose,
-  PanelLeftOpen,
   Paperclip,
   RefreshCw,
   Search,
-  Settings2,
-  ShieldCheck,
-  SlidersHorizontal,
   X,
 } from 'lucide-react'
 
 import AliasMapping, { type Alias } from './AliasMapping'
 import TraceabilityDrawer from './TraceabilityDrawer'
 import EvidenceDrawer from './EvidenceDrawer'
+import { Sidebar } from '@/components/personas/Shell'
 
 const initialAliases: Alias[] = [
   { name: 'Alfa Consultoría Integral', source: 'Clientify', method: 'ETL automático', validity: '01/01/2026 — Actual', status: 'Vigente', evidence: 'Ver evidencia' },
@@ -40,14 +31,6 @@ const initialAliases: Alias[] = [
 
 function Field({ label, children, hint, className = '' }: { label: string; children: React.ReactNode; hint?: string; className?: string }) {
   return <div className={`client-field ${className}`}><label>{label}</label>{children}{hint && <span className="client-field-hint">{hint}</span>}</div>
-}
-
-function Sidebar({ collapsed, onToggle }: { collapsed: boolean; onToggle: () => void }) {
-  return <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
-    <header className="brand"><img src="/logo-atenas.png" alt="ATENAS Grupo Consultor" /><button className="icon-button sidebar-close" onClick={onToggle} aria-label={collapsed ? 'Expandir menú' : 'Contraer menú'}>{collapsed ? <PanelLeftOpen size={16} /> : <PanelLeftClose size={16} />}</button></header>
-    <div className="sidebar-content"><div className="workspace-switch"><span className="workspace-avatar">LO</span><div><strong>Lo-Fi workspace</strong><span>Operaciones</span></div><ChevronDown size={15} /></div><nav className="nav"><span className="nav-label">MENÚ PRINCIPAL</span><a href="#resumen"><LayoutDashboard size={16} />Resumen</a><a href="#ventas"><FilePlus2 size={16} />Ventas verificadas</a><a href="#reportes"><SlidersHorizontal size={16} />Reportes</a><span className="nav-label second">CONFIGURACIÓN</span><a href="#integraciones"><ShieldCheck size={16} />Integraciones</a><a href="#ajustes"><Settings2 size={16} />Ajustes</a></nav></div>
-    <footer className="sidebar-footer"><div className="support-card"><CircleHelp size={17} /><div><strong>¿Necesitas ayuda?</strong><span>Revisa la guía de operación</span></div><ChevronRight size={14} /></div><div className="user-card"><div className="user-avatar">MG</div><div><strong>María González</strong><span>Administradora</span></div><MoreHorizontal size={16} /></div></footer>
-  </aside>
 }
 
 function IdentityResolution({ reason, onReasonChange, onFile }: { reason: string; onReasonChange: (value: string) => void; onFile: (name: string) => void }) {
@@ -138,7 +121,7 @@ export default function ClientesAlias() {
   const flash = (message: string) => { setNotice(message); window.setTimeout(() => setNotice(''), 3500) }
   const inactivate = (index: number) => { setAliases((current) => current.map((alias, item) => item === index ? { ...alias, status: 'Inactivo', validity: `${alias.validity.split(' — ')[0]} — 08/10/2026` } : alias)); setModal(null); flash('Vigencia cerrada · el registro se conserva en el historial') }
 
-  return <main className="app-shell"><Sidebar collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} /><section className="content">
+  return <main className="app-shell"><Sidebar collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} active="personas" /><section className="content">
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-slate-200/80 bg-white px-6"><div className="flex items-center gap-3"><button className="mobile-menu icon-button" aria-label="Abrir menú"><Menu size={19} /></button><span className="workspace-top-pill"><span />Lo-Fi workspace · Operaciones</span></div><div className="top-actions"><label className="quick-search"><Search size={14} /><span className="sr-only">Búsqueda rápida</span><input aria-label="Búsqueda rápida" placeholder="Búsqueda rápida" /></label><button className="icon-button" aria-label="Notificaciones"><Bell size={18} /></button><span className="top-user"><span className="user-avatar">MG</span>María González<ChevronDown size={14} /></span></div></header>
     <div className="page-wrap clients-page">
       <nav aria-label="Ruta de navegación" className="mb-3 flex items-center gap-2 text-sm text-slate-500">

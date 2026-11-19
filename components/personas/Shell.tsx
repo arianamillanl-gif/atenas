@@ -2,14 +2,13 @@ import Link from 'next/link'
 import {
   ArrowLeftRight,
   BadgeCheck,
+  BriefcaseBusiness,
   Bell,
   FileSearch,
-  Building2,
   ChevronDown,
   ChevronRight,
   CircleHelp,
   CreditCard,
-  LayoutDashboard,
   Menu,
   MoreHorizontal,
   Network,
@@ -17,21 +16,22 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Search,
-  Settings2,
-  ShieldCheck,
   Users,
 } from 'lucide-react'
 
-type NavKey = 'resumen' | 'ventas' | 'personas' | 'servicios' | 'cartera' | 'asignaciones' | 'unidades' | 'estructuras' | 'cobro-ingreso' | 'gobernanza' | 'ajustes'
+type NavKey = 'bsc' | 'ventas' | 'cobro' | 'registrar' | 'aplicacion' | 'cartera' | 'asignaciones' | 'estructuras' | 'personas' | 'servicios'
 
-const NAV_ROUTES: Partial<Record<NavKey, string>> = {
+const NAV_ROUTES: Record<NavKey, string> = {
+  bsc: '/bsc-comisiones',
   ventas: '/ventas-verificadas',
-  personas: '/personas',
-  servicios: '/servicios',
+  cobro: '/bsc-comisiones?view=cobro-ingreso',
+  registrar: '/bsc-comisiones?view=registrar-ingresos',
+  aplicacion: '/cobro-ingreso',
   cartera: '/maestro-cartera',
   asignaciones: '/asignaciones',
   estructuras: '/estructuras',
-  'cobro-ingreso': '/cobro-ingreso',
+  personas: '/personas',
+  servicios: '/servicios',
 }
 
 function NavLink({ id, active, children }: { id: NavKey; active: NavKey; children: React.ReactNode }) {
@@ -43,7 +43,7 @@ function NavLink({ id, active, children }: { id: NavKey; active: NavKey; childre
   )
 }
 
-export function Sidebar({ collapsed, onToggle, active = 'personas' }: { collapsed: boolean; onToggle: () => void; active?: NavKey }) {
+export function Sidebar({ collapsed = false, onToggle = () => {}, active = 'personas' }: { collapsed?: boolean; onToggle?: () => void; active?: NavKey }) {
   return (
     <aside className={`sidebar ${collapsed ? 'collapsed' : ''}`}>
       <header className="brand">
@@ -62,21 +62,20 @@ export function Sidebar({ collapsed, onToggle, active = 'personas' }: { collapse
           <ChevronDown size={15} />
         </div>
         <nav className="nav" aria-label="Menú principal">
-          <span className="nav-label">MENÚ PRINCIPAL</span>
-          <NavLink id="resumen" active={active}><LayoutDashboard size={16} />Resumen</NavLink>
-          <span className="nav-label second">OPERACIÓN COMERCIAL</span>
+          <span className="nav-label">DIRECCIÓN Y COMISIONES</span>
+          <NavLink id="bsc" active={active}><BriefcaseBusiness size={16} />BSC Comisiones</NavLink>
+          <span className="nav-label">OPERACIÓN COMERCIAL</span>
           <NavLink id="ventas" active={active}><BadgeCheck size={16} />Ventas verificadas</NavLink>
-          <span className="nav-label second">GESTIÓN</span>
+          <span className="nav-label">TESORERÍA Y COBRANZAS</span>
+          <NavLink id="cobro" active={active}><CreditCard size={16} />Cobro/Ingreso</NavLink>
+          <NavLink id="registrar" active={active}><ArrowLeftRight size={16} />Registrar ingresos</NavLink>
+          <NavLink id="aplicacion" active={active}><FileSearch size={16} />Aplicación de ingresos a cuentas por cobrar</NavLink>
+          <span className="nav-label">CARTERA Y ESTRUCTURA</span>
+          <NavLink id="cartera" active={active}><FileSearch size={16} />Maestro de cartera</NavLink>
+          <NavLink id="asignaciones" active={active}><ArrowLeftRight size={16} />Asignación de cartera</NavLink>
+          <NavLink id="estructuras" active={active}><Network size={16} />Estructura comercial</NavLink>
           <NavLink id="personas" active={active}><Users size={16} />Personas</NavLink>
           <NavLink id="servicios" active={active}><Package size={16} />Servicios</NavLink>
-          <NavLink id="cartera" active={active}><FileSearch size={16} />Maestro de cartera</NavLink>
-          <NavLink id="asignaciones" active={active}><ArrowLeftRight size={16} />Asignaciones de cartera</NavLink>
-          <NavLink id="unidades" active={active}><Building2 size={16} />Unidades</NavLink>
-          <NavLink id="estructuras" active={active}><Network size={16} />Estructuras</NavLink>
-          <NavLink id="cobro-ingreso" active={active}><CreditCard size={16} />Cobro / Ingreso</NavLink>
-          <span className="nav-label second">CONFIGURACIÓN</span>
-          <NavLink id="gobernanza" active={active}><ShieldCheck size={16} />Gobernanza</NavLink>
-          <NavLink id="ajustes" active={active}><Settings2 size={16} />Ajustes</NavLink>
         </nav>
       </div>
       <footer className="sidebar-footer">

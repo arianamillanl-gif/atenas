@@ -1,56 +1,25 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import {
   AlertTriangle,
-  Package,
   Bell,
   ChevronDown,
-  CircleHelp,
   Clock3,
   FileClock,
-  FileSearch,
   HelpCircle,
-  History,
-  LayoutDashboard,
   LockKeyhole,
   Menu,
-  PanelLeftClose,
   Search,
-  Settings2,
   ShieldCheck,
-  Users,
   X,
   Save,
 } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { Sidebar } from '@/components/personas/Shell'
 
 const inputClass = 'w-full rounded-xl border border-slate-200/90 bg-white px-3.5 py-2.5 text-xs text-slate-800 outline-none transition-all placeholder:text-slate-400 shadow-2xs focus:border-[#2A4B93] focus:ring-2 focus:ring-[#2A4B93]/10'
 const labelClass = 'mb-1.5 inline-block text-xs font-semibold text-slate-700'
-
-function Sidebar() {
-  return <aside className="sidebar hidden lg:flex">
-    <div className="sidebar-content">
-      <div className="brand"><img src="/logo-atenas.png" alt="ATENAS" /><button className="icon-button ml-auto" aria-label="Colapsar panel"><PanelLeftClose size={18} /></button></div>
-      <div className="workspace-switch"><div className="workspace-avatar">LF</div><div><strong>Lo-Fi workspace</strong><span>Estructura comercial</span></div><ChevronDown size={15} /></div>
-      <nav className="nav" aria-label="Navegación principal">
-        <span className="nav-label">GENERAL</span>
-        <a href="#inicio"><LayoutDashboard size={17} />Inicio</a>
-        <a href="#clientes"><Users size={17} />Clientes<span className="nav-count">24</span></a>
-        <span className="nav-label second">ESTRUCTURA COMERCIAL</span>
-        <Link href="/servicios"><Package size={17} />Servicios</Link>
-        <Link className="active" href="/maestro-cartera" aria-current="page"><FileSearch size={17} />Maestro de cartera</Link>
-        <a href="#segmentos"><Settings2 size={17} />Segmentos</a>
-        <a href="#unidades"><ShieldCheck size={17} />Unidades de negocio</a>
-        <span className="nav-label second">GOBIERNO Y CONTROL</span>
-        <a href="#auditoria"><History size={17} />Auditoría</a>
-        <a href="#configuracion"><Settings2 size={17} />Configuración</a>
-      </nav>
-    </div>
-    <div className="sidebar-footer"><div className="support-card"><CircleHelp size={17} /><div><strong>¿Necesitas ayuda?</strong><span>Centro de soporte</span></div><ChevronDown size={14} /></div><div className="user-card"><div className="user-avatar">MG</div><div><strong>María González</strong><span>Administradora</span></div><ChevronDown size={14} /></div></div>
-  </aside>
-}
 
 const auditRows = [
   { date: "09/10/2026 · 14:30", user: "María González", field: "Nombre de la cartera", before: "Cartera West", after: "Cartera Corporativa West", reason: "Ajuste de nomenclatura por estandarización del catálogo corporativo" },
@@ -70,7 +39,7 @@ export default function MaestroCarteraModule() {
   function save() { setSaved(true); window.setTimeout(() => setSaved(false), 2200) }
   function confirmStatus() { if (reason.trim().length < 10) return; setStatus('Inactiva'); setStatusOpen(false); setReason('') }
 
-  return <div className="app-shell"><Sidebar /><div className="content"><header className="topbar"><div className="flex items-center gap-3"><button className="mobile-menu icon-button" aria-label="Abrir menú"><Menu size={18} /></button><div className="breadcrumb"><span>Estructura comercial</span><span>›</span><strong>Maestro de cartera</strong></div></div><div className="top-actions"><label className="search-box hidden sm:flex"><Search size={15} /><input placeholder="Búsqueda rápida" aria-label="Búsqueda rápida" /></label><button className="icon-button notification" aria-label="Notificaciones"><Bell size={18} /><i /></button><div className="top-user"><span className="user-avatar">MG</span><span className="hidden md:inline">María González</span></div></div></header>
+  return <div className="app-shell"><Sidebar active="cartera" /><div className="content"><header className="topbar"><div className="flex items-center gap-3"><button className="mobile-menu icon-button" aria-label="Abrir menú"><Menu size={18} /></button><div className="breadcrumb"><span>Estructura comercial</span><span>›</span><strong>Maestro de cartera</strong></div></div><div className="top-actions"><label className="search-box hidden sm:flex"><Search size={15} /><input placeholder="Búsqueda rápida" aria-label="Búsqueda rápida" /></label><button className="icon-button notification" aria-label="Notificaciones"><Bell size={18} /><i /></button><div className="top-user"><span className="user-avatar">MG</span><span className="hidden md:inline">María González</span></div></div></header>
     <main className="detail-page"><div className="page-wrap">
       <div className="detail-breadcrumb">Catálogos maestros <span>›</span><strong>Ficha F04A</strong></div>
       <section className="mb-6"><h1 className="text-2xl font-bold text-slate-900">Maestro de cartera</h1><p className="mt-1 text-xs text-slate-500">Crear y mantener una cartera como entidad independiente de la asignación de clientes.</p></section>
