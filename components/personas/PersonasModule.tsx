@@ -212,7 +212,7 @@ export default function PersonasModule() {
 
   return (
     <main className="app-shell">
-      <Sidebar collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} />
+      <Sidebar collapsed={collapsed} onToggle={() => setCollapsed((value) => !value)} active="personas" />
       <section className="content flex min-h-screen flex-col">
         <Topbar />
 

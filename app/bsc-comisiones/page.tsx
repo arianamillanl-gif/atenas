@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   description: 'Control gerencial consultivo de comisiones y trazabilidad de cierre mensual en ATENAS.',
 }
 
-export default function BscComisionesPage() {
-  return <BscDashboard />
+export default async function BscComisionesPage({ searchParams }: { searchParams: Promise<{ view?: string }> }) {
+  const { view } = await searchParams
+  return <BscDashboard key={view ?? 'default'} initialView={view} />
 }
