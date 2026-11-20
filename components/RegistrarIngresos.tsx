@@ -7,10 +7,10 @@ import { CashflowToolbar } from '@/components/cashflow-toolbar'
 import { TablePagination } from '@/components/table-pagination'
 
 const rows = [
-	{ id: 'ING-2026-0048', subtitle: 'Comprobante de ingreso', date: '13/11/2026', bankReference: '007482901348', rate: '1,00', cxcDocument: 'FCL25-29-12-1', cxcDocuments: ['FCL25-29-12-1', 'FCL25-31-10-2', 'MC25-30-1'], description: 'Cobro de ventas · Unidad Centro', concept: 'Cobro por ventas', controlAccount: 'Cobro por ventas', detailAccount: 'Servicios', unit: 'Mach Cargo VE', payment: 'Transferencia', income: '12.500,00', payout: '0,00', usd: '120,00', cashUsd: '0,00', bs: '0,00', cashBs: '0,00', bankNational: '', bankNationalReference: '', bankInternational: 'Banco Internacional', bankInternationalReference: '007482901348', observation: 'Abono recibido por transferencia bancaria.' },
+	{ id: 'ING-2026-0048', subtitle: 'Comprobante de ingreso', date: '13/11/2026', bankReference: '007482901348', rate: '1,00', cxcDocument: 'FCL25-29-12-1', cxcDocuments: ['FCL25-29-12-1', 'FCL25-31-10-2', 'MC25-30-1'], description: 'Cobro de ventas · Unidad Centro', concept: 'Cobro por ventas', controlAccount: 'Cobro por ventas', detailAccount: 'Servicios', unit: 'Atenas', payment: 'Transferencia', income: '12.500,00', payout: '0,00', usd: '120,00', cashUsd: '0,00', bs: '0,00', cashBs: '0,00', bankNational: '', bankNationalReference: '', bankInternational: 'Banco Internacional', bankInternationalReference: '007482901348', observation: 'Abono recibido por transferencia bancaria.' },
 	{ id: 'ING-2026-0047', subtitle: 'Comprobante de ingreso', date: '12/11/2026', bankReference: '007482901327', rate: '1,00', cxcDocument: 'FCL25-29-12-2', cxcDocuments: ['FCL25-29-12-2'], description: 'Servicios profesionales · Octubre', concept: 'Servicios profesionales', controlAccount: 'Ingresos operativos', detailAccount: 'Servicios', unit: 'Administración', payment: 'Pago móvil', income: '8.250,00', payout: '0,00', usd: '0,00', cashUsd: '0,00', bs: '8.250,00', cashBs: '0,00', bankNational: 'Banco Nacional', bankNationalReference: '007482901327', bankInternational: '', bankInternationalReference: '', observation: 'Pago recibido por servicios prestados en octubre.' },
 	{ id: 'MOV-2026-0012', subtitle: 'Comprobante de egreso', date: '12/11/2026', bankReference: '007482901294', rate: '1,00', cxcDocument: '—', cxcDocuments: [], description: 'Compra de insumos administrativos', concept: 'Compra de insumos', controlAccount: 'Gastos administrativos', detailAccount: 'Otros ingresos', unit: 'Administración', payment: 'Transferencia', income: '0,00', payout: '2.400,00', usd: '0,00', cashUsd: '0,00', bs: '2.400,00', cashBs: '0,00', bankNational: 'Banco Nacional', bankNationalReference: '007482901294', bankInternational: '', bankInternationalReference: '', observation: 'Compra de papelería y útiles de oficina.' },
-	{ id: 'ING-2026-0046', subtitle: 'Comprobante de caja', date: '11/11/2026', bankReference: 'CAJ-2026-0046', rate: '1,00', cxcDocument: '—', cxcDocuments: [], description: 'Reintegro de gastos · Unidad Norte', concept: 'Reintegro de gastos', controlAccount: 'Ingresos operativos', detailAccount: 'Otros ingresos', unit: 'Mach Cargo VE', payment: 'Efectivo', income: '1.850,00', payout: '0,00', usd: '0,00', cashUsd: '0,00', bs: '0,00', cashBs: '1.850,00', bankNational: '', bankNationalReference: '', bankInternational: '', bankInternationalReference: '', observation: 'Reintegro de gastos con comprobantes aprobados.' },
+	{ id: 'ING-2026-0046', subtitle: 'Comprobante de caja', date: '11/11/2026', bankReference: 'CAJ-2026-0046', rate: '1,00', cxcDocument: '—', cxcDocuments: [], description: 'Reintegro de gastos · Unidad Norte', concept: 'Reintegro de gastos', controlAccount: 'Ingresos operativos', detailAccount: 'Otros ingresos', unit: 'Atenas', payment: 'Efectivo', income: '1.850,00', payout: '0,00', usd: '0,00', cashUsd: '0,00', bs: '0,00', cashBs: '1.850,00', bankNational: '', bankNationalReference: '', bankInternational: '', bankInternationalReference: '', observation: 'Reintegro de gastos con comprobantes aprobados.' },
 ]
 
 const filterColumns = [
@@ -36,17 +36,21 @@ const emptyCurrencyMetadata = (): Record<CurrencyKey, string> => ({ bs: '', cash
 
 const parseAmount = (value: string) => Number(value.replace(/\./g, '').replace(',', '.')) || 0
 
+function getPaymentMethodLabels(amounts: { usd: string; cashUsd: string; bs: string; cashBs: string }) {
+  return [
+    { label: 'USD', amount: amounts.usd },
+    { label: 'USD Efectivo', amount: amounts.cashUsd },
+    { label: 'Bs.', amount: amounts.bs },
+    { label: 'Bs. Efectivo', amount: amounts.cashBs },
+  ].filter(({ amount }) => parseAmount(amount) > 0).map(({ label }) => label)
+}
+
 function PaymentMethodBadges({ row }: { row: (typeof rows)[number] }) {
-  const paymentMethods = [
-    { label: 'USD', amount: row.usd },
-    { label: 'USD Efectivo', amount: row.cashUsd },
-    { label: 'Bs.', amount: row.bs },
-    { label: 'Bs. Efectivo', amount: row.cashBs },
-  ].filter(({ amount }) => parseAmount(amount) > 0)
+  const paymentMethods = getPaymentMethodLabels(row)
 
   return (
     <div className="flex flex-wrap gap-1">
-      {paymentMethods.length > 0 ? paymentMethods.map(({ label }) => (
+      {paymentMethods.length > 0 ? paymentMethods.map((label) => (
         <span key={label} className="inline-flex items-center whitespace-nowrap rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">{label}</span>
       )) : '—'}
     </div>
@@ -202,6 +206,7 @@ export default function RegistrarIngresos() {
         cashBs: amounts.cashBs,
         usd: amounts.usd,
         cashUsd: amounts.cashUsd,
+        payment: getPaymentMethodLabels(amounts).join(', ') || '—',
         bankNational: bankSelections.bs,
         bankNationalReference: bankReferences.bs,
         bankInternational: bankSelections.usd,
@@ -212,8 +217,37 @@ export default function RegistrarIngresos() {
       setSaved(true)
       return
     }
+    const nextRecordNumber = Math.max(0, ...incomeRows.map((row) => Number(row.id.match(/\d+$/)?.[0] ?? 0))) + 1
+    const id = `ING-${new Date().getFullYear()}-${String(nextRecordNumber).padStart(4, '0')}`
+    const nextRecord = {
+      id,
+      subtitle: 'Comprobante de ingreso',
+      date,
+      bankReference: bankReferences.bs || bankReferences.usd || '',
+      rate,
+      cxcDocument: selectedCxc[0] ?? '—',
+      cxcDocuments: selectedCxc,
+      description,
+      concept: controlAccount || description.trim() || 'Por asignar',
+      controlAccount,
+      detailAccount,
+      unit,
+      payment: getPaymentMethodLabels(amounts).join(', ') || '—',
+      income: formatMoney(total),
+      payout: '0,00',
+      usd: amounts.usd,
+      cashUsd: amounts.cashUsd,
+      bs: amounts.bs,
+      cashBs: amounts.cashBs,
+      bankNational: bankSelections.bs,
+      bankNationalReference: bankReferences.bs,
+      bankInternational: bankSelections.usd,
+      bankInternationalReference: bankReferences.usd,
+      observation,
+    }
+    setIncomeRows((current) => [nextRecord, ...current])
+    resetIncomeForm()
     setSaved(true)
-    setFormDirty(false)
   }
 
   return <div className="mx-auto flex max-w-[1600px] flex-col gap-0 p-4 md:p-7 [&>section]:mb-6">
@@ -224,7 +258,7 @@ export default function RegistrarIngresos() {
       <div className="mb-4"><h2 id="general-parameters-heading" className="text-base font-bold text-slate-900">Parámetros Generales</h2><p className="mt-0.5 text-xs text-slate-500">Configuración de tasas, fecha, unidad y notas del movimiento</p></div>
       <div className="grid gap-4 md:grid-cols-2"><Field label="Tasa no oficial" value={rate} onChange={(event) => setRate(event.target.value)} /><div><span className={labelClass}>Tasa oficial</span><div className="mt-1.5 flex min-h-[42px] items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white px-4 py-1.5"><strong className="text-sm font-semibold tabular-nums text-slate-900">1,00 VE</strong><span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-600">+100</span></div></div></div>
       <div aria-hidden="true" className="my-4 border-t border-slate-100" />
-      <div className="grid gap-4 md:grid-cols-12 md:items-end"><div className="md:col-span-3"><Field label="Fecha" value={date} onChange={(event) => setDate(event.target.value)} /></div><label className="min-w-0 md:col-span-4"><span className={labelClass}>Unidad</span><select className={fieldClass} value={unit} onChange={(event) => setUnit(event.target.value)}><option value="">Seleccione una unidad</option><option>Administración</option><option>Centro</option><option>Norte</option><option>Mach Cargo VE</option></select></label><div className="md:col-span-5"><Field label="Observación" placeholder="Agrega una nota para este movimiento" value={observation} onChange={(event) => setObservation(event.target.value)} /></div></div>
+      <div className="grid gap-4 md:grid-cols-12 md:items-end"><div className="md:col-span-3"><Field label="Fecha" value={date} onChange={(event) => setDate(event.target.value)} /></div><label className="min-w-0 md:col-span-4"><span className={labelClass}>Unidad</span><select className={fieldClass} value={unit} onChange={(event) => setUnit(event.target.value)}><option value="">Seleccione una unidad</option><option>Administración</option><option>Centro</option><option>Norte</option><option>Atenas</option></select></label><div className="md:col-span-5"><Field label="Observación" placeholder="Agrega una nota para este movimiento" value={observation} onChange={(event) => setObservation(event.target.value)} /></div></div>
     </section>
 
 
