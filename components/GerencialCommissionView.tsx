@@ -53,7 +53,12 @@ type SelectFilterProps = {
 
 const areas = ['Comercial', 'Operaciones', 'Consumer Insights', 'Marketing', 'Health Intelligence', 'Finanzas', 'Servicio']
 const commissionTypes = ['Venta Nueva', 'On Hand', 'Renovación', 'Gerencial', 'Geomarketing']
-const commissionStatuses = ['ACTIVADA', 'GENERADA', 'NO_PAGADERA', 'ANULADA']
+const commissionStatuses = ['ACTIVADA', 'GENERADA', 'NO_PAGADERA', 'ANULADA', 'PAGADA']
+
+const paidCommissions = [
+  { area: 'Comercial', beneficiary: 'María F. Ruiz', type: 'Renovación', amount: 284500 },
+  { area: 'Servicio', beneficiary: 'Ana S. Torres', type: 'On Hand', amount: 156800 },
+]
 
 const kpis = [
   { label: 'Pendientes de Activación', value: '$439,700', badge: '3 Casos', tone: 'text-slate-500 bg-slate-100', icon: Activity },
@@ -61,6 +66,7 @@ const kpis = [
   { label: 'Observadas', value: '$1,820,100', badge: '2 Casos', tone: 'text-rose-700 bg-rose-50', icon: AlertTriangle },
   { label: 'Listas para Aprobación', value: '$1,987,200', badge: '5 Casos', tone: 'text-emerald-700 bg-emerald-50', icon: Check },
   { label: 'Pendientes de Pago', value: '$439,700', badge: '2 Casos', tone: 'text-orange-700 bg-orange-50', icon: CircleDollarSign },
+  { label: 'Pagadas', value: '$441,300', badge: '2 Casos', tone: 'text-emerald-700 bg-emerald-50', icon: Check },
   { label: 'Congelado / Diferido', value: '$167,100', badge: '1 Caso', tone: 'text-violet-700 bg-violet-50', icon: AlertTriangle },
   { label: 'Condición Global Vesper / Calidad', value: '91.4%', badge: '10 Casos · Objetivo ≥ 95%', tone: 'text-blue-800 bg-blue-50', icon: BarChart3 },
 ]
@@ -199,6 +205,15 @@ export default function GerencialCommissionView() {
     return matchesText && matchesTab && matchesArea && matchesBeneficiary && matchesType && matchesStatus
   }), [filters.area, filters.beneficiary, filters.type, tableFilter, tableSearch])
 
+  const filteredPaidCommissions = useMemo(() => paidCommissions.filter((commission) => (
+    (filters.status === 'Todos' || filters.status === 'PAGADA')
+    && (filters.area === 'Todas' || commission.area === filters.area)
+    && (filters.beneficiary === 'Todos' || commission.beneficiary === filters.beneficiary)
+    && (filters.type === 'Todos' || commission.type === filters.type)
+  )), [filters.area, filters.beneficiary, filters.status, filters.type])
+  const paidKpiAmount = filteredPaidCommissions.reduce((total, commission) => total + commission.amount, 0)
+  const paidKpi = { value: formatMoney(paidKpiAmount), badge: `${filteredPaidCommissions.length} ${filteredPaidCommissions.length === 1 ? 'Caso' : 'Casos'}` }
+
   const setFilter = (key: keyof DashboardFilters, value: string) => setFilters((current) => ({ ...current, [key]: value }))
   const clearFilters = () => setFilters({ period: 'Julio 2026', area: 'Todas', line: 'Todos', beneficiary: 'Todos', type: 'Todos', status: 'Todos' })
 
@@ -248,18 +263,21 @@ export default function GerencialCommissionView() {
 
       {view === 'control' ? (
         <div role="tabpanel" className="flex flex-col gap-5">
-          <div className="overflow-x-auto pb-1" aria-label="Indicadores clave del cierre">
-            <div className="grid min-w-[980px] grid-cols-7 gap-3">
-              {kpis.map(({ label, value, badge, tone, icon: Icon }) => (
-                <article key={label} className="flex min-h-[148px] flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                  <div className="flex min-h-12 items-start gap-2.5">
-                    <span className={`grid size-8 shrink-0 place-items-center rounded-lg ${tone}`}><Icon aria-hidden="true" className="size-4" /></span>
-                    <h3 className="pt-0.5 text-[11px] font-semibold leading-4 text-slate-600">{label}</h3>
-                  </div>
-                  <strong className="mt-3 text-[19px] font-bold tracking-tight tabular-nums text-slate-900">{value}</strong>
-                  <span className="mt-auto pt-2 text-[10px] font-semibold text-slate-500">{badge}</span>
-                </article>
-              ))}
+          <div aria-label="Indicadores clave del cierre">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              {kpis.map(({ label, value, badge, tone, icon: Icon }) => {
+                const paidValues = label === 'Pagadas' ? paidKpi : null
+                return (
+                  <article key={label} className="flex min-h-[160px] flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <div className="flex min-h-[52px] items-start gap-2.5">
+                      <span className={`grid size-8 shrink-0 place-items-center rounded-lg ${tone}`}><Icon aria-hidden="true" className="size-4" /></span>
+                      <h3 className="min-w-0 pt-0.5 text-[11px] font-semibold leading-4 text-slate-600">{label}</h3>
+                    </div>
+                    <strong className="mt-3 text-[19px] font-bold tracking-tight tabular-nums text-slate-900">{paidValues?.value ?? value}</strong>
+                    <span className="mt-auto pt-2 text-[10px] font-semibold text-slate-500">{paidValues?.badge ?? badge}</span>
+                  </article>
+                )
+              })}
             </div>
           </div>
 
