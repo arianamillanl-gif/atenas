@@ -15,7 +15,23 @@ import {
   Grid2X2,
   Search,
   X,
+  SlidersHorizontal,
+  Maximize2,
+  ArrowDownWideNarrow,
+  ArrowDownAZ,
 } from 'lucide-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import {
   Area,
   AreaChart,
@@ -175,15 +191,76 @@ function formatCommissionStatus(status: string) {
   return labels[status] ?? status.toLowerCase().replaceAll('_', ' ')
 }
 
-function ChartCard({ title, children, filters }: { title: string; children: React.ReactNode; filters: Pick<DashboardFilters, 'type' | 'status'> }) {
+type AnalyticsSort = 'amount' | 'alpha'
+type AnalyticsRow = { name: string; amount?: number; value?: number; [key: string]: string | number | string[] | undefined }
+
+function downloadAnalyticsCsv(filename: string, headers: string[], rows: (string | number)[][]) {
+  const content = [headers, ...rows].map((row) => row.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(',')).join('\r\n')
+  const url = URL.createObjectURL(new Blob([`\uFEFF${content}`], { type: 'text/csv;charset=utf-8' }))
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  link.click()
+  window.setTimeout(() => URL.revokeObjectURL(url), 1000)
+}
+
+function ChartCard({ title, children, filters, rows, sortMode, onSort, exportData, filename }: {
+  title: string
+  children: React.ReactNode
+  filters: DashboardFilters
+  rows: AnalyticsRow[]
+  sortMode: AnalyticsSort
+  onSort: (mode: AnalyticsSort) => void
+  exportData: () => void
+  filename: string
+}) {
+  const [isExpanded, setIsExpanded] = useState(false)
+  const amountKey = rows.some((row) => row.amount !== undefined) ? 'amount' : 'value'
+  const activeFilters = `Período: ${filters.period} · Área: ${filters.area} · Línea: ${filters.line} · Beneficiario: ${filters.beneficiary} · Tipo: ${filters.type} · Estado: ${filters.status === 'Todos' ? 'Todos' : formatCommissionStatus(filters.status)}`
   return (
     <section className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
-      <h3 className="text-sm font-bold text-slate-900">{title}</h3>
-      <div className="mb-4 mt-2 flex flex-wrap gap-1.5" aria-label={`Filtros activos en ${title}`}>
+      <header className="mb-2 flex min-w-0 items-center justify-between gap-3">
+        <h3 className="min-w-0 truncate text-sm font-bold text-slate-900">{title}</h3>
+        <DropdownMenu>
+          <DropdownMenuTrigger aria-label="Opciones de vista y exportación" title="Opciones de vista y exportación" className="inline-flex size-8 shrink-0 items-center justify-center rounded-lg border border-[#E2E8F0] bg-[#F8FAFC] text-[#1E2B58] outline-none transition-colors hover:border-[#93C5FD] hover:bg-[#EFF6FF] focus-visible:ring-2 focus-visible:ring-[#93C5FD]">
+            <SlidersHorizontal aria-hidden="true" className="size-[15px]" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="z-30 min-w-[210px] rounded-xl border border-[#E2E8F0] bg-white py-1.5 shadow-lg">
+            <DropdownMenuItem className="gap-2 text-xs text-slate-700" onClick={() => setIsExpanded(true)}><Maximize2 className="size-4 text-slate-400" />Ver en pantalla completa</DropdownMenuItem>
+            <DropdownMenuItem className="gap-2 text-xs text-slate-700" onClick={exportData}>Exportar datos (CSV)</DropdownMenuItem>
+            <DropdownMenuSeparator className="bg-slate-100" />
+            <DropdownMenuGroup>
+              <DropdownMenuLabel className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">ORDENAR POR</DropdownMenuLabel>
+              <DropdownMenuRadioGroup value={sortMode} onValueChange={(value) => onSort(value as AnalyticsSort)}>
+                <DropdownMenuRadioItem value="amount" className="gap-2 text-xs text-slate-700 data-checked:text-[#1E2B58]"><ArrowDownWideNarrow className="size-4" />Mayor monto</DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="alpha" className="gap-2 text-xs text-slate-700 data-checked:text-[#1E2B58]"><ArrowDownAZ className="size-4" />Alfabético</DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </header>
+      <div className="mb-4 flex flex-wrap gap-1.5" aria-label={`Filtros activos en ${title}`}>
         <span className="max-w-full truncate rounded-full border border-[#BFDBFE] bg-[#EFF6FF] px-2 py-1 text-[9px] font-medium text-[#1E2B58]">Tipo: {filters.type}</span>
         <span className="max-w-full truncate rounded-full border border-[#CBD5E1] bg-[#F1F5F9] px-2 py-1 text-[9px] font-medium text-[#334155]">Estado: {filters.status === 'Todos' ? 'Todos' : formatCommissionStatus(filters.status)}</span>
       </div>
       {children}
+      <Dialog open={isExpanded} onOpenChange={setIsExpanded}>
+        <DialogContent className="h-[88vh] w-[calc(100vw-2rem)] max-w-6xl overflow-y-auto border border-slate-200 bg-white p-5 text-slate-900 sm:!max-w-[calc(100vw-2rem)] md:p-7">
+          <DialogHeader className="border-b border-slate-100 pb-3">
+            <DialogTitle className="text-base font-bold">{title}</DialogTitle>
+            <DialogDescription>{activeFilters} · Orden: {sortMode === 'amount' ? 'Mayor monto' : 'Alfabético'}</DialogDescription>
+          </DialogHeader>
+          <div className="py-1">{children}</div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead><tr className="border-b border-slate-100 text-left text-[10px] uppercase tracking-wider text-slate-400"><th className="py-2 font-medium">Elemento</th><th className="py-2 text-right font-medium">{amountKey === 'amount' ? 'Monto' : 'Porcentaje'}</th></tr></thead>
+              <tbody>{rows.map((row) => <tr key={row.name} className="border-b border-slate-50 last:border-0"><td className="py-2 font-medium text-slate-700">{row.name}</td><td className="py-2 text-right font-semibold tabular-nums text-slate-900">{amountKey === 'amount' ? formatMoney(Number(row.amount)) : `${Number(row.value)}%`}</td></tr>)}</tbody>
+            </table>
+            {rows.length === 0 && <p className="py-5 text-center text-xs text-slate-500">No hay datos para los filtros seleccionados.</p>}
+          </div>
+          <p className="text-[10px] text-slate-500">Datos exportables: {filename.replace('.csv', '')} · {rows.length} registros</p>
+        </DialogContent>
+      </Dialog>
     </section>
   )
 }
@@ -218,7 +295,7 @@ export default function GerencialCommissionView() {
   const [selectedException, setSelectedException] = useState<string | null>(null)
   const [tableSearch, setTableSearch] = useState('')
   const [tableFilter, setTableFilter] = useState('Todos')
-  const [impactExported, setImpactExported] = useState(false)
+  const [analyticsSort, setAnalyticsSort] = useState<Record<'beneficiary' | 'type' | 'area' | 'impact', AnalyticsSort>>({ beneficiary: 'amount', type: 'amount', area: 'amount', impact: 'amount' })
 
   const filteredExceptions = useMemo(() => exceptions.filter((item) => {
     const matchesPriority = exceptionPriority === 'Todas' || item.priority === exceptionPriority
@@ -261,6 +338,10 @@ export default function GerencialCommissionView() {
     ), 0)
     return { ...item, value: amount }
   }).filter((item) => item.value > 0)
+  const sortAnalyticsRows = <T extends { name: string; amount?: number; value?: number }>(rows: T[], mode: AnalyticsSort) => [...rows].sort((a, b) => mode === 'amount' ? (b.amount ?? b.value ?? 0) - (a.amount ?? a.value ?? 0) : a.name.localeCompare(b.name, 'es'))
+  const sortedBeneficiaryData = sortAnalyticsRows(filteredBeneficiaryData, analyticsSort.beneficiary)
+  const sortedTypeData = sortAnalyticsRows(filteredTypeData, analyticsSort.type)
+  const sortedAreaData = sortAnalyticsRows(filteredAreaData, analyticsSort.area)
   const analyticsTotal = filteredBeneficiaryData.reduce((total, item) => total + item.amount, 0)
   const filteredImpactRows = impactRows.filter((row) => (
     (filters.period === 'Todos' || row.period === filters.period)
@@ -270,6 +351,7 @@ export default function GerencialCommissionView() {
     && (filters.type === 'Todos' || row.commissionType === filters.type)
     && (filters.status === 'Todos' || row.commissionStatus === filters.status)
   ))
+  const sortedImpactRows = [...filteredImpactRows].sort((a, b) => analyticsSort.impact === 'amount' ? b.amount - a.amount : a.name.localeCompare(b.name, 'es'))
   const filteredImpactTotal = filteredImpactRows.reduce((total, row) => total + row.amount, 0)
   const formattedFilterContext = (value: string) => value === 'Todos' || value === 'Todas' ? 'Todos' : value
 
@@ -278,28 +360,15 @@ export default function GerencialCommissionView() {
 
   const exportImpactCsv = () => {
     const headers = ['Ranking', 'Entidad', 'Categoria', 'Periodo', 'Area', 'Tipo_Comision', 'Estado_Comision', 'Monto_USD', 'Porcentaje_Incidencia']
-    const rows = filteredImpactRows.map((row, index) => [
-      String(index + 1),
-      row.name,
-      row.type,
-      row.period,
-      row.area,
-      row.commissionType,
-      formatCommissionStatus(row.commissionStatus),
-      row.amount.toFixed(2),
-      filteredImpactTotal ? ((row.amount / filteredImpactTotal) * 100).toFixed(2) : '0.00',
-    ])
-    const csv = [headers, ...rows].map((row) => row.map((value) => `"${value.replaceAll('"', '""')}"`).join(',')).join('\r\n')
-    const url = URL.createObjectURL(new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8' }))
-    const link = document.createElement('a')
+    const rows = sortedImpactRows.map((row, index) => [String(index + 1), row.name, row.type, row.period, row.area, row.commissionType, formatCommissionStatus(row.commissionStatus), row.amount.toFixed(2), filteredImpactTotal ? ((row.amount / filteredImpactTotal) * 100).toFixed(2) : '0.00'])
     const periodSlug = filters.period.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-    link.href = url
-    link.download = `impacto-cierre-comisiones-${periodSlug || 'todos'}.csv`
-    link.click()
-    window.setTimeout(() => URL.revokeObjectURL(url), 1000)
-    setImpactExported(true)
-    window.setTimeout(() => setImpactExported(false), 1500)
+    downloadAnalyticsCsv(`impacto-cierre-comisiones-${periodSlug || 'todos'}.csv`, headers, rows)
   }
+
+  const setAnalyticsSortMode = (key: keyof typeof analyticsSort, mode: AnalyticsSort) => setAnalyticsSort((current) => ({ ...current, [key]: mode }))
+  const exportBeneficiaries = () => downloadAnalyticsCsv('beneficiarios.csv', ['Beneficiario', 'Area', 'Monto_USD', 'Tipos_Comision', 'Estados_Comision'], sortedBeneficiaryData.map((row) => [row.name, row.area, row.amount.toFixed(2), row.commissionTypes.join(' | '), row.commissionStatuses.map(formatCommissionStatus).join(' | ')]))
+  const exportTypes = () => downloadAnalyticsCsv('tipo-comision.csv', ['Tipo_Comision', 'Monto_USD', 'Porcentaje'], sortedTypeData.map((row) => [row.name, row.value.toFixed(2), analyticsTotal ? ((row.value / analyticsTotal) * 100).toFixed(2) : '0.00']))
+  const exportAreas = () => downloadAnalyticsCsv('areas.csv', ['Area', 'Monto_USD', 'Tipos_Comision', 'Estados_Comision'], sortedAreaData.map((row) => [row.name, row.amount.toFixed(2), row.commissionTypes.join(' | '), row.commissionStatuses.map(formatCommissionStatus).join(' | ')]))
 
   const exportCsv = () => {
     const content = [
@@ -415,9 +484,9 @@ export default function GerencialCommissionView() {
       ) : (
         <div role="tabpanel" className="flex flex-col gap-5">
           <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
-            <ChartCard title="Comisiones por Beneficiario" filters={filters}>
+            <ChartCard title="Comisiones por Beneficiario" filters={filters} rows={sortedBeneficiaryData} sortMode={analyticsSort.beneficiary} onSort={(mode) => setAnalyticsSortMode('beneficiary', mode)} exportData={exportBeneficiaries} filename="beneficiarios.csv">
               <ChartContainer config={beneficiaryConfig} className="h-[220px] w-full aspect-auto">
-                <BarChart data={filteredBeneficiaryData} layout="vertical" margin={{ left: 0, right: 82, top: 4, bottom: 4 }}>
+                <BarChart data={sortedBeneficiaryData} layout="vertical" margin={{ left: 0, right: 82, top: 4, bottom: 4 }}>
                   <CartesianGrid horizontal={false} strokeDasharray="3 3" />
                   <XAxis type="number" hide domain={[0, 'dataMax + 650000']} />
                   <YAxis type="category" dataKey="name" width={150} tickLine={false} axisLine={false} tick={{ fill: '#64748b', fontSize: 10 }} />
@@ -429,12 +498,12 @@ export default function GerencialCommissionView() {
               </ChartContainer>
             </ChartCard>
 
-            <ChartCard title="Comisiones por Tipo de Comisión" filters={filters}>
+            <ChartCard title="Comisiones por Tipo de Comisión" filters={filters} rows={sortedTypeData.map((row) => ({ name: row.name, amount: row.value }))} sortMode={analyticsSort.type} onSort={(mode) => setAnalyticsSortMode('type', mode)} exportData={exportTypes} filename="tipo-comision.csv">
               <div className="relative">
                 <ChartContainer config={typeConfig} className="h-[220px] w-full aspect-auto">
                   <PieChart>
-                    <Pie data={filteredTypeData} dataKey="value" nameKey="name" innerRadius={57} outerRadius={82} paddingAngle={3} strokeWidth={0}>
-                      {filteredTypeData.map((item) => <Cell key={item.name} fill={item.fill} />)}
+                    <Pie data={sortedTypeData} dataKey="value" nameKey="name" innerRadius={57} outerRadius={82} paddingAngle={3} strokeWidth={0}>
+                      {sortedTypeData.map((item) => <Cell key={item.name} fill={item.fill} />)}
                     </Pie>
                     <Tooltip content={<ChartTooltipContent formatter={(value) => `${value}%`} />} />
                   </PieChart>
@@ -449,9 +518,9 @@ export default function GerencialCommissionView() {
               </div>
             </ChartCard>
 
-            <ChartCard title="Comisiones por Área" filters={filters}>
+            <ChartCard title="Comisiones por Área" filters={filters} rows={sortedAreaData} sortMode={analyticsSort.area} onSort={(mode) => setAnalyticsSortMode('area', mode)} exportData={exportAreas} filename="areas.csv">
               <ChartContainer config={areaConfig} className="h-[220px] w-full aspect-auto">
-                <BarChart data={filteredAreaData} layout="vertical" margin={{ left: 0, right: 82, top: 4, bottom: 4 }}>
+                <BarChart data={sortedAreaData} layout="vertical" margin={{ left: 0, right: 82, top: 4, bottom: 4 }}>
                   <CartesianGrid horizontal={false} strokeDasharray="3 3" />
                   <XAxis type="number" hide domain={[0, 'dataMax + 650000']} />
                   <YAxis type="category" dataKey="name" width={104} tickLine={false} axisLine={false} tick={{ fill: '#64748b', fontSize: 10 }} />
@@ -482,19 +551,15 @@ export default function GerencialCommissionView() {
               </ChartContainer>
             </section>
 
-            <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5 xl:col-span-2">
-              <div className="mb-4 flex items-start justify-between gap-3">
-                <div><h2 className="text-sm font-bold text-slate-900">Impacto en Cierre de Comisiones</h2><p className="mt-1 text-[11px] text-slate-500">Ranking de incidencia en el período</p></div>
-                <button type="button" onClick={exportImpactCsv} title="Descargar ranking filtrado en CSV" aria-label="Descargar ranking filtrado en CSV" className="inline-flex h-7 shrink-0 items-center gap-1.5 rounded-lg border border-[#CBD5E1] bg-white px-2.5 text-xs font-medium text-[#1E2B58] transition-colors hover:border-[#93C5FD] hover:bg-[#EFF6FF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#93C5FD] focus-visible:ring-offset-2">
-                  {impactExported ? <Check aria-hidden="true" className="size-3.5 text-emerald-600" /> : <Download aria-hidden="true" className="size-3.5" />}
-                  {impactExported ? 'Descargado' : 'Exportar CSV'}
-                </button>
-              </div>
+            <div className="xl:col-span-2">
+              <ChartCard title="Impacto en Cierre de Comisiones" filters={filters} rows={sortedImpactRows.map((row) => ({ name: row.name, amount: row.amount }))} sortMode={analyticsSort.impact} onSort={(mode) => setAnalyticsSortMode('impact', mode)} exportData={exportImpactCsv} filename="impacto-cierre-comisiones.csv">
+              <p className="mb-3 text-[11px] text-slate-500">Ranking de incidencia en el período</p>
               <div className="divide-y divide-slate-100">
-                {filteredImpactRows.map((row, index) => <div key={row.name} className="flex items-center gap-3 py-3"><span className="grid size-7 shrink-0 place-items-center rounded-lg bg-slate-50 text-[10px] font-bold text-slate-500">{index + 1}</span><div className="min-w-0 flex-1"><strong className="block truncate text-xs font-semibold text-slate-800">{row.name}</strong><span className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-[9px] font-semibold ${row.type === 'Cliente' ? 'bg-[#EFF6FF] text-[#1E2B58]' : 'bg-[#F1F5F9] text-[#334155]'}`}>{row.type}</span></div><strong className="shrink-0 text-xs font-bold tabular-nums text-slate-900">{formatMoney(row.amount)}</strong></div>)}
-                {filteredImpactRows.length === 0 && <p className="py-5 text-center text-xs text-slate-500">No hay registros de impacto para los filtros seleccionados.</p>}
+                {sortedImpactRows.map((row, index) => <div key={row.name} className="flex items-center gap-3 py-3"><span className="grid size-7 shrink-0 place-items-center rounded-lg bg-slate-50 text-[10px] font-bold text-slate-500">{index + 1}</span><div className="min-w-0 flex-1"><strong className="block truncate text-xs font-semibold text-slate-800">{row.name}</strong><span className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-[9px] font-semibold ${row.type === 'Cliente' ? 'bg-[#EFF6FF] text-[#1E2B58]' : 'bg-[#F1F5F9] text-[#334155]'}`}>{row.type}</span></div><strong className="shrink-0 text-xs font-bold tabular-nums text-slate-900">{formatMoney(row.amount)}</strong></div>)}
+                {sortedImpactRows.length === 0 && <p className="py-5 text-center text-xs text-slate-500">No hay registros de impacto para los filtros seleccionados.</p>}
               </div>
-            </section>
+              </ChartCard>
+            </div>
           </div>
 
           <section aria-labelledby="traceability-title" className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
