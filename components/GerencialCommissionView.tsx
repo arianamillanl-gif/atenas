@@ -61,14 +61,14 @@ const paidCommissions = [
 ]
 
 const kpis = [
-  { label: 'Pendientes de Activación', value: '$439,700', badge: '3 Casos', tone: 'text-slate-500 bg-slate-100', icon: Activity },
-  { label: 'En Revisión', value: '$2,431,500', badge: '5 Casos', tone: 'text-amber-700 bg-amber-50', icon: Search },
-  { label: 'Observadas', value: '$1,820,100', badge: '2 Casos', tone: 'text-rose-700 bg-rose-50', icon: AlertTriangle },
-  { label: 'Listas para Aprobación', value: '$1,987,200', badge: '5 Casos', tone: 'text-emerald-700 bg-emerald-50', icon: Check },
-  { label: 'Pendientes de Pago', value: '$439,700', badge: '2 Casos', tone: 'text-orange-700 bg-orange-50', icon: CircleDollarSign },
-  { label: 'Pagadas', value: '$441,300', badge: '2 Casos', tone: 'text-emerald-700 bg-emerald-50', icon: Check },
-  { label: 'Congelado / Diferido', value: '$167,100', badge: '1 Caso', tone: 'text-violet-700 bg-violet-50', icon: AlertTriangle },
-  { label: 'Condición Global Vesper / Calidad', value: '91.4%', badge: '10 Casos · Objetivo ≥ 95%', tone: 'text-blue-800 bg-blue-50', icon: BarChart3 },
+  { label: 'Pendientes de Activación', value: '$439,700', badge: '3 Casos', context: 'Activación', tone: 'text-slate-500 bg-slate-100', icon: Activity },
+  { label: 'En Revisión', value: '$2,431,500', badge: '5 Casos', context: 'Validación', tone: 'text-amber-700 bg-amber-50', icon: Search },
+  { label: 'Observadas', value: '$1,820,100', badge: '2 Casos', context: 'Con alertas', tone: 'text-rose-700 bg-rose-50', icon: AlertTriangle },
+  { label: 'Listas para Aprobación', value: '$1,987,200', badge: '5 Casos', context: 'Aprobación', tone: 'text-emerald-700 bg-emerald-50', icon: Check },
+  { label: 'Pendientes de Pago', value: '$439,700', badge: '2 Casos', context: 'Pago pendiente', tone: 'text-orange-700 bg-orange-50', icon: CircleDollarSign },
+  { label: 'Pagadas', value: '$441,300', badge: '2 Casos', context: 'USD acumulado', tone: 'text-emerald-700 bg-emerald-50', icon: Check },
+  { label: 'Congelado / Diferido', value: '$167,100', badge: '1 Caso', context: 'En espera', tone: 'text-violet-700 bg-violet-50', icon: AlertTriangle },
+  { label: 'Condición Global Vesper / Calidad', value: '91.4%', badge: '10 Casos', context: 'Obj. ≥ 95%', tone: 'text-blue-800 bg-blue-50', icon: BarChart3 },
 ]
 
 const exceptions = [
@@ -212,7 +212,7 @@ export default function GerencialCommissionView() {
     && (filters.type === 'Todos' || commission.type === filters.type)
   )), [filters.area, filters.beneficiary, filters.status, filters.type])
   const paidKpiAmount = filteredPaidCommissions.reduce((total, commission) => total + commission.amount, 0)
-  const paidKpi = { value: formatMoney(paidKpiAmount), badge: `${filteredPaidCommissions.length} ${filteredPaidCommissions.length === 1 ? 'Caso' : 'Casos'}` }
+  const paidKpi = { value: formatMoney(paidKpiAmount), badge: `${filteredPaidCommissions.length} ${filteredPaidCommissions.length === 1 ? 'Caso' : 'Casos'}`, context: 'USD acumulado' }
 
   const setFilter = (key: keyof DashboardFilters, value: string) => setFilters((current) => ({ ...current, [key]: value }))
   const clearFilters = () => setFilters({ period: 'Julio 2026', area: 'Todas', line: 'Todos', beneficiary: 'Todos', type: 'Todos', status: 'Todos' })
@@ -231,9 +231,9 @@ export default function GerencialCommissionView() {
   }
 
   return (
-    <section aria-label="Control gerencial de comisiones" className="flex flex-col gap-5 font-sans">
-      <section aria-label="Filtros globales" className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
-        <div className="mb-4 flex items-center justify-between gap-3 border-b border-slate-100 pb-3">
+    <section aria-label="Control gerencial de comisiones" className="flex flex-col gap-4 font-sans">
+      <section aria-label="Filtros globales" className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm md:px-5 md:py-4">
+        <div className="mb-3 flex items-center justify-between gap-3 border-b border-slate-100 pb-2">
           <div>
             <h2 className="text-sm font-bold text-slate-800">Filtros de consulta</h2>
             <p className="mt-1 text-[11px] text-slate-500">Contexto aplicado: {filters.period} · {filters.area}</p>
@@ -262,19 +262,22 @@ export default function GerencialCommissionView() {
       </div>
 
       {view === 'control' ? (
-        <div role="tabpanel" className="flex flex-col gap-5">
+        <div role="tabpanel" className="flex flex-col gap-4">
           <div aria-label="Indicadores clave del cierre">
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-              {kpis.map(({ label, value, badge, tone, icon: Icon }) => {
+              {kpis.map(({ label, value, badge, context, tone, icon: Icon }) => {
                 const paidValues = label === 'Pagadas' ? paidKpi : null
                 return (
-                  <article key={label} className="flex min-h-[160px] flex-col rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                    <div className="flex min-h-[52px] items-start gap-2.5">
+                  <article key={label} className="flex h-[132px] flex-col rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                    <div className="flex min-h-10 items-center gap-2">
                       <span className={`grid size-8 shrink-0 place-items-center rounded-lg ${tone}`}><Icon aria-hidden="true" className="size-4" /></span>
-                      <h3 className="min-w-0 pt-0.5 text-[11px] font-semibold leading-4 text-slate-600">{label}</h3>
+                      <h3 className="min-w-0 text-[11px] font-semibold leading-4 text-slate-600">{label}</h3>
                     </div>
-                    <strong className="mt-3 text-[19px] font-bold tracking-tight tabular-nums text-slate-900">{paidValues?.value ?? value}</strong>
-                    <span className="mt-auto pt-2 text-[10px] font-semibold text-slate-500">{paidValues?.badge ?? badge}</span>
+                    <strong className="mt-1.5 text-xl font-semibold leading-6 tracking-tight tabular-nums text-slate-900">{paidValues?.value ?? value}</strong>
+                    <div className={`mt-auto flex items-center justify-between gap-2 border-t border-slate-100 pt-2 text-[10px] leading-4 ${context === 'Obj. ≥ 95%' ? 'pr-9' : ''}`}>
+                      <span className="shrink-0 font-semibold text-slate-500">{paidValues?.badge ?? badge}</span>
+                      <span className="min-w-0 text-right font-medium text-slate-400">{paidValues?.context ?? context}</span>
+                    </div>
                   </article>
                 )
               })}
