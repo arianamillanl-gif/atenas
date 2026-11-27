@@ -88,11 +88,11 @@ const closingProgress = [
 ]
 
 const beneficiaryData = [
-  { name: 'María Fernanda Ruiz', amount: 780400, commissionTypes: ['Renovación'], commissionStatuses: ['ACTIVADA'] },
-  { name: 'Carlos Mendoza', amount: 624180, commissionTypes: ['Venta Nueva'], commissionStatuses: ['GENERADA'] },
-  { name: 'Ana Sofía Torres', amount: 488900, commissionTypes: ['On Hand'], commissionStatuses: ['ACTIVADA'] },
-  { name: 'Luis Ramírez', amount: 314650, commissionTypes: ['Gerencial'], commissionStatuses: ['NO_PAGADERA'] },
-  { name: 'Equipo gerencial', amount: 223370, commissionTypes: ['Geomarketing'], commissionStatuses: ['ANULADA'] },
+  { name: 'María Fernanda Ruiz', area: 'Comercial', amount: 780400, commissionTypes: ['Renovación'], commissionStatuses: ['ACTIVADA'] },
+  { name: 'Carlos Mendoza', area: 'Operaciones', amount: 624180, commissionTypes: ['Venta Nueva'], commissionStatuses: ['GENERADA'] },
+  { name: 'Ana Sofía Torres', area: 'Servicio', amount: 488900, commissionTypes: ['On Hand'], commissionStatuses: ['ACTIVADA'] },
+  { name: 'Luis Ramírez', area: 'Comercial', amount: 314650, commissionTypes: ['Gerencial'], commissionStatuses: ['NO_PAGADERA'] },
+  { name: 'Equipo gerencial', area: 'Marketing', amount: 223370, commissionTypes: ['Geomarketing'], commissionStatuses: ['ANULADA'] },
 ]
 
 const typeData = [
@@ -101,14 +101,6 @@ const typeData = [
   { name: 'On Hand', value: 18, fill: 'var(--color-onHand)' },
   { name: 'Gerencial', value: 13, fill: 'var(--color-gerencial)' },
   { name: 'Geomarketing', value: 8, fill: 'var(--color-geomarketing)' },
-]
-
-const areaData = [
-  { name: 'Comercial', amount: 920500, commissionTypes: ['Renovación', 'Gerencial'], commissionStatuses: ['ACTIVADA', 'NO_PAGADERA'] },
-  { name: 'Operaciones', amount: 618200, commissionTypes: ['Venta Nueva'], commissionStatuses: ['GENERADA'] },
-  { name: 'Marketing', amount: 452180, commissionTypes: ['Geomarketing'], commissionStatuses: ['ANULADA'] },
-  { name: 'Finanzas', amount: 298700, commissionTypes: ['Gerencial'], commissionStatuses: ['NO_PAGADERA'] },
-  { name: 'Servicio', amount: 141920, commissionTypes: ['On Hand'], commissionStatuses: ['ACTIVADA'] },
 ]
 
 const monthlyData = [
@@ -188,8 +180,8 @@ function ChartCard({ title, children, filters }: { title: string; children: Reac
     <section className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5">
       <h3 className="text-sm font-bold text-slate-900">{title}</h3>
       <div className="mb-4 mt-2 flex flex-wrap gap-1.5" aria-label={`Filtros activos en ${title}`}>
-        <span className={`max-w-full truncate rounded-full px-2 py-1 text-[9px] font-medium ${filters.type !== 'Todos' ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-50 text-slate-500'}`}>Tipo: {filters.type}</span>
-        <span className={`max-w-full truncate rounded-full px-2 py-1 text-[9px] font-medium ${filters.status !== 'Todos' ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-50 text-slate-500'}`}>Estado: {filters.status === 'Todos' ? 'Todos' : formatCommissionStatus(filters.status)}</span>
+        <span className="max-w-full truncate rounded-full border border-[#BFDBFE] bg-[#EFF6FF] px-2 py-1 text-[9px] font-medium text-[#1E2B58]">Tipo: {filters.type}</span>
+        <span className="max-w-full truncate rounded-full border border-[#CBD5E1] bg-[#F1F5F9] px-2 py-1 text-[9px] font-medium text-[#334155]">Estado: {filters.status === 'Todos' ? 'Todos' : formatCommissionStatus(filters.status)}</span>
       </div>
       {children}
     </section>
@@ -251,6 +243,26 @@ export default function GerencialCommissionView() {
   const paidKpiAmount = filteredPaidCommissions.reduce((total, commission) => total + commission.amount, 0)
   const paidKpi = { value: formatMoney(paidKpiAmount), badge: `${filteredPaidCommissions.length} ${filteredPaidCommissions.length === 1 ? 'Caso' : 'Casos'}`, context: 'USD acumulado' }
 
+  const matchesAnalyticsFilters = (item: { name: string; amount: number; commissionTypes: string[]; commissionStatuses: string[]; area?: string }) => (
+    (filters.area === 'Todas' || item.area === filters.area || item.name === filters.area)
+    && (filters.beneficiary === 'Todos' || item.name === filters.beneficiary || item.name === 'María Fernanda Ruiz' && filters.beneficiary === 'María F. Ruiz' || item.name === 'Ana Sofía Torres' && filters.beneficiary === 'Ana S. Torres')
+    && (filters.type === 'Todos' || item.commissionTypes.includes(filters.type))
+    && (filters.status === 'Todos' || item.commissionStatuses.includes(filters.status))
+  )
+  const filteredBeneficiaryData = beneficiaryData.filter(matchesAnalyticsFilters)
+  const filteredAreaData = Array.from(new Set(filteredBeneficiaryData.map((item) => item.area))).map((name) => {
+    const entries = filteredBeneficiaryData.filter((item) => item.area === name)
+    return { name, amount: entries.reduce((total, item) => total + item.amount, 0), commissionTypes: Array.from(new Set(entries.flatMap((item) => item.commissionTypes))), commissionStatuses: Array.from(new Set(entries.flatMap((item) => item.commissionStatuses))) }
+  })
+  const filteredTypeData = typeData.map((item) => {
+    const amount = filteredBeneficiaryData.reduce((total, beneficiary) => (
+      total + (beneficiary.commissionTypes.includes(item.name) ? beneficiary.amount : 0)
+    ), 0)
+    return { ...item, value: amount }
+  }).filter((item) => item.value > 0)
+  const analyticsTotal = filteredBeneficiaryData.reduce((total, item) => total + item.amount, 0)
+  const formattedFilterContext = (value: string) => value === 'Todos' || value === 'Todas' ? 'Todos' : value
+
   const setFilter = (key: keyof DashboardFilters, value: string) => setFilters((current) => ({ ...current, [key]: value }))
   const clearFilters = () => setFilters({ period: 'Julio 2026', area: 'Todas', line: 'Todos', beneficiary: 'Todos', type: 'Todos', status: 'Todos' })
 
@@ -273,7 +285,7 @@ export default function GerencialCommissionView() {
         <div className="mb-3 flex items-center justify-between gap-3 border-b border-slate-100 pb-2">
           <div>
             <h2 className="text-sm font-bold text-slate-800">Filtros de consulta</h2>
-            <p className="mt-1 text-[11px] text-slate-500">Contexto aplicado: {filters.period} · {filters.area}</p>
+            <p className="mt-1 text-[11px] text-slate-500">Contexto aplicado: {filters.period} · {filters.area} · {filters.type} · {filters.status === 'Todos' ? 'Todos los estados' : formatCommissionStatus(filters.status)}</p>
           </div>
           <button type="button" onClick={clearFilters} className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-slate-200 px-3 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-[#1e2b58]">
             <X aria-hidden="true" className="size-3.5" /> Limpiar
@@ -370,12 +382,12 @@ export default function GerencialCommissionView() {
           <div className="grid grid-cols-1 gap-4 xl:grid-cols-3">
             <ChartCard title="Comisiones por Beneficiario" filters={filters}>
               <ChartContainer config={beneficiaryConfig} className="h-[220px] w-full aspect-auto">
-                <BarChart data={beneficiaryData} layout="vertical" margin={{ left: 0, right: 82, top: 4, bottom: 4 }}>
+                <BarChart data={filteredBeneficiaryData} layout="vertical" margin={{ left: 0, right: 82, top: 4, bottom: 4 }}>
                   <CartesianGrid horizontal={false} strokeDasharray="3 3" />
                   <XAxis type="number" hide domain={[0, 'dataMax + 650000']} />
-                  <YAxis type="category" dataKey="name" width={128} tickLine={false} axisLine={false} tick={{ fill: '#64748b', fontSize: 10 }} />
+                  <YAxis type="category" dataKey="name" width={150} tickLine={false} axisLine={false} tick={{ fill: '#64748b', fontSize: 10 }} />
                   <Tooltip cursor={{ fill: '#f8fafc' }} content={<CommissionTooltip dimension="Beneficiario" />} />
-                  <Bar dataKey="amount" fill="var(--color-amount)" radius={[0, 5, 5, 0]} barSize={17}>
+                  <Bar dataKey="amount" fill="#1E2B58" background={{ fill: '#F1F5F9', radius: 999 }} radius={[0, 5, 5, 0]} barSize={10}>
                     <LabelList dataKey="amount" position="right" formatter={(value) => formatMoney(Number(value))} className="fill-slate-600 text-[9px] tabular-nums" />
                   </Bar>
                 </BarChart>
@@ -386,30 +398,30 @@ export default function GerencialCommissionView() {
               <div className="relative">
                 <ChartContainer config={typeConfig} className="h-[220px] w-full aspect-auto">
                   <PieChart>
-                    <Pie data={typeData} dataKey="value" nameKey="name" innerRadius={57} outerRadius={82} paddingAngle={3} strokeWidth={0}>
-                      {typeData.map((item) => <Cell key={item.name} fill={item.fill} />)}
+                    <Pie data={filteredTypeData} dataKey="value" nameKey="name" innerRadius={57} outerRadius={82} paddingAngle={3} strokeWidth={0}>
+                      {filteredTypeData.map((item) => <Cell key={item.name} fill={item.fill} />)}
                     </Pie>
                     <Tooltip content={<ChartTooltipContent formatter={(value) => `${value}%`} />} />
                   </PieChart>
                 </ChartContainer>
                 <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center pb-1">
-                  <strong className="text-lg font-bold text-slate-900">$2.43M</strong>
-                  <span className="max-w-28 text-center text-[9px] leading-3 text-slate-500">Total · {filters.status !== 'Todos' ? `Estado: ${formatCommissionStatus(filters.status)}` : filters.type !== 'Todos' ? `Tipo: ${filters.type}` : 'Estado: Todos'}</span>
+                  <strong className="text-lg font-bold tabular-nums text-slate-900">{analyticsTotal >= 1000000 ? `$${(analyticsTotal / 1000000).toFixed(2)}M` : formatMoney(analyticsTotal)}</strong>
+                  <span className="max-w-28 whitespace-normal break-normal text-center text-[9px] leading-3 text-slate-500">Total · {filters.type !== 'Todos' ? filters.type : filters.status !== 'Todos' ? formatCommissionStatus(filters.status) : 'Comisiones'}</span>
                 </div>
               </div>
               <div className="mt-1 grid grid-cols-2 gap-x-3 gap-y-2">
-                {typeData.map((item, index) => <div key={item.name} className="flex min-w-0 items-center gap-2 text-[10px] text-slate-600"><span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: `var(--chart-${index + 1})` }} /><span className="min-w-0 flex-1 truncate">{item.name}</span><strong className="text-slate-800">{item.value}%</strong></div>)}
+                {filteredTypeData.map((item) => <div key={item.name} className="flex min-w-0 items-center gap-2 text-[10px] text-slate-600"><span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: item.fill }} /><span className="min-w-0 flex-1 truncate">{item.name}</span><strong className="text-slate-800">{analyticsTotal ? `${Math.round(item.value / analyticsTotal * 100)}%` : '0%'}</strong></div>)}
               </div>
             </ChartCard>
 
             <ChartCard title="Comisiones por Área" filters={filters}>
               <ChartContainer config={areaConfig} className="h-[220px] w-full aspect-auto">
-                <BarChart data={areaData} layout="vertical" margin={{ left: 0, right: 82, top: 4, bottom: 4 }}>
+                <BarChart data={filteredAreaData} layout="vertical" margin={{ left: 0, right: 82, top: 4, bottom: 4 }}>
                   <CartesianGrid horizontal={false} strokeDasharray="3 3" />
                   <XAxis type="number" hide domain={[0, 'dataMax + 650000']} />
-                  <YAxis type="category" dataKey="name" width={88} tickLine={false} axisLine={false} tick={{ fill: '#64748b', fontSize: 10 }} />
+                  <YAxis type="category" dataKey="name" width={104} tickLine={false} axisLine={false} tick={{ fill: '#64748b', fontSize: 10 }} />
                   <Tooltip cursor={{ fill: '#f8fafc' }} content={<CommissionTooltip dimension="Área" />} />
-                  <Bar dataKey="amount" fill="var(--color-amount)" radius={[0, 5, 5, 0]} barSize={17}>
+                  <Bar dataKey="amount" fill="#1E2B58" background={{ fill: '#F1F5F9', radius: 999 }} radius={[0, 5, 5, 0]} barSize={10}>
                     <LabelList dataKey="amount" position="right" formatter={(value) => formatMoney(Number(value))} className="fill-slate-600 text-[9px] tabular-nums" />
                   </Bar>
                 </BarChart>
