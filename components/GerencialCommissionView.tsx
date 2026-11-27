@@ -114,11 +114,11 @@ const monthlyData = [
 ]
 
 const impactRows = [
-  { name: 'Grupo Andino S.A.', type: 'Cliente', amount: '$284,500' },
-  { name: 'Inversiones Litoral', type: 'Cliente', amount: '$198,240' },
-  { name: 'Red Médica Nacional', type: 'Servicio', amount: '$156,800' },
-  { name: 'Constructora Norte', type: 'Cliente', amount: '$94,120' },
-  { name: 'Logística Integral', type: 'Servicio', amount: '$72,900' },
+  { name: 'Grupo Andino S.A.', type: 'Cliente', amount: 284500, area: 'Comercial', line: 'Consultoría', beneficiary: 'María F. Ruiz', commissionType: 'Renovación', commissionStatus: 'ACTIVADA', period: 'Julio 2026' },
+  { name: 'Inversiones Litoral', type: 'Cliente', amount: 198240, area: 'Operaciones', line: 'Venta Nueva', beneficiary: 'Carlos Mendoza', commissionType: 'Venta Nueva', commissionStatus: 'GENERADA', period: 'Julio 2026' },
+  { name: 'Red Médica Nacional', type: 'Servicio', amount: 156800, area: 'Servicio', line: 'On Hand', beneficiary: 'Ana S. Torres', commissionType: 'On Hand', commissionStatus: 'ACTIVADA', period: 'Julio 2026' },
+  { name: 'Constructora Norte', type: 'Cliente', amount: 94120, area: 'Comercial', line: 'Gerencial', beneficiary: 'Luis Ramírez', commissionType: 'Gerencial', commissionStatus: 'NO_PAGADERA', period: 'Julio 2026' },
+  { name: 'Logística Integral', type: 'Servicio', amount: 72900, area: 'Marketing', line: 'Geomarketing', beneficiary: 'María F. Ruiz', commissionType: 'Geomarketing', commissionStatus: 'ANULADA', period: 'Julio 2026' },
 ]
 
 const traceability = [
@@ -218,6 +218,7 @@ export default function GerencialCommissionView() {
   const [selectedException, setSelectedException] = useState<string | null>(null)
   const [tableSearch, setTableSearch] = useState('')
   const [tableFilter, setTableFilter] = useState('Todos')
+  const [impactExported, setImpactExported] = useState(false)
 
   const filteredExceptions = useMemo(() => exceptions.filter((item) => {
     const matchesPriority = exceptionPriority === 'Todas' || item.priority === exceptionPriority
@@ -261,10 +262,44 @@ export default function GerencialCommissionView() {
     return { ...item, value: amount }
   }).filter((item) => item.value > 0)
   const analyticsTotal = filteredBeneficiaryData.reduce((total, item) => total + item.amount, 0)
+  const filteredImpactRows = impactRows.filter((row) => (
+    (filters.period === 'Todos' || row.period === filters.period)
+    && (filters.area === 'Todas' || row.area === filters.area)
+    && (filters.line === 'Todos' || row.line === filters.line)
+    && (filters.beneficiary === 'Todos' || row.beneficiary === filters.beneficiary)
+    && (filters.type === 'Todos' || row.commissionType === filters.type)
+    && (filters.status === 'Todos' || row.commissionStatus === filters.status)
+  ))
+  const filteredImpactTotal = filteredImpactRows.reduce((total, row) => total + row.amount, 0)
   const formattedFilterContext = (value: string) => value === 'Todos' || value === 'Todas' ? 'Todos' : value
 
   const setFilter = (key: keyof DashboardFilters, value: string) => setFilters((current) => ({ ...current, [key]: value }))
   const clearFilters = () => setFilters({ period: 'Julio 2026', area: 'Todas', line: 'Todos', beneficiary: 'Todos', type: 'Todos', status: 'Todos' })
+
+  const exportImpactCsv = () => {
+    const headers = ['Ranking', 'Entidad', 'Categoria', 'Periodo', 'Area', 'Tipo_Comision', 'Estado_Comision', 'Monto_USD', 'Porcentaje_Incidencia']
+    const rows = filteredImpactRows.map((row, index) => [
+      String(index + 1),
+      row.name,
+      row.type,
+      row.period,
+      row.area,
+      row.commissionType,
+      formatCommissionStatus(row.commissionStatus),
+      row.amount.toFixed(2),
+      filteredImpactTotal ? ((row.amount / filteredImpactTotal) * 100).toFixed(2) : '0.00',
+    ])
+    const csv = [headers, ...rows].map((row) => row.map((value) => `"${value.replaceAll('"', '""')}"`).join(',')).join('\r\n')
+    const url = URL.createObjectURL(new Blob([`\uFEFF${csv}`], { type: 'text/csv;charset=utf-8' }))
+    const link = document.createElement('a')
+    const periodSlug = filters.period.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+    link.href = url
+    link.download = `impacto-cierre-comisiones-${periodSlug || 'todos'}.csv`
+    link.click()
+    window.setTimeout(() => URL.revokeObjectURL(url), 1000)
+    setImpactExported(true)
+    window.setTimeout(() => setImpactExported(false), 1500)
+  }
 
   const exportCsv = () => {
     const content = [
@@ -294,7 +329,7 @@ export default function GerencialCommissionView() {
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
           <SelectFilter label="Período de cierre" value={filters.period} options={['Julio 2026', 'Todos']} onChange={(value) => setFilter('period', value)} />
           <SelectFilter label="Área" value={filters.area} options={['Todas', ...areas]} onChange={(value) => setFilter('area', value)} />
-          <SelectFilter label="Línea de negocio" value={filters.line} options={['Todos']} onChange={(value) => setFilter('line', value)} />
+          <SelectFilter label="Línea de negocio" value={filters.line} options={['Todos', ...Array.from(new Set(impactRows.map((row) => row.line)))]} onChange={(value) => setFilter('line', value)} />
           <SelectFilter label="Beneficiario" value={filters.beneficiary} options={['Todos', ...Array.from(new Set(tableRows.map((row) => row.beneficiary)))]} onChange={(value) => setFilter('beneficiary', value)} />
           <SelectFilter label="Tipo de comisión" value={filters.type} options={['Todos', ...commissionTypes]} onChange={(value) => setFilter('type', value)} />
           <SelectFilter label="Estado de comisión" value={filters.status} options={['Todos', ...commissionStatuses]} onChange={(value) => setFilter('status', value)} />
@@ -448,9 +483,16 @@ export default function GerencialCommissionView() {
             </section>
 
             <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:p-5 xl:col-span-2">
-              <div className="mb-4"><h2 className="text-sm font-bold text-slate-900">Impacto en Cierre de Comisiones</h2><p className="mt-1 text-[11px] text-slate-500">Ranking de incidencia en el período</p></div>
+              <div className="mb-4 flex items-start justify-between gap-3">
+                <div><h2 className="text-sm font-bold text-slate-900">Impacto en Cierre de Comisiones</h2><p className="mt-1 text-[11px] text-slate-500">Ranking de incidencia en el período</p></div>
+                <button type="button" onClick={exportImpactCsv} title="Descargar ranking filtrado en CSV" aria-label="Descargar ranking filtrado en CSV" className="inline-flex h-7 shrink-0 items-center gap-1.5 rounded-lg border border-[#CBD5E1] bg-white px-2.5 text-xs font-medium text-[#1E2B58] transition-colors hover:border-[#93C5FD] hover:bg-[#EFF6FF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#93C5FD] focus-visible:ring-offset-2">
+                  {impactExported ? <Check aria-hidden="true" className="size-3.5 text-emerald-600" /> : <Download aria-hidden="true" className="size-3.5" />}
+                  {impactExported ? 'Descargado' : 'Exportar CSV'}
+                </button>
+              </div>
               <div className="divide-y divide-slate-100">
-                {impactRows.map((row, index) => <div key={row.name} className="flex items-center gap-3 py-3"><span className="grid size-7 shrink-0 place-items-center rounded-lg bg-slate-50 text-[10px] font-bold text-slate-500">{index + 1}</span><div className="min-w-0 flex-1"><strong className="block truncate text-xs font-semibold text-slate-800">{row.name}</strong><span className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-[9px] font-semibold ${row.type === 'Cliente' ? 'bg-blue-50 text-blue-700' : 'bg-violet-50 text-violet-700'}`}>{row.type}</span></div><strong className="shrink-0 text-xs font-bold tabular-nums text-slate-900">{row.amount}</strong></div>)}
+                {filteredImpactRows.map((row, index) => <div key={row.name} className="flex items-center gap-3 py-3"><span className="grid size-7 shrink-0 place-items-center rounded-lg bg-slate-50 text-[10px] font-bold text-slate-500">{index + 1}</span><div className="min-w-0 flex-1"><strong className="block truncate text-xs font-semibold text-slate-800">{row.name}</strong><span className={`mt-1 inline-flex rounded-full px-2 py-0.5 text-[9px] font-semibold ${row.type === 'Cliente' ? 'bg-[#EFF6FF] text-[#1E2B58]' : 'bg-[#F1F5F9] text-[#334155]'}`}>{row.type}</span></div><strong className="shrink-0 text-xs font-bold tabular-nums text-slate-900">{formatMoney(row.amount)}</strong></div>)}
+                {filteredImpactRows.length === 0 && <p className="py-5 text-center text-xs text-slate-500">No hay registros de impacto para los filtros seleccionados.</p>}
               </div>
             </section>
           </div>
